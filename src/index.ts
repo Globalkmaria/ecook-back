@@ -2,9 +2,9 @@ import express from "express";
 import session from "express-session";
 import cors from "cors";
 
-import { config, corsOption, getSessions } from "./config/index.js";
-import v1 from "./router/v1/index.js";
-import { errorHandler, notFound } from "./middleware/errorHandlers.js";
+import { config, corsOption, getSessions } from "./config/index";
+import v1 from "./router/v1/index";
+import { errorHandler, notFound } from "./middleware/errorHandlers";
 
 const app = express();
 
