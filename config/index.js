@@ -14,14 +14,21 @@ export const config = {
     secret: required("SESSION_SECRET"),
   },
   server: {
-    url: required("SERVER_URL", "http://localhost:8080"),
+    url: required("SERVER_URL"),
   },
-  port: parseInt(required("PORT", 8080)),
+  port: parseInt(required("PORT")),
   cors: {
     allowedOrigin: required("CORS_ALLOW_ORIGIN"),
   },
   frontend: {
     url: required("FRONTEND_URL"),
+  },
+  mysql: {
+    host: required("MYSQL_HOST"),
+    user: required("MYSQL_USER"),
+    password: required("MYSQL_PASSWORD"),
+    database: required("MYSQL_NAME"),
+    port: required("MYSQL_PORT"),
   },
 };
 
