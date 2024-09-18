@@ -23,6 +23,11 @@ interface RecipeIngredient extends RowDataPacket {
   ingredient_quantity?: string; // Nullable, varchar(20)
   ingredient_id?: number; // Non-nullable, int
   product_id?: number; // Nullable, int
+  product_name?: string; // Nullable, varchar(255)
+  product_brand?: string; // Nullable, varchar(255)
+  product_purchased_from?: string; // Nullable, varchar(255)
+  product_link?: string; // Nullable, varchar(255)
+  product_img?: string; // Nullable, varchar(255)
 }
 
 interface RecipeTag extends RowDataPacket {
@@ -52,6 +57,10 @@ interface UserSimple extends RowDataPacket {
   img?: string; // Nullable, varchar(255)
 }
 
+interface RecipeImgs extends RowDataPacket {
+  recipe_img: string; // Non-nullable, varchar(255)
+}
+
 interface ClientRecipeDetail {
   id: number;
   name: string;
@@ -65,32 +74,43 @@ interface ClientRecipeDetail {
     name: string;
     quantity: string;
     ingredientId: number | null;
-    productId: number | null;
+    product: {
+      id: number;
+      name: string;
+      brand: string | null;
+      purchasedFrom: string | null;
+      link: string | null;
+      img: string | null;
+    } | null;
   }[];
   tags: { id: number; name: string }[];
   user: { id: number; username: string; img: string | null };
 }
 
-router.get("/:recipe_id", async (req, res, next) => {
+router.get("/:recipeId", async (req, res, next) => {
   try {
-    const { recipe_id } = req.params;
-    console.log("recipe_id", recipe_id);
-    if (isNaN(Number(recipe_id)))
+    const { recipeId } = req.params;
+
+    if (isNaN(Number(recipeId)))
       return res.status(400).json({ error: "Invalid recipe ID" });
 
     const [recipe_info] = await mysqlDB.query<RecipeInfo[]>(
-      `SELECT * FROM recipes where recipes.id = ${recipe_id}`
+      `SELECT * FROM recipes where recipes.id = ${recipeId}`
     );
 
     if (!recipe_info.length)
       return res.status(404).json({ error: "Recipe not found" });
 
+    const [imgs] = await mysqlDB.query<RecipeImgs[]>(
+      `SELECT recipe_img FROM recipe_img_view WHERE recipe_id = ${recipeId}`
+    );
+
     const [ingredients] = await mysqlDB.query<RecipeIngredient[]>(
-      `SELECT * FROM recipe_ingredients_view where recipe_ingredients_view.recipe_id = ${recipe_id}`
+      `SELECT * FROM recipe_ingredients_view where recipe_ingredients_view.recipe_id = ${recipeId}`
     );
 
     const [tags_data] = await mysqlDB.query<RecipeTag[]>(
-      `SELECT * FROM recipe_tags_view WHERE recipe_tags_view.recipe_id = ${recipe_id}`
+      `SELECT * FROM recipe_tags_view WHERE recipe_tags_view.recipe_id = ${recipeId}`
     );
 
     const [user_data] = await mysqlDB.query<UserSimple[]>(
@@ -107,13 +127,22 @@ router.get("/:recipe_id", async (req, res, next) => {
       simpleDescription: info.simple_description ?? "",
       time: info.time ?? "",
       steps: info.steps ? info.steps : [],
-      img: info.recipe_img,
+      img: imgs[0].recipe_img,
       ingredients: ingredients.map((ingredient) => ({
         id: ingredient.id,
         name: ingredient.ingredient_name,
         quantity: ingredient.ingredient_quantity ?? "",
         ingredientId: ingredient.ingredient_id ?? null,
-        productId: ingredient.product_id ?? null,
+        product: ingredient.product_id
+          ? {
+              id: ingredient.product_id,
+              name: ingredient.product_name ?? "",
+              brand: ingredient.product_brand ?? null,
+              purchasedFrom: ingredient.product_purchased_from ?? null,
+              link: ingredient.product_link ?? null,
+              img: ingredient.product_img ?? null,
+            }
+          : null,
       })),
       tags: tags_data.map((tag) => ({ id: tag.tag_id, name: tag.tag_name })),
       user: {
@@ -122,6 +151,8 @@ router.get("/:recipe_id", async (req, res, next) => {
         img: user.img ?? "",
       },
     };
+
+    console.log(recipe);
 
     return res.status(200).json(recipe);
   } catch (e) {
