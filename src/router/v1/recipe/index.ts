@@ -1,6 +1,7 @@
 import mysqlDB from "../../../db/mysql";
 import express from "express";
 import { RowDataPacket } from "mysql2";
+import { ClientProduct, Product } from "../products";
 
 const router = express.Router();
 
@@ -61,6 +62,24 @@ interface RecipeImgs extends RowDataPacket {
   recipe_img: string; // Non-nullable, varchar(255)
 }
 
+interface RecipeProduct {
+  id: number;
+  name: string;
+  brand: string | null;
+  purchasedFrom: string | null;
+  link: string | null;
+  img: string | null;
+}
+
+interface Ingredient {
+  id: number;
+  name: string;
+  quantity: string;
+  ingredientId: number | null;
+  userProduct: RecipeProduct | null;
+  products: ClientProduct[] | null;
+}
+
 interface ClientRecipeDetail {
   id: number;
   name: string;
@@ -69,20 +88,7 @@ interface ClientRecipeDetail {
   time: string;
   steps: string[];
   img: string;
-  ingredients: {
-    id: number;
-    name: string;
-    quantity: string;
-    ingredientId: number | null;
-    product: {
-      id: number;
-      name: string;
-      brand: string | null;
-      purchasedFrom: string | null;
-      link: string | null;
-      img: string | null;
-    } | null;
-  }[];
+  ingredients: Ingredient[];
   tags: { id: number; name: string }[];
   user: { id: number; username: string; img: string | null };
 }
@@ -105,7 +111,7 @@ router.get("/:recipeId", async (req, res, next) => {
       `SELECT recipe_img FROM recipe_img_view WHERE recipe_id = ${recipeId}`
     );
 
-    const [ingredients] = await mysqlDB.query<RecipeIngredient[]>(
+    const [ingredients_data] = await mysqlDB.query<RecipeIngredient[]>(
       `SELECT * FROM recipe_ingredients_view where recipe_ingredients_view.recipe_id = ${recipeId}`
     );
 
@@ -115,6 +121,71 @@ router.get("/:recipeId", async (req, res, next) => {
 
     const [user_data] = await mysqlDB.query<UserSimple[]>(
       `SELECT * FROM users_simple_view WHERE users_simple_view.id = ${recipe_info[0].user_id}`
+    );
+
+    const getProducts = async (ingredientData: RecipeIngredient) => {
+      const { ingredient_id, product_id } = ingredientData;
+      if (!ingredient_id) return { ingredientId: null, products: null };
+      const [products_data] = await mysqlDB.query<Product[]>(
+        `SELECT * FROM ingredient_products
+          JOIN
+      product_detail_view ON product_detail_view.id = ingredient_products.product_id
+          WHERE
+      ingredient_id = ${ingredient_id} AND product_detail_view.id != ${product_id}
+       LIMIT 5;`
+      );
+
+      const products: ClientProduct[] = products_data.map((product) => ({
+        id: product.id,
+        ingredientId: product.ingredient_id,
+        userId: product.user_id,
+        name: product.name,
+        brand: product.brand,
+        purchasedFrom: product.purchased_from,
+        link: product.link,
+        img: product.img,
+        createdAt: product.created_at,
+        updatedAt: product.updated_at,
+      }));
+
+      return { ingredientId: ingredient_id, products };
+    };
+
+    const ingredientsProductsPromises = ingredients_data.map(
+      (ingredient_data) => getProducts(ingredient_data)
+    );
+
+    const ingredientsProducts = await Promise.all(ingredientsProductsPromises);
+
+    const IngredientIdAndProductsMap = ingredientsProducts.reduce(
+      (map, { ingredientId, products }) => {
+        if (ingredientId) map[ingredientId] = products;
+
+        return map;
+      },
+      {} as { [ingredientId: number]: ClientProduct[] | null }
+    );
+
+    const ingredients: Ingredient[] = ingredients_data.map(
+      (ingredient_data) => ({
+        id: ingredient_data.id,
+        name: ingredient_data.ingredient_name,
+        quantity: ingredient_data.ingredient_quantity ?? "",
+        ingredientId: ingredient_data.ingredient_id ?? null,
+        userProduct: ingredient_data.product_id
+          ? {
+              id: ingredient_data.product_id,
+              name: ingredient_data.product_name ?? "",
+              brand: ingredient_data.product_brand ?? null,
+              purchasedFrom: ingredient_data.product_purchased_from ?? null,
+              link: ingredient_data.product_link ?? null,
+              img: ingredient_data.product_img ?? null,
+            }
+          : null,
+        products: ingredient_data.ingredient_id
+          ? IngredientIdAndProductsMap[ingredient_data.ingredient_id]
+          : null,
+      })
     );
 
     const info = recipe_info[0];
@@ -128,22 +199,7 @@ router.get("/:recipeId", async (req, res, next) => {
       time: info.time ?? "",
       steps: info.steps ? info.steps : [],
       img: imgs[0].recipe_img,
-      ingredients: ingredients.map((ingredient) => ({
-        id: ingredient.id,
-        name: ingredient.ingredient_name,
-        quantity: ingredient.ingredient_quantity ?? "",
-        ingredientId: ingredient.ingredient_id ?? null,
-        product: ingredient.product_id
-          ? {
-              id: ingredient.product_id,
-              name: ingredient.product_name ?? "",
-              brand: ingredient.product_brand ?? null,
-              purchasedFrom: ingredient.product_purchased_from ?? null,
-              link: ingredient.product_link ?? null,
-              img: ingredient.product_img ?? null,
-            }
-          : null,
-      })),
+      ingredients,
       tags: tags_data.map((tag) => ({ id: tag.tag_id, name: tag.tag_name })),
       user: {
         id: user.id,

@@ -4,7 +4,7 @@ import { RowDataPacket } from "mysql2";
 
 const router = express.Router();
 
-interface Product extends RowDataPacket {
+export interface Product extends RowDataPacket {
   id: number; // Primary key for the ingredient
   ingredient_id: number; // Foreign key referencing ingredient
   product_id: number; // Foreign key referencing product
@@ -18,7 +18,7 @@ interface Product extends RowDataPacket {
   img: string; // URL to the product image
 }
 
-interface ClientProduct {
+export interface ClientProduct {
   id: number;
   ingredientId: number;
   userId: number;
