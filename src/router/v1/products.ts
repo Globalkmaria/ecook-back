@@ -18,6 +18,14 @@ export interface Product extends RowDataPacket {
   img: string; // URL to the product image
 }
 
+interface Ingredient extends RowDataPacket {
+  id: number; // Corresponds to 'int' and is the primary key
+  user_id?: number | null; // 'int' and nullable, thus optional
+  name: string; // Corresponds to 'varchar(255)' and is required
+  created_at?: Date; // 'timestamp' and nullable, so it's optional
+  updated_at?: Date; // 'timestamp' and nullable, so it's optional
+}
+
 export interface ClientProduct {
   id: number;
   ingredientId: number;
@@ -31,6 +39,50 @@ export interface ClientProduct {
   updatedAt: Date;
 }
 
+router.get("/", async (req, res, next) => {
+  try {
+    const { ingredient } = req.query;
+
+    if (!ingredient?.toString().trim()) {
+      return res.status(400).json({ error: "Invalid ingredient" });
+    }
+
+    const [ingredientData] = await mysqlDB.query<Ingredient[]>(
+      `SELECT * FROM ingredients WHERE name='${ingredient}';`
+    );
+
+    const ingredientInfo = ingredientData[0];
+    if (!ingredientInfo) {
+      return res.json({ ingredientId: null, products: [] });
+    }
+
+    const [productsData] = await mysqlDB.query<Product[]>(
+      `SELECT * FROM ingredient_products
+        JOIN
+    product_detail_view ON product_detail_view.id = ingredient_products.product_id
+        WHERE
+    ingredient_id = ${ingredientInfo.id};`
+    );
+
+    const products: ClientProduct[] = productsData.map((product) => ({
+      id: product.id,
+      ingredientId: product.ingredient_id,
+      userId: product.user_id,
+      name: product.name,
+      brand: product.brand,
+      purchasedFrom: product.purchased_from,
+      link: product.link,
+      img: product.img,
+      createdAt: product.created_at,
+      updatedAt: product.updated_at,
+    }));
+
+    res.json({ ingredientId: ingredientInfo.id, products });
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.get("/:ingredientId", async (req, res, next) => {
   try {
     const { ingredientId } = req.params;
@@ -41,7 +93,7 @@ router.get("/:ingredientId", async (req, res, next) => {
     const [data] = await mysqlDB.query<Product[]>(
       `SELECT * FROM ingredient_products
         JOIN
-    product_detail_view ON product_detail_view.product_id = ingredient_products.product_id
+    product_detail_view ON product_detail_view.id = ingredient_products.product_id
         WHERE
     ingredient_id = ${ingredientId};`
     );

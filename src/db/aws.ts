@@ -21,7 +21,7 @@ export const upload = multer({
       cb(null, { fieldName: file.fieldname });
     },
     key: (req, file, cb) => {
-      cb(null, file.originalname);
+      cb(null, `images/${Date.now().toString()}-${file.originalname}`);
     },
   }),
 });
