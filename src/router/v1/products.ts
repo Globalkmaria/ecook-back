@@ -48,7 +48,8 @@ router.get("/", async (req, res, next) => {
     }
 
     const [ingredientData] = await mysqlDB.query<Ingredient[]>(
-      `SELECT * FROM ingredients WHERE name='${ingredient}';`
+      `SELECT * FROM ingredients WHERE name = ?`,
+      [ingredient]
     );
 
     const ingredientInfo = ingredientData[0];
@@ -58,10 +59,9 @@ router.get("/", async (req, res, next) => {
 
     const [productsData] = await mysqlDB.query<Product[]>(
       `SELECT * FROM ingredient_products
-        JOIN
-    product_detail_view ON product_detail_view.id = ingredient_products.product_id
-        WHERE
-    ingredient_id = ${ingredientInfo.id};`
+         JOIN product_detail_view ON product_detail_view.id = ingredient_products.product_id
+         WHERE ingredient_id = ?`,
+      [ingredientInfo.id]
     );
 
     const products: ClientProduct[] = productsData.map((product) => ({
@@ -92,10 +92,9 @@ router.get("/:ingredientId", async (req, res, next) => {
 
     const [data] = await mysqlDB.query<Product[]>(
       `SELECT * FROM ingredient_products
-        JOIN
-    product_detail_view ON product_detail_view.id = ingredient_products.product_id
-        WHERE
-    ingredient_id = ${ingredientId};`
+        JOIN product_detail_view ON product_detail_view.id = ingredient_products.product_id
+        WHERE ingredient_id = ?`,
+      [ingredientId] // Pass ingredientId as a parameter
     );
 
     const products: ClientProduct[] = data.map((product) => ({
