@@ -1,6 +1,7 @@
+import { upload } from "../../db/aws";
 import mysqlDB from "../../db/mysql";
 import express from "express";
-import { RowDataPacket } from "mysql2";
+import { ResultSetHeader, RowDataPacket } from "mysql2";
 
 const router = express.Router();
 
@@ -50,6 +51,182 @@ router.get("/", async (req, res, next) => {
     });
 
     res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+});
+
+// ---
+interface IngredientNewProduct {
+  name: string;
+  brand: string | null;
+  purchasedFrom: string | null;
+  link: string | null;
+  img: File | null;
+  id: string | null;
+}
+
+interface NewRecipeIngredient {
+  name: string;
+  quantity: string;
+  ingredientId: number | null;
+  productId: number | null;
+  newProduct: IngredientNewProduct | null;
+}
+
+interface INewRecipe {
+  title: string;
+  description: string;
+  simpleDescription: string;
+  time: string;
+  steps: string[];
+  ingredients: NewRecipeIngredient[];
+  tags: string[];
+  user: { id: number };
+}
+
+router.post("/", upload.any(), async (req, res, next) => {
+  try {
+    const files = req.files as Express.MulterS3.File[];
+    const filesKeys = new Map<string, string>(
+      files.map((file) => [file.fieldname, file.key])
+    );
+
+    const info = JSON.parse(req.body.info) as INewRecipe;
+
+    const userId = info.user.id;
+
+    // recipe
+    const [recipeResult] = await mysqlDB.execute<ResultSetHeader>(
+      `INSERT INTO recipes (name, user_id, time, description, simple_description, steps) VALUES (?,?,?,?,?,?)`,
+      [
+        info.title,
+        userId,
+        info.time,
+        info.description,
+        info.simpleDescription,
+        info.steps,
+      ]
+    );
+
+    const recipeId = recipeResult.insertId;
+
+    // img
+
+    if (filesKeys.has("img")) {
+      // save recipe img location
+      const img = filesKeys.get("img");
+      const [imgResult] = await mysqlDB.execute<ResultSetHeader>(
+        `INSERT INTO imgs (url, user_id) VALUES (?,?)`,
+        [img, userId]
+      );
+
+      const imgId = imgResult.insertId;
+
+      await mysqlDB.execute<ResultSetHeader>(
+        `INSERT INTO recipe_imgs (recipe_id, img_id) VALUES (?,?)`,
+        [recipeId, imgId]
+      );
+    }
+
+    // tags
+
+    if (info.tags.length) {
+      await mysqlDB.execute<ResultSetHeader>(
+        `INSERT IGNORE INTO tags (user_id, name) VALUES ${info.tags
+          .map(() => "(?, ?)")
+          .join(", ")}`,
+        info.tags.flatMap((tag) => [userId, tag])
+      );
+
+      const [tagsIds] = await mysqlDB.query<RowDataPacket[]>(
+        `SELECT id FROM tags WHERE name IN (?)`,
+        [info.tags]
+      );
+
+      await mysqlDB.execute<ResultSetHeader>(
+        `INSERT INTO recipe_tags (recipe_id, tag_id) VALUES ${tagsIds
+          .map(() => `(${recipeId}, ?)`)
+          .join(", ")}`,
+        tagsIds.map((tag) => tag.id)
+      );
+    }
+
+    // ingredients
+
+    const ingredientNames = info.ingredients.map((ingredient) =>
+      ingredient.name.toLowerCase()
+    );
+
+    if (info.ingredients.length) {
+      await mysqlDB.execute<ResultSetHeader>(
+        `INSERT IGNORE INTO ingredients (name, user_id) VALUES ${info.ingredients
+          .map(() => `(?, ${userId})`)
+          .join(", ")}`,
+        ingredientNames
+      );
+
+      const [ingredientsIds] = await mysqlDB.query<RowDataPacket[]>(
+        `SELECT id, name FROM ingredients WHERE name IN (?) ORDER BY FIELD(name, ?)`,
+        [ingredientNames, ingredientNames]
+      );
+
+      const ingredientNameAndIdMap = new Map<string, number>(
+        ingredientsIds.map((ingredient) => [ingredient.name, ingredient.id])
+      );
+
+      for (const ingredient of info.ingredients) {
+        const ingredientId = ingredientNameAndIdMap.get(ingredient.name);
+        let productId = ingredient.productId;
+
+        if (
+          ingredient.newProduct &&
+          Object.keys(ingredient.newProduct).length
+        ) {
+          // save product and get product id
+          const newProduct = ingredient.newProduct;
+          const [newProductId] = await mysqlDB.execute<ResultSetHeader>(
+            `INSERT INTO products (user_id, name, brand, purchased_from, link) VALUES (?,?,?,?,?)`,
+            [
+              userId,
+              newProduct?.name ?? "",
+              newProduct?.brand ?? "",
+              newProduct?.purchasedFrom ?? "",
+              newProduct?.link ?? "",
+            ]
+          );
+
+          productId = newProductId.insertId;
+          // link product img
+          if (filesKeys.has(`img_${newProduct.id}`)) {
+            const img = filesKeys.get(`img_${newProduct.id}`);
+            const [imgId] = await mysqlDB.execute<ResultSetHeader>(
+              `INSERT INTO imgs (url, user_id) VALUES (?,?)`,
+              [img, userId]
+            );
+
+            const [result] = await mysqlDB.execute<ResultSetHeader>(
+              `INSERT INTO product_imgs (product_id, img_id) VALUES (?,?)`,
+              [productId, imgId.insertId]
+            );
+          }
+
+          // link product - ingredient
+          await mysqlDB.execute<ResultSetHeader>(
+            `INSERT INTO ingredient_products (ingredient_id, product_id) VALUES (?,?)`,
+            [ingredientNameAndIdMap.get(ingredient.name), productId]
+          );
+        }
+
+        // link recipe - ingredient
+        await mysqlDB.execute<ResultSetHeader>(
+          `INSERT INTO recipe_ingredients (recipe_id, ingredient_id, product_id, name) VALUES (?,?,?,?)`,
+          [recipeId, ingredientId ?? null, productId ?? null, ingredient.name]
+        );
+      }
+    }
+
+    res.status(200).json({ message: "POST /recipes" });
   } catch (error) {
     next(error);
   }

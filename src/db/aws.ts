@@ -1,3 +1,4 @@
+import { getRandomId } from "../utils/numbers";
 import { config } from "../config/index";
 import { S3Client } from "@aws-sdk/client-s3"; // Import AWS SDK v3 S3 client
 import multer from "multer"; // Import Multer for file uploads
@@ -21,7 +22,8 @@ export const upload = multer({
       cb(null, { fieldName: file.fieldname });
     },
     key: (req, file, cb) => {
-      cb(null, `images/${Date.now().toString()}-${file.originalname}`);
+      cb(null, `images/${getRandomId()}-${file.originalname}`);
     },
   }),
+  limits: { fileSize: 500 * 1024 },
 });
