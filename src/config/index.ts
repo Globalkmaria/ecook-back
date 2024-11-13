@@ -37,6 +37,9 @@ export const config = {
     bucket: required("AWS_BUCKET"),
     s3ForcePathStyle: true,
   },
+  img: {
+    dbUrl: required("IMG_DB_URL"),
+  },
 };
 
 export const corsOption = {

@@ -1,3 +1,4 @@
+import { config } from "../../config";
 import { upload } from "../../db/aws";
 import mysqlDB from "../../db/mysql";
 import express from "express";
@@ -45,7 +46,7 @@ router.get("/", async (req, res, next) => {
         id: recipe.id,
         name: recipe.name,
         simpleDescription: recipe.simple_description ?? "",
-        img: recipe.img,
+        img: config.img.dbUrl + recipe.img,
         tags,
       };
     });

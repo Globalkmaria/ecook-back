@@ -2,6 +2,7 @@ import mysqlDB from "../../../db/mysql";
 import express from "express";
 import { RowDataPacket } from "mysql2";
 import { ClientProduct, Product } from "../products";
+import { config } from "../../../config";
 
 const router = express.Router();
 
@@ -143,7 +144,7 @@ router.get("/:recipeId", async (req, res, next) => {
         brand: product.brand,
         purchasedFrom: product.purchased_from,
         link: product.link,
-        img: product.img,
+        img: config.img.dbUrl + product.img,
         createdAt: product.created_at,
         updatedAt: product.updated_at,
       }));
@@ -179,7 +180,9 @@ router.get("/:recipeId", async (req, res, next) => {
               brand: ingredient_data.product_brand ?? null,
               purchasedFrom: ingredient_data.product_purchased_from ?? null,
               link: ingredient_data.product_link ?? null,
-              img: ingredient_data.product_img ?? null,
+              img: ingredient_data.product_img
+                ? config.img.dbUrl + ingredient_data.product_img
+                : null,
             }
           : null,
         products: ingredient_data.ingredient_id
@@ -198,7 +201,7 @@ router.get("/:recipeId", async (req, res, next) => {
       simpleDescription: info.simple_description ?? "",
       time: info.time ?? "",
       steps: info.steps ? info.steps : [],
-      img: imgs[0].recipe_img,
+      img: config.img.dbUrl + imgs[0].recipe_img,
       ingredients,
       tags: tags_data.map((tag) => ({ id: tag.tag_id, name: tag.tag_name })),
       user: {
