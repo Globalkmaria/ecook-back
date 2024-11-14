@@ -211,8 +211,6 @@ router.get("/:recipeId", async (req, res, next) => {
       },
     };
 
-    console.log(recipe);
-
     return res.status(200).json(recipe);
   } catch (e) {
     next(e);

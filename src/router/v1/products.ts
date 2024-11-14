@@ -1,3 +1,4 @@
+import { config } from "../../config";
 import mysqlDB from "../../db/mysql";
 import express from "express";
 import { RowDataPacket } from "mysql2";
@@ -72,7 +73,7 @@ router.get("/", async (req, res, next) => {
       brand: product.brand,
       purchasedFrom: product.purchased_from,
       link: product.link,
-      img: product.img,
+      img: config.img.dbUrl + product.img,
       createdAt: product.created_at,
       updatedAt: product.updated_at,
     }));
@@ -105,7 +106,7 @@ router.get("/:ingredientId", async (req, res, next) => {
       brand: product.brand,
       purchasedFrom: product.purchased_from,
       link: product.link,
-      img: product.img,
+      img: config.img.dbUrl + product.img,
       createdAt: product.created_at,
       updatedAt: product.updated_at,
     }));
