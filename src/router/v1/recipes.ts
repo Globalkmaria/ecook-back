@@ -9,7 +9,6 @@ const router = express.Router();
 interface RecipesSimple extends RowDataPacket {
   id: number; // Non-nullable, int, default 0
   name: string; // Non-nullable, varchar(50)
-  simple_description?: string | null; // Nullable, varchar(100)
   created_at: Date; // Timestamp for when the record was created
   updated_at: Date; // Timestamp for when the record was updated
   img: string; // Non-nullable, varchar(255)
@@ -23,7 +22,6 @@ interface RecipesSimple extends RowDataPacket {
 interface ClientRecipeSimple {
   id: number;
   name: string;
-  simpleDescription: string;
   img: string;
   tags: { id: number; name: string }[];
 }
@@ -45,7 +43,6 @@ router.get("/", async (req, res, next) => {
       return {
         id: recipe.id,
         name: recipe.name,
-        simpleDescription: recipe.simple_description ?? "",
         img: config.img.dbUrl + recipe.img,
         tags,
       };
@@ -78,8 +75,8 @@ interface NewRecipeIngredient {
 interface INewRecipe {
   title: string;
   description: string;
-  simpleDescription: string;
-  time: string;
+  hours: number;
+  minutes: number;
   steps: string[];
   ingredients: NewRecipeIngredient[];
   tags: string[];
@@ -99,13 +96,13 @@ router.post("/", upload.any(), async (req, res, next) => {
 
     // recipe
     const [recipeResult] = await mysqlDB.execute<ResultSetHeader>(
-      `INSERT INTO recipes (name, user_id, time, description, simple_description, steps) VALUES (?,?,?,?,?,?)`,
+      `INSERT INTO recipes (name, user_id, hours, minutes, description, steps) VALUES (?,?,?,?,?,?)`,
       [
         info.title,
         userId,
-        info.time,
+        Number(info.hours) ?? 0,
+        Number(info.minutes) ?? 0,
         info.description,
-        info.simpleDescription,
         info.steps,
       ]
     );

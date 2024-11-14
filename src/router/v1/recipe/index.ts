@@ -10,9 +10,9 @@ interface RecipeInfo extends RowDataPacket {
   id: number; // Primary key, auto_increment
   name: string; // Non-nullable, varchar(50)
   user_id: number; //  foreign key
-  time?: string; // Nullable, varchar(50)
+  hours: number; // Non-nullable, int
+  minutes: number; // Non-nullable, int
   description?: string; // Nullable, varchar(255)
-  simple_description?: string; // Nullable, varchar(100)
   steps?: string[]; // Json string[] Nullable, JSON type in TypeScript as Record<string, any> or object
   created_at: Date; // Timestamp with CURRENT_TIMESTAMP default
   updated_at: Date; // Timestamp with auto-update on change
@@ -85,8 +85,8 @@ interface ClientRecipeDetail {
   id: number;
   name: string;
   description: string;
-  simpleDescription: string;
-  time: string;
+  hours: number;
+  minutes: number;
   steps: string[];
   img: string;
   ingredients: Ingredient[];
@@ -198,8 +198,8 @@ router.get("/:recipeId", async (req, res, next) => {
       id: info.id,
       name: info.name,
       description: info.description ?? "",
-      simpleDescription: info.simple_description ?? "",
-      time: info.time ?? "",
+      hours: info.hours,
+      minutes: info.minutes,
       steps: info.steps ? info.steps : [],
       img: config.img.dbUrl + imgs[0].recipe_img,
       ingredients,
