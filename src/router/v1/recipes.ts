@@ -218,8 +218,14 @@ router.post("/", upload.any(), async (req, res, next) => {
 
         // link recipe - ingredient
         await mysqlDB.execute<ResultSetHeader>(
-          `INSERT INTO recipe_ingredients (recipe_id, ingredient_id, product_id, name) VALUES (?,?,?,?)`,
-          [recipeId, ingredientId ?? null, productId ?? null, ingredient.name]
+          `INSERT INTO recipe_ingredients (recipe_id, ingredient_id, product_id, name, quantity) VALUES (?,?,?,?, ?)`,
+          [
+            recipeId,
+            ingredientId ?? null,
+            productId ?? null,
+            ingredient.name,
+            ingredient.quantity,
+          ]
         );
       }
     }
