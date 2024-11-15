@@ -6,7 +6,7 @@ import { ResultSetHeader, RowDataPacket } from "mysql2";
 
 const router = express.Router();
 
-interface RecipesSimple extends RowDataPacket {
+export interface RecipesSimple extends RowDataPacket {
   id: number; // Non-nullable, int, default 0
   name: string; // Non-nullable, varchar(50)
   created_at: Date; // Timestamp for when the record was created
@@ -17,9 +17,11 @@ interface RecipesSimple extends RowDataPacket {
   user_id: number; // Non-nullable, int, default 0
   tag_ids?: string | null; // Nullable, text (could store a list of tag IDs as a string)
   tag_names?: string | null; // Nullable, text (could store a list of tag names as a string)
+  hours: number; // Non-nullable, int, default 0
+  minutes: number; // Non-nullable, int, default 0
 }
 
-interface ClientRecipeSimple {
+export interface ClientRecipeSimple {
   id: number;
   name: string;
   img: string;
@@ -45,6 +47,8 @@ router.get("/", async (req, res, next) => {
         name: recipe.name,
         img: config.img.dbUrl + recipe.img,
         tags,
+        hours: recipe.hours,
+        minutes: recipe.minutes,
       };
     });
 
