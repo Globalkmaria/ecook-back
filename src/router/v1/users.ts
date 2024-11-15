@@ -4,15 +4,9 @@ import { RowDataPacket } from "mysql2";
 import { config } from "../../config";
 import mysqlDB from "../../db/mysql";
 import { ClientRecipeSimple, RecipesSimple } from "./recipes";
+import { UserSimple } from "./recipe";
 
 const router = express.Router();
-
-interface User extends RowDataPacket {
-  id: number;
-  img?: string;
-  username: string;
-  first_name?: string;
-}
 
 router.get("/:username", async (req, res, next) => {
   try {
@@ -20,7 +14,7 @@ router.get("/:username", async (req, res, next) => {
 
     if (!username) return res.status(400).json({ error: "Invalid username" });
 
-    const [userData] = await mysqlDB.execute<User[]>(
+    const [userData] = await mysqlDB.execute<UserSimple[]>(
       `SELECT * FROM users WHERE username = ?`,
       [username]
     );

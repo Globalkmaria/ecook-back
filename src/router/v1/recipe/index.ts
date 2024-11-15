@@ -40,11 +40,11 @@ interface RecipeTag extends RowDataPacket {
 
 interface User extends RowDataPacket {
   id: number; // Primary key, auto_increment
+  username: string; //  varchar(100)
   email: string; // Non-nullable, varchar(255)
   password: string; // Non-nullable, varchar(255)
   first_name?: string; // Nullable, varchar(100)
   last_name?: string; // Nullable, varchar(100)
-  username?: string; // Nullable, varchar(100)
   img?: string; // Nullable, varchar(255)
   youtube_link?: string; // Nullable, varchar(255)
   created_at?: Date; // Timestamp, default CURRENT_TIMESTAMP
@@ -52,12 +52,8 @@ interface User extends RowDataPacket {
   instagram_link?: string; // Nullable, varchar(255)
 }
 
-interface UserSimple extends RowDataPacket {
-  id: number; // Primary key, auto_increment
-  first_name?: string; // Nullable, varchar(100)
-  username?: string; // Nullable, varchar(100)
-  img?: string; // Nullable, varchar(255)
-}
+export type UserSimple = RowDataPacket &
+  Pick<User, "id" | "username" | "img" | "first_name">;
 
 interface RecipeImgs extends RowDataPacket {
   recipe_img: string; // Non-nullable, varchar(255)
@@ -206,7 +202,7 @@ router.get("/:recipeId", async (req, res, next) => {
       tags: tags_data.map((tag) => ({ id: tag.tag_id, name: tag.tag_name })),
       user: {
         id: user.id,
-        username: user.first_name ?? user.username ?? "",
+        username: user.username,
         img: user.img ?? "",
       },
     };
