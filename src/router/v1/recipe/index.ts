@@ -94,45 +94,47 @@ router.get("/:recipeId", async (req, res, next) => {
   try {
     const { recipeId } = req.params;
 
-    if (isNaN(Number(recipeId)))
+    if (!/^\d+$/.test(recipeId)) {
       return res.status(400).json({ error: "Invalid recipe ID" });
+    }
 
     const [recipe_info] = await mysqlDB.query<RecipeInfo[]>(
       `SELECT * FROM recipes where recipes.id = ${recipeId}`
     );
 
-    if (!recipe_info.length)
+    if (!recipe_info)
       return res.status(404).json({ error: "Recipe not found" });
 
-    const [imgs] = await mysqlDB.query<RecipeImgs[]>(
-      `SELECT recipe_img FROM recipe_img_view WHERE recipe_id = ${recipeId}`
-    );
+    const [[imgs], [ingredients_data], [tags_data], [user_data]] =
+      await Promise.all([
+        mysqlDB.query<RecipeImgs[]>(
+          `SELECT recipe_img FROM recipe_img_view WHERE recipe_id = ?`,
+          [recipeId]
+        ),
+        mysqlDB.query<RecipeIngredient[]>(
+          `SELECT * FROM recipe_ingredients_view WHERE recipe_id = ?`,
+          [recipeId]
+        ),
+        mysqlDB.query<RecipeTag[]>(
+          `SELECT * FROM recipe_tags_view WHERE recipe_id = ?`,
+          [recipeId]
+        ),
+        mysqlDB.query<UserSimple[]>(
+          `SELECT * FROM users_simple_view WHERE id = ?`,
+          [recipe_info[0].user_id]
+        ),
+      ]);
 
-    const [ingredients_data] = await mysqlDB.query<RecipeIngredient[]>(
-      `SELECT * FROM recipe_ingredients_view where recipe_ingredients_view.recipe_id = ${recipeId}`
-    );
-
-    const [tags_data] = await mysqlDB.query<RecipeTag[]>(
-      `SELECT * FROM recipe_tags_view WHERE recipe_tags_view.recipe_id = ${recipeId}`
-    );
-
-    const [user_data] = await mysqlDB.query<UserSimple[]>(
-      `SELECT * FROM users_simple_view WHERE users_simple_view.id = ${recipe_info[0].user_id}`
-    );
-
-    const getProducts = async (ingredientData: RecipeIngredient) => {
-      const { ingredient_id, product_id } = ingredientData;
-      if (!ingredient_id) return { ingredientId: null, products: null };
-      const [products_data] = await mysqlDB.query<Product[]>(
+    const getProducts = async (ingredientId: number, productId?: number) => {
+      const [productsData] = await mysqlDB.query<Product[]>(
         `SELECT * FROM ingredient_products
-          JOIN
-      product_detail_view ON product_detail_view.id = ingredient_products.product_id
-          WHERE
-      ingredient_id = ${ingredient_id} AND product_detail_view.id != ${product_id}
-       LIMIT 5;`
+         JOIN product_detail_view ON product_detail_view.id = ingredient_products.product_id
+         WHERE ingredient_id = ? AND product_detail_view.id != ?
+         LIMIT 5`,
+        [ingredientId, productId]
       );
 
-      const products: ClientProduct[] = products_data.map((product) => ({
+      const products: ClientProduct[] = productsData.map((product) => ({
         id: product.id,
         ingredientId: product.ingredient_id,
         userId: product.user_id,
@@ -145,14 +147,22 @@ router.get("/:recipeId", async (req, res, next) => {
         updatedAt: product.updated_at,
       }));
 
-      return { ingredientId: ingredient_id, products };
+      return products;
     };
 
-    const ingredientsProductsPromises = ingredients_data.map(
-      (ingredient_data) => getProducts(ingredient_data)
-    );
+    const ingredientsProducts = await Promise.all(
+      ingredients_data.map(async (ingredient) => {
+        if (!ingredient.ingredient_id) {
+          return { ingredientId: null, products: null };
+        }
 
-    const ingredientsProducts = await Promise.all(ingredientsProductsPromises);
+        const products = await getProducts(
+          ingredient.ingredient_id,
+          ingredient.product_id
+        );
+        return { ingredientId: ingredient.ingredient_id, products };
+      })
+    );
 
     const IngredientIdAndProductsMap = ingredientsProducts.reduce(
       (map, { ingredientId, products }) => {
