@@ -213,4 +213,53 @@ router.get("/:recipeId", async (req, res, next) => {
   }
 });
 
+router.delete("/:recipeId", async (req, res, next) => {
+  const connection = await mysqlDB.getConnection();
+
+  try {
+    const { recipeId } = req.params;
+
+    if (!/^\d+$/.test(recipeId)) {
+      return res.status(400).json({ error: "Invalid recipe ID" });
+    }
+
+    await connection.beginTransaction();
+
+    const [recipeInfo] = await connection.query<RecipeInfo[]>(
+      `SELECT * FROM recipes WHERE id = ?`,
+      [recipeId]
+    );
+
+    if (!recipeInfo.length) {
+      await connection.rollback();
+      return res.status(404).json({ error: "Recipe not found" });
+    }
+
+    await connection.query(`DELETE FROM recipe_imgs WHERE recipe_id = ?`, [
+      recipeId,
+    ]);
+    await connection.query(
+      `DELETE FROM recipe_ingredients WHERE recipe_id = ?`,
+      [recipeId]
+    );
+    await connection.query(`DELETE FROM recipe_tags WHERE recipe_id = ?`, [
+      recipeId,
+    ]);
+
+    await connection.query(`DELETE FROM recipes WHERE id = ?`, [recipeId]);
+    await connection.commit();
+
+    return res.status(200).json({ message: "Recipe deleted" });
+  } catch (error) {
+    console.error(
+      `Error deleting recipe with ID ${req.params.recipeId}:`,
+      error
+    );
+    await connection.rollback();
+    next(error);
+  } finally {
+    connection.release();
+  }
+});
+
 export default router;
