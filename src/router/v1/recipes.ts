@@ -76,7 +76,7 @@ interface NewRecipeIngredient {
   newProduct: IngredientNewProduct | null;
 }
 
-interface INewRecipe {
+export interface INewRecipe {
   name: string;
   description: string;
   hours: number;
@@ -234,7 +234,7 @@ router.post("/", upload.any(), async (req, res, next) => {
       }
     }
 
-    res.status(200).json({ message: "POST /recipes" });
+    res.status(200).json({ message: "POST /recipes", id: recipeId });
   } catch (error) {
     next(error);
   }
