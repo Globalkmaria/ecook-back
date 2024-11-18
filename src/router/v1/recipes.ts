@@ -77,7 +77,7 @@ interface NewRecipeIngredient {
 }
 
 interface INewRecipe {
-  title: string;
+  name: string;
   description: string;
   hours: number;
   minutes: number;
@@ -102,7 +102,7 @@ router.post("/", upload.any(), async (req, res, next) => {
     const [recipeResult] = await mysqlDB.execute<ResultSetHeader>(
       `INSERT INTO recipes (name, user_id, hours, minutes, description, steps) VALUES (?,?,?,?,?,?)`,
       [
-        info.title,
+        info.name,
         userId,
         Number(info.hours) ?? 0,
         Number(info.minutes) ?? 0,
@@ -207,7 +207,7 @@ router.post("/", upload.any(), async (req, res, next) => {
               [img, userId]
             );
 
-            const [result] = await mysqlDB.execute<ResultSetHeader>(
+            await mysqlDB.execute<ResultSetHeader>(
               `INSERT INTO product_imgs (product_id, img_id) VALUES (?,?)`,
               [productId, imgId.insertId]
             );
