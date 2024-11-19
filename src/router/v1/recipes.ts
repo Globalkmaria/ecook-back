@@ -28,11 +28,162 @@ export interface ClientRecipeSimple {
   tags: { id: number; name: string }[];
 }
 
+interface QueryParams {
+  q?: string;
+  type?: string;
+}
+
+const SEARCH_TYPES = ["name", "tag", "ingredient", "product"];
+
 router.get("/", async (req, res, next) => {
   try {
-    const [data] = await mysqlDB.query<RecipesSimple[]>(
-      `SELECT * FROM recipes_simple_view`
-    );
+    const { q, type } = req.query as QueryParams;
+
+    let data: RecipesSimple[] = [];
+
+    if (type && !SEARCH_TYPES.includes(type)) {
+      return res.status(400).json({ error: "Invalid search type" });
+    }
+
+    if (!q) {
+      const result = await mysqlDB.query<RecipesSimple[]>(
+        `SELECT * FROM recipes_simple_view`
+      );
+
+      data = result[0];
+    } else if (type === "name") {
+      const result = await mysqlDB.query<RecipesSimple[]>(
+        `SELECT 
+            r.id AS id,
+            r.name AS name,
+            r.created_at AS created_at,
+            r.updated_at AS updated_at,
+            r.hours AS hours,
+            r.minutes AS minutes,
+            ri.recipe_img AS img,
+            u.img AS user_img,
+            u.username AS user_username,
+            u.id AS user_id,
+            GROUP_CONCAT(tag_id SEPARATOR ',') AS tag_ids,
+            GROUP_CONCAT(tag_name SEPARATOR ',') AS tag_names
+        FROM
+            (SELECT * FROM recipes WHERE LOWER(name) LIKE LOWER(?)) AS r
+        JOIN 
+            users_simple_view u ON u.id = r.user_id
+        JOIN 
+            recipe_img_view ri ON ri.recipe_id = r.id
+        LEFT JOIN 
+            recipe_tags_view rt ON rt.recipe_id = r.id
+        GROUP BY r.id , ri.recipe_img`,
+        [`%${q}%`]
+      );
+
+      data = result[0];
+    } else if (type === "tag") {
+      const result = await mysqlDB.query<RecipesSimple[]>(
+        `SELECT 
+            r.id AS id,
+            r.name AS name,
+            r.created_at AS created_at,
+            r.updated_at AS updated_at,
+            r.hours AS hours,
+            r.minutes AS minutes,
+            ri.recipe_img AS img,
+            u.img AS user_img,
+            u.username AS user_username,
+            u.id AS user_id,
+            GROUP_CONCAT(tag_id SEPARATOR ',') AS tag_ids,
+            GROUP_CONCAT(tag_name SEPARATOR ',') AS tag_names
+          FROM
+            recipes r
+          JOIN 
+            (SELECT DISTINCT recipe_id FROM recipe_tags_view WHERE LOWER(tag_name) = LOWER(?)) filtered_recipes
+            ON filtered_recipes.recipe_id = r.id
+          JOIN 
+            recipe_img_view ri ON ri.recipe_id = r.id
+          LEFT JOIN 
+            recipe_tags_view rt ON rt.recipe_id = r.id
+          JOIN 
+            users_simple_view u ON u.id = r.user_id
+          GROUP BY r.id , ri.recipe_img`,
+        [`${q}`]
+      );
+
+      data = result[0];
+    } else if (type === "ingredient") {
+      const result = await mysqlDB.query<RecipesSimple[]>(
+        `SELECT 
+            r.id AS id,
+            r.name AS name,
+            r.created_at AS created_at,
+            r.updated_at AS updated_at,
+            r.hours AS hours,
+            r.minutes AS minutes,
+            ri.recipe_img AS img,
+            u.img AS user_img,
+            u.username AS user_username,
+            u.id AS user_id,
+            GROUP_CONCAT(rt.tag_id SEPARATOR ',') AS tag_ids,
+            GROUP_CONCAT(rt.tag_name SEPARATOR ',') AS tag_names
+        FROM
+            recipes r
+        JOIN 
+            (SELECT DISTINCT recipe_id FROM recipe_ingredients WHERE LOWER(name) = LOWER(?)) filtered_recipes
+            ON filtered_recipes.recipe_id = r.id
+        JOIN 
+            recipe_img_view ri ON ri.recipe_id = r.id
+        LEFT JOIN 
+            recipe_tags_view rt ON rt.recipe_id = r.id
+        JOIN 
+            users_simple_view u ON u.id = r.user_id
+        GROUP BY 
+            r.id, ri.recipe_img;`,
+        [q]
+      );
+
+      data = result[0];
+    } else if (type === "product") {
+      const result = await mysqlDB.query<RecipesSimple[]>(
+        `
+          SELECT 
+              r.id AS id,
+              r.name AS name,
+              r.created_at AS created_at,
+              r.updated_at AS updated_at,
+              r.hours AS hours,
+              r.minutes AS minutes,
+              ri.recipe_img AS img,
+              u.img AS user_img,
+              u.username AS user_username,
+              u.id AS user_id,
+              GROUP_CONCAT(tag_id SEPARATOR ',') AS tag_ids,
+              GROUP_CONCAT(tag_name SEPARATOR ',') AS tag_names
+          FROM
+            recipes r
+          JOIN 
+            (
+              SELECT recipe_id
+                FROM 
+                  (SELECT * FROM products WHERE LOWER(name) = LOWER(?)) AS filtered_products
+                JOIN 
+              recipe_ingredients rig ON rig.product_id = filtered_products.id
+            ) 
+            AS filtered_recipes	ON filtered_recipes.recipe_id = r.id
+          JOIN 
+              recipe_img_view ri ON ri.recipe_id = r.id
+          LEFT JOIN 
+              recipe_tags_view rt ON rt.recipe_id = r.id
+          JOIN 
+              users_simple_view u ON u.id = r.user_id
+          GROUP BY r.id, r.name, r.created_at, r.updated_at, r.hours, r.minutes, ri.recipe_img, u.img, u.username, u.id
+        `,
+        [q]
+      );
+
+      data = result[0];
+    } else {
+      return res.status(400).json({ error: "Invalid search type" });
+    }
 
     const result: ClientRecipeSimple[] = data.map((recipe) => {
       const tagIds = recipe.tag_ids ? recipe.tag_ids.split(",") : [];
