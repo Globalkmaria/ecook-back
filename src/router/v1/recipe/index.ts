@@ -40,11 +40,12 @@ interface RecipeTag extends RowDataPacket {
   tag_name: string; // Non-nullable, varchar(100)
 }
 
-interface User extends RowDataPacket {
+export interface User extends RowDataPacket {
   id: number; // Primary key, auto_increment
   username: string; //  varchar(100)
   email: string; // Non-nullable, varchar(255)
-  password: string; // Non-nullable, varchar(255)
+  hashed_password: string; // Non-nullable, VARBINARY(255)
+  salt: string; // Non-nullable, VARBINARY(255)
   first_name?: string; // Nullable, varchar(100)
   last_name?: string; // Nullable, varchar(100)
   img?: string; // Nullable, varchar(255)
@@ -277,6 +278,8 @@ router.delete("/:recipeId", async (req, res, next) => {
 });
 
 router.put("/:recipeId", upload.any(), async (req, res, next) => {
+  console.log("req.user", req.user);
+
   try {
     const { recipeId } = req.params;
 
@@ -289,7 +292,7 @@ router.put("/:recipeId", upload.any(), async (req, res, next) => {
       files.map((file) => [file.fieldname, file.key])
     );
 
-    const info = JSON.parse(req.body.info) as EditRecipe;
+    const info = req.body.info as EditRecipe;
     const userId = info.user.id;
 
     const [existingRecipe] = await mysqlDB.query<RowDataPacket[]>(

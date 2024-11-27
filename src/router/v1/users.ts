@@ -1,5 +1,4 @@
 import express from "express";
-import { RowDataPacket } from "mysql2";
 
 import { config } from "../../config";
 import mysqlDB from "../../db/mysql";

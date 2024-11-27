@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 
 const required = (key: string, defaultValue = undefined) => {
