@@ -1,10 +1,14 @@
-import mysqlDB from "../../../db/mysql";
-import { upload } from "../../../db/aws";
 import express from "express";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
+
+import mysqlDB from "../../../db/mysql";
+import { upload } from "../../../db/aws";
 import { ClientProduct, Product } from "../products";
 import { config } from "../../../config";
 import { INewRecipe } from "../recipes";
+import { authGuard } from "../../../middleware/auth";
+import { validateId } from "../../../utils/numbers";
+import { SerializedUser } from "../../../config/passport";
 
 const router = express.Router();
 
@@ -99,7 +103,7 @@ router.get("/:recipeId", async (req, res, next) => {
   try {
     const { recipeId } = req.params;
 
-    if (!/^\d+$/.test(recipeId)) {
+    if (!validateId(recipeId)) {
       return res.status(400).json({ error: "Invalid recipe ID" });
     }
 
@@ -228,19 +232,18 @@ router.get("/:recipeId", async (req, res, next) => {
   }
 });
 
-router.delete("/:recipeId", async (req, res, next) => {
+router.delete("/:recipeId", authGuard, async (req, res, next) => {
   const connection = await mysqlDB.getConnection();
 
   try {
     const { recipeId } = req.params;
 
-    if (!/^\d+$/.test(recipeId)) {
+    if (!validateId(recipeId))
       return res.status(400).json({ error: "Invalid recipe ID" });
-    }
 
     await connection.beginTransaction();
 
-    const [recipeInfo] = await connection.query<RecipeInfo[]>(
+    const [recipeInfo] = await connection.execute<RecipeInfo[]>(
       `SELECT * FROM recipes WHERE id = ?`,
       [recipeId]
     );
@@ -249,6 +252,11 @@ router.delete("/:recipeId", async (req, res, next) => {
       await connection.rollback();
       return res.status(404).json({ error: "Recipe not found" });
     }
+
+    const user = req.user as SerializedUser;
+
+    if (recipeInfo[0].user_id !== user.id)
+      return res.status(403).json({ error: "Forbidden" });
 
     await connection.query(`DELETE FROM recipe_imgs WHERE recipe_id = ?`, [
       recipeId,
@@ -277,30 +285,33 @@ router.delete("/:recipeId", async (req, res, next) => {
   }
 });
 
-router.put("/:recipeId", upload.any(), async (req, res, next) => {
-  console.log("req.user", req.user);
-
+router.put("/:recipeId", authGuard, upload.any(), async (req, res, next) => {
+  const connection = await mysqlDB.getConnection();
   try {
     const { recipeId } = req.params;
 
-    if (!/^\d+$/.test(recipeId)) {
+    if (!validateId(recipeId))
       return res.status(400).json({ error: "Invalid recipe ID" });
-    }
 
     const files = req.files as Express.MulterS3.File[];
     const filesKeys = new Map<string, string>(
       files.map((file) => [file.fieldname, file.key])
     );
 
-    const info = req.body.info as EditRecipe;
-    const userId = info.user.id;
+    const user = req.user as User;
 
-    const [existingRecipe] = await mysqlDB.query<RowDataPacket[]>(
+    const info = req.body.info as EditRecipe;
+    const userId = user.id;
+
+    await connection.beginTransaction();
+
+    const [existingRecipe] = await connection.execute<RowDataPacket[]>(
       `SELECT * FROM recipes WHERE id = ? AND user_id = ?`,
       [recipeId, userId]
     );
 
     if (!existingRecipe.length) {
+      await connection.rollback();
       return res
         .status(404)
         .json({ error: "Recipe not found or unauthorized" });
@@ -309,6 +320,11 @@ router.put("/:recipeId", upload.any(), async (req, res, next) => {
     // recipe
 
     const currentRecipe = existingRecipe[0] as RecipeInfo;
+
+    if (currentRecipe.user_id !== userId) {
+      await connection.rollback();
+      return res.status(403).json({ error: "Forbidden" });
+    }
 
     const updates = new Map<string, any>();
     if (info.name !== currentRecipe.name) updates.set("name", info.name);
@@ -327,10 +343,10 @@ router.put("/:recipeId", upload.any(), async (req, res, next) => {
         .join(", ");
       const updateValues = updates.values();
 
-      await mysqlDB.execute(`UPDATE recipes SET ${updateFields} WHERE id = ?`, [
-        ...updateValues,
-        recipeId,
-      ]);
+      await connection.execute(
+        `UPDATE recipes SET ${updateFields} WHERE id = ?`,
+        [...updateValues, recipeId]
+      );
     }
 
     // img
@@ -339,25 +355,25 @@ router.put("/:recipeId", upload.any(), async (req, res, next) => {
       // save recipe img location
       const imgUrl = filesKeys.get("img");
 
-      const [existingImg] = await mysqlDB.query<RowDataPacket[]>(
+      const [existingImg] = await connection.execute<RowDataPacket[]>(
         `SELECT img_id FROM recipe_imgs WHERE recipe_id = ?`,
         [recipeId]
       );
 
       if (existingImg.length) {
-        await mysqlDB.execute(`UPDATE imgs SET url = ? WHERE id = ?`, [
+        await connection.execute(`UPDATE imgs SET url = ? WHERE id = ?`, [
           imgUrl,
           existingImg[0].img_id,
         ]);
       } else {
-        const [imgResult] = await mysqlDB.execute<ResultSetHeader>(
+        const [imgResult] = await connection.execute<ResultSetHeader>(
           `INSERT INTO imgs (url, user_id) VALUES (?, ?)`,
           [imgUrl, userId]
         );
 
         const imgId = imgResult.insertId;
 
-        await mysqlDB.execute<ResultSetHeader>(
+        await connection.execute<ResultSetHeader>(
           `INSERT INTO recipe_imgs (recipe_id, img_id) VALUES (?,?)`,
           [recipeId, imgId]
         );
@@ -367,7 +383,7 @@ router.put("/:recipeId", upload.any(), async (req, res, next) => {
     // tags
 
     if (info.tags.length) {
-      const [existingTags] = await mysqlDB.query<RowDataPacket[]>(
+      const [existingTags] = await connection.query<RowDataPacket[]>(
         `SELECT name FROM tags WHERE id IN (SELECT tag_id FROM recipe_tags WHERE recipe_id = ?)`,
         [recipeId]
       );
@@ -384,7 +400,7 @@ router.put("/:recipeId", upload.any(), async (req, res, next) => {
 
       // Remove only unnecessary tags
       if (tagsToRemove.length) {
-        const [tagsIds] = await mysqlDB.query<RowDataPacket[]>(
+        const [tagsIds] = await connection.query<RowDataPacket[]>(
           `SELECT id FROM tags WHERE name IN (?)`,
           [tagsToRemove]
         );
@@ -392,7 +408,7 @@ router.put("/:recipeId", upload.any(), async (req, res, next) => {
         const tagIdsArray = tagsIds.map((tag) => tag.id);
         const placeholders = tagIdsArray.map(() => "?").join(", ");
 
-        await mysqlDB.execute(
+        await connection.execute(
           `DELETE FROM recipe_tags WHERE recipe_id = ? AND tag_id IN (${placeholders})`,
           [recipeId, ...tagIdsArray]
         );
@@ -400,19 +416,19 @@ router.put("/:recipeId", upload.any(), async (req, res, next) => {
 
       // Insert only new tags
       if (tagsToAdd.length) {
-        await mysqlDB.execute(
+        await connection.execute(
           `INSERT IGNORE INTO tags (user_id, name) VALUES ${tagsToAdd
             .map(() => "(?, ?)")
             .join(", ")}`,
-          tagsToAdd.flatMap((tag) => [info.user.id, tag])
+          tagsToAdd.flatMap((tag) => [userId, tag])
         );
 
-        const [tagsIds] = await mysqlDB.query<RowDataPacket[]>(
+        const [tagsIds] = await connection.query<RowDataPacket[]>(
           `SELECT id FROM tags WHERE name IN (?)`,
           [tagsToAdd]
         );
 
-        await mysqlDB.execute(
+        await connection.execute(
           `INSERT INTO recipe_tags (recipe_id, tag_id) VALUES ${tagsToAdd
             .map(() => `(${recipeId}, ?)`)
             .join(", ")}`,
@@ -428,14 +444,14 @@ router.put("/:recipeId", upload.any(), async (req, res, next) => {
     );
 
     if (info.ingredients.length) {
-      await mysqlDB.execute(
+      await connection.execute(
         `INSERT IGNORE INTO ingredients (name, user_id) VALUES ${info.ingredients
           .map(() => `(?, ${userId})`)
           .join(", ")}`,
         ingredientNames
       );
 
-      const [ingredientsIds] = await mysqlDB.query<RowDataPacket[]>(
+      const [ingredientsIds] = await connection.query<RowDataPacket[]>(
         `SELECT id, name FROM ingredients WHERE name IN (?) ORDER BY FIELD(name, ?)`,
         [ingredientNames, ingredientNames]
       );
@@ -444,7 +460,7 @@ router.put("/:recipeId", upload.any(), async (req, res, next) => {
         ingredientsIds.map((ingredient) => [ingredient.name, ingredient.id])
       );
 
-      await mysqlDB.execute(
+      await connection.execute(
         `DELETE FROM recipe_ingredients WHERE recipe_id = ?`,
         [recipeId]
       );
@@ -459,7 +475,7 @@ router.put("/:recipeId", upload.any(), async (req, res, next) => {
         ) {
           // save product and get product id
           const newProduct = ingredient.newProduct;
-          const [newProductId] = await mysqlDB.execute<ResultSetHeader>(
+          const [newProductId] = await connection.execute<ResultSetHeader>(
             `INSERT INTO products (user_id, name, brand, purchased_from, link) VALUES (?,?,?,?,?)`,
             [
               userId,
@@ -474,26 +490,26 @@ router.put("/:recipeId", upload.any(), async (req, res, next) => {
           // link product img
           if (filesKeys.has(`img_${newProduct.id}`)) {
             const img = filesKeys.get(`img_${newProduct.id}`);
-            const [imgId] = await mysqlDB.execute<ResultSetHeader>(
+            const [imgId] = await connection.execute<ResultSetHeader>(
               `INSERT INTO imgs (url, user_id) VALUES (?,?)`,
               [img, userId]
             );
 
-            await mysqlDB.execute<ResultSetHeader>(
+            await connection.execute<ResultSetHeader>(
               `INSERT INTO product_imgs (product_id, img_id) VALUES (?,?)`,
               [productId, imgId.insertId]
             );
           }
 
           // link product - ingredient
-          await mysqlDB.execute<ResultSetHeader>(
+          await connection.execute<ResultSetHeader>(
             `INSERT INTO ingredient_products (ingredient_id, product_id) VALUES (?,?)`,
             [ingredientNameAndIdMap.get(ingredient.name), productId]
           );
         }
 
         // link recipe - ingredient
-        await mysqlDB.execute<ResultSetHeader>(
+        await connection.execute<ResultSetHeader>(
           `INSERT INTO recipe_ingredients (recipe_id, ingredient_id, product_id, name, quantity) VALUES (?,?,?,?, ?)`,
           [
             recipeId,
@@ -506,11 +522,16 @@ router.put("/:recipeId", upload.any(), async (req, res, next) => {
       }
     }
 
+    await connection.commit();
+
     res
       .status(200)
       .json({ message: "Recipe updated successfully", id: recipeId });
   } catch (error) {
+    await connection.rollback();
     next(error);
+  } finally {
+    connection.release();
   }
 });
 

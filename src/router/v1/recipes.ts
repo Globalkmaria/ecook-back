@@ -1,8 +1,11 @@
+import express from "express";
+import { ResultSetHeader, RowDataPacket } from "mysql2";
+
 import { config } from "../../config";
 import { upload } from "../../db/aws";
 import mysqlDB from "../../db/mysql";
-import express from "express";
-import { ResultSetHeader, RowDataPacket } from "mysql2";
+import { SerializedUser } from "../../config/passport";
+import { authGuard } from "../../middleware/auth";
 
 const router = express.Router();
 
@@ -235,69 +238,75 @@ export interface INewRecipe {
   steps: string[];
   ingredients: NewRecipeIngredient[];
   tags: string[];
-  user: { id: number };
 }
 
-router.post("/", upload.any(), async (req, res, next) => {
+router.post("/", authGuard, upload.any(), async (req, res, next) => {
+  const connection = await mysqlDB.getConnection();
+
   try {
     const files = req.files as Express.MulterS3.File[];
     const filesKeys = new Map<string, string>(
       files.map((file) => [file.fieldname, file.key])
     );
 
+    const user = req.user as SerializedUser;
+    const userId = user.id;
+
+    // body info needs to be json parsed
     const info = JSON.parse(req.body.info) as INewRecipe;
 
-    const userId = info.user.id;
+    await connection.beginTransaction();
+
+    // check if required fields are present
+    if (!info.name || !info.steps || !filesKeys.has("img"))
+      return res.status(400).json({ error: "Missing required fields" });
 
     // recipe
-    const [recipeResult] = await mysqlDB.execute<ResultSetHeader>(
+    const [recipeResult] = await connection.execute<ResultSetHeader>(
       `INSERT INTO recipes (name, user_id, hours, minutes, description, steps) VALUES (?,?,?,?,?,?)`,
       [
-        info.name,
+        info.name ?? "",
         userId,
         Number(info.hours) ?? 0,
         Number(info.minutes) ?? 0,
-        info.description,
+        info.description ?? "",
         info.steps,
       ]
     );
 
     const recipeId = recipeResult.insertId;
 
-    // img
+    // recipe main img required
 
-    if (filesKeys.has("img")) {
-      // save recipe img location
-      const img = filesKeys.get("img");
-      const [imgResult] = await mysqlDB.execute<ResultSetHeader>(
-        `INSERT INTO imgs (url, user_id) VALUES (?,?)`,
-        [img, userId]
-      );
+    const img = filesKeys.get("img");
+    const [imgResult] = await connection.query<ResultSetHeader>(
+      `INSERT INTO imgs (url, user_id) VALUES (?,?)`,
+      [img, userId]
+    );
 
-      const imgId = imgResult.insertId;
+    const imgId = imgResult.insertId;
 
-      await mysqlDB.execute<ResultSetHeader>(
-        `INSERT INTO recipe_imgs (recipe_id, img_id) VALUES (?,?)`,
-        [recipeId, imgId]
-      );
-    }
+    await connection.query<ResultSetHeader>(
+      `INSERT INTO recipe_imgs (recipe_id, img_id) VALUES (?,?)`,
+      [recipeId, imgId]
+    );
 
     // tags
 
     if (info.tags.length) {
-      await mysqlDB.execute<ResultSetHeader>(
+      await connection.execute<ResultSetHeader>(
         `INSERT IGNORE INTO tags (user_id, name) VALUES ${info.tags
           .map(() => "(?, ?)")
           .join(", ")}`,
         info.tags.flatMap((tag) => [userId, tag])
       );
 
-      const [tagsIds] = await mysqlDB.query<RowDataPacket[]>(
+      const [tagsIds] = await connection.query<RowDataPacket[]>(
         `SELECT id FROM tags WHERE name IN (?)`,
         [info.tags]
       );
 
-      await mysqlDB.execute<ResultSetHeader>(
+      await connection.query<ResultSetHeader>(
         `INSERT INTO recipe_tags (recipe_id, tag_id) VALUES ${tagsIds
           .map(() => `(${recipeId}, ?)`)
           .join(", ")}`,
@@ -312,14 +321,14 @@ router.post("/", upload.any(), async (req, res, next) => {
     );
 
     if (info.ingredients.length) {
-      await mysqlDB.execute<ResultSetHeader>(
+      await connection.execute<ResultSetHeader>(
         `INSERT IGNORE INTO ingredients (name, user_id) VALUES ${info.ingredients
           .map(() => `(?, ${userId})`)
           .join(", ")}`,
         ingredientNames
       );
 
-      const [ingredientsIds] = await mysqlDB.query<RowDataPacket[]>(
+      const [ingredientsIds] = await connection.execute<RowDataPacket[]>(
         `SELECT id, name FROM ingredients WHERE name IN (?) ORDER BY FIELD(name, ?)`,
         [ingredientNames, ingredientNames]
       );
@@ -338,7 +347,7 @@ router.post("/", upload.any(), async (req, res, next) => {
         ) {
           // save product and get product id
           const newProduct = ingredient.newProduct;
-          const [newProductId] = await mysqlDB.execute<ResultSetHeader>(
+          const [newProductId] = await connection.execute<ResultSetHeader>(
             `INSERT INTO products (user_id, name, brand, purchased_from, link) VALUES (?,?,?,?,?)`,
             [
               userId,
@@ -350,29 +359,30 @@ router.post("/", upload.any(), async (req, res, next) => {
           );
 
           productId = newProductId.insertId;
+
           // link product img
           if (filesKeys.has(`img_${newProduct.id}`)) {
             const img = filesKeys.get(`img_${newProduct.id}`);
-            const [imgId] = await mysqlDB.execute<ResultSetHeader>(
+            const [imgId] = await connection.query<ResultSetHeader>(
               `INSERT INTO imgs (url, user_id) VALUES (?,?)`,
               [img, userId]
             );
 
-            await mysqlDB.execute<ResultSetHeader>(
+            await connection.query<ResultSetHeader>(
               `INSERT INTO product_imgs (product_id, img_id) VALUES (?,?)`,
               [productId, imgId.insertId]
             );
           }
 
           // link product - ingredient
-          await mysqlDB.execute<ResultSetHeader>(
+          await connection.query<ResultSetHeader>(
             `INSERT INTO ingredient_products (ingredient_id, product_id) VALUES (?,?)`,
             [ingredientNameAndIdMap.get(ingredient.name), productId]
           );
         }
 
         // link recipe - ingredient
-        await mysqlDB.execute<ResultSetHeader>(
+        await connection.execute<ResultSetHeader>(
           `INSERT INTO recipe_ingredients (recipe_id, ingredient_id, product_id, name, quantity) VALUES (?,?,?,?, ?)`,
           [
             recipeId,
@@ -385,9 +395,14 @@ router.post("/", upload.any(), async (req, res, next) => {
       }
     }
 
+    await connection.commit();
+
     res.status(200).json({ message: "POST /recipes", id: recipeId });
   } catch (error) {
+    await connection.rollback();
     next(error);
+  } finally {
+    connection.release();
   }
 });
 
