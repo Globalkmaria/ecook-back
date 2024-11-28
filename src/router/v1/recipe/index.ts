@@ -300,7 +300,7 @@ router.put("/:recipeId", authGuard, upload.any(), async (req, res, next) => {
 
     const user = req.user as User;
 
-    const info = req.body.info as EditRecipe;
+    const info = JSON.parse(req.body.info) as EditRecipe;
     const userId = user.id;
 
     await connection.beginTransaction();
@@ -334,7 +334,7 @@ router.put("/:recipeId", authGuard, upload.any(), async (req, res, next) => {
       updates.set("minutes", Number(info.minutes));
     if (info.description !== currentRecipe.description)
       updates.set("description", info.description);
-    if (info.steps.join("") !== currentRecipe.steps?.join(""))
+    if (info.steps?.join("") !== currentRecipe.steps?.join(""))
       updates.set("steps", info.steps);
 
     if (updates.size > 0) {
