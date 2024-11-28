@@ -12,7 +12,7 @@ interface UserRow {
   salt: string;
 }
 
-interface SerializedUser {
+export interface SerializedUser {
   id: number;
   username: string;
 }

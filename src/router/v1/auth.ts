@@ -20,9 +20,7 @@ router.post("/login", (req, res, next) => {
     } else {
       passport.authenticate("local")(req, res, function () {
         const user = req.user as User;
-        res
-          .status(200)
-          .json({ user: { username: user.username, img: user.img } });
+        res.status(200).json({ username: user.username, img: user.img });
       });
     }
   });
@@ -42,10 +40,12 @@ router.post("/signup", async (req, res, next) => {
 
   const body = req.body;
 
+  // TODO img
   const user = {
     username: body.username,
     password: body.password,
     email: body.email,
+    img: body.img,
   };
 
   crypto.pbkdf2(
@@ -73,7 +73,7 @@ router.post("/signup", async (req, res, next) => {
         req.login(newUser, (error: any) => {
           if (error) return next(error);
 
-          res.status(201).json({ user: { username: user.username } });
+          res.status(201).json({ username: user.username, img: user?.img });
         });
       } catch (error) {
         if (error) return next(error);

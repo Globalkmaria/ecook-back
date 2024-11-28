@@ -16,9 +16,7 @@ const app = express();
 app.use(express.json());
 app.use(logger("dev"));
 
-app.use(express.json());
 app.use(cors(corsOption));
-app.use(cookieParser());
 
 app.use(session(getSessions()));
 
