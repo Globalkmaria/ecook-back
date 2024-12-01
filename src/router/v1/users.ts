@@ -2,8 +2,9 @@ import express from "express";
 
 import { config } from "../../config/index.js";
 import mysqlDB from "../../db/mysql.js";
-import { ClientRecipeSimple, RecipesSimple } from "./recipes.js";
+import { ClientRecipeSimple, RecipesSimple } from "./recipes/index.js";
 import { UserSimple } from "./recipe/index.js";
+import { generateRecipeKey } from "./recipes/helper.js";
 
 const router = express.Router();
 
@@ -41,12 +42,13 @@ router.get("/:username", async (req, res, next) => {
         tags,
         hours: recipe.hours,
         minutes: recipe.minutes,
+        key: generateRecipeKey(recipe.id, recipe.name),
       };
     });
 
     const user = {
       id: userData[0].id,
-      img: userData[0].img,
+      img: config.img.dbUrl + userData[0].img,
       username: userData[0].username,
     };
 

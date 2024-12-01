@@ -1,12 +1,13 @@
 import express from "express";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 
-import { upload } from "../../db/aws.js";
-import mysqlDB from "../../db/mysql.js";
-import { SerializedUser } from "../../config/passport.js";
-import { authGuard } from "../../middleware/auth.js";
-import { config } from "../../config/index.js";
-import { encrypt } from "../../utils/encrypt.js";
+import { upload } from "../../../db/aws.js";
+import mysqlDB from "../../../db/mysql.js";
+import { SerializedUser } from "../../../config/passport.js";
+import { authGuard } from "../../../middleware/auth.js";
+import { config } from "../../../config/index.js";
+import { getNewRecipeData, generateRecipeKey } from "./helper.js";
+import { lightSlugify, splitString } from "../../../utils/normalize.js";
 
 const router = express.Router();
 
@@ -190,13 +191,14 @@ router.get("/", async (req, res, next) => {
     }
 
     const result: ClientRecipeSimple[] = data.map((recipe) => {
-      const tagIds = recipe.tag_ids ? recipe.tag_ids.split(",") : [];
-      const tagNames = recipe.tag_names ? recipe.tag_names.split(",") : [];
+      const tagIds = splitString(recipe.tag_ids);
+      const tagNames = splitString(recipe.tag_names);
       const tags = tagIds.map((id, index) => ({
         id: parseInt(id, 10),
         name: tagNames[index],
       }));
-      // const link = `${encrypt(recipe.id.toString())}-${recipe.name}`;
+
+      const key = generateRecipeKey(recipe.id, recipe.name);
 
       return {
         id: recipe.id,
@@ -205,7 +207,7 @@ router.get("/", async (req, res, next) => {
         tags,
         hours: recipe.hours,
         minutes: recipe.minutes,
-        // link,
+        key,
       };
     });
 
@@ -267,14 +269,7 @@ router.post("/", authGuard, upload.any(), async (req, res, next) => {
     // recipe
     const [recipeResult] = await connection.execute<ResultSetHeader>(
       `INSERT INTO recipes (name, user_id, hours, minutes, description, steps) VALUES (?,?,?,?,?,?)`,
-      [
-        info.name ?? "",
-        userId,
-        Number(info.hours) ?? 0,
-        Number(info.minutes) ?? 0,
-        info.description ?? "",
-        info.steps,
-      ]
+      [getNewRecipeData(info, userId)]
     );
 
     const recipeId = recipeResult.insertId;
@@ -321,11 +316,7 @@ router.post("/", authGuard, upload.any(), async (req, res, next) => {
 
     // normalize ingredient names
     const ingredientNames = info.ingredients.map((ingredient) =>
-      ingredient.name
-        .trim()
-        .toLowerCase()
-        .replace(/\s+/g, "-")
-        .replace(/-+/g, "-")
+      lightSlugify(ingredient.name)
     );
 
     if (info.ingredients.length) {

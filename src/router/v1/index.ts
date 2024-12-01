@@ -1,6 +1,6 @@
 import express from "express";
 
-import recipesRouter from "./recipes.js";
+import recipesRouter from "./recipes/index.js";
 import recipeDetailRouter from "./recipe/index.js";
 import productsRouter from "./products.js";
 import usersRouter from "./users.js";
