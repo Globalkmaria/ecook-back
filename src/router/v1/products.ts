@@ -2,6 +2,8 @@ import { config } from "../../config/index.js";
 import mysqlDB from "../../db/mysql.js";
 import express from "express";
 import { RowDataPacket } from "mysql2";
+import { authGuard } from "../../middleware/auth.js";
+import { lightSlugify } from "../../utils/normalize.js";
 
 const router = express.Router();
 
@@ -40,45 +42,55 @@ export interface ClientProduct {
   updatedAt: Date;
 }
 
-router.get("/", async (req, res, next) => {
+const QUERY_TYPES = ["ingredientName"];
+
+router.get("/", authGuard, async (req, res, next) => {
   try {
-    const { ingredient } = req.query;
+    const { type, q } = req.query as { type: string; q: string };
 
-    if (!ingredient?.toString().trim()) {
-      return res.status(400).json({ error: "Invalid ingredient" });
+    if (!q?.toString().trim()) {
+      return res.status(400).json({ error: "Invalid query" });
     }
 
-    const [ingredientData] = await mysqlDB.query<Ingredient[]>(
-      `SELECT * FROM ingredients WHERE name = ?`,
-      [ingredient]
-    );
-
-    const ingredientInfo = ingredientData[0];
-    if (!ingredientInfo) {
-      return res.json({ ingredientId: null, products: [] });
+    if (typeof type === "string" && !QUERY_TYPES.includes(type)) {
+      return res.status(400).json({ error: "Invalid query type" });
     }
 
-    const [productsData] = await mysqlDB.query<Product[]>(
-      `SELECT * FROM ingredient_products
+    if (type === "ingredientName") {
+      const [ingredientData] = await mysqlDB.query<Ingredient[]>(
+        `SELECT * FROM ingredients WHERE name = ?`,
+        [lightSlugify(q)]
+      );
+
+      const ingredientInfo = ingredientData[0];
+      if (!ingredientInfo) {
+        return res.json({ ingredientId: null, products: [] });
+      }
+
+      const [productsData] = await mysqlDB.query<Product[]>(
+        `SELECT * FROM ingredient_products
          JOIN product_detail_view ON product_detail_view.id = ingredient_products.product_id
          WHERE ingredient_id = ?`,
-      [ingredientInfo.id]
-    );
+        [ingredientInfo.id]
+      );
 
-    const products: ClientProduct[] = productsData.map((product) => ({
-      id: product.id,
-      ingredientId: product.ingredient_id,
-      userId: product.user_id,
-      name: product.name,
-      brand: product.brand,
-      purchasedFrom: product.purchased_from,
-      link: product.link,
-      img: config.img.dbUrl + product.img,
-      createdAt: product.created_at,
-      updatedAt: product.updated_at,
-    }));
+      const products: ClientProduct[] = productsData.map((product) => ({
+        id: product.id,
+        ingredientId: product.ingredient_id,
+        userId: product.user_id,
+        name: product.name,
+        brand: product.brand,
+        purchasedFrom: product.purchased_from,
+        link: product.link,
+        img: config.img.dbUrl + product.img,
+        createdAt: product.created_at,
+        updatedAt: product.updated_at,
+      }));
 
-    res.json({ ingredientId: ingredientInfo.id, products });
+      res.json({ ingredientId: ingredientInfo.id, products });
+    } else {
+      res.status(400).json({ error: "Invalid query type" });
+    }
   } catch (error) {
     next(error);
   }
