@@ -167,7 +167,7 @@ router.get("/", async (req, res, next) => {
             (
               SELECT recipe_id
                 FROM 
-                  (SELECT * FROM products WHERE LOWER(name) = LOWER(?)) AS filtered_products
+                  (SELECT * FROM products WHERE REPLACE(LOWER(name), ' ', '-') = REPLACE(LOWER(?), ' ', '-')) AS filtered_products
                 JOIN 
               recipe_ingredients rig ON rig.product_id = filtered_products.id
             ) 
@@ -316,13 +316,18 @@ router.post("/", authGuard, upload.any(), async (req, res, next) => {
 
     // ingredients
 
+    // normalize ingredient names
     const ingredientNames = info.ingredients.map((ingredient) =>
-      ingredient.name.toLowerCase()
+      ingredient.name
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-")
     );
 
     if (info.ingredients.length) {
       await connection.execute<ResultSetHeader>(
-        `INSERT IGNORE INTO ingredients (name, user_id) VALUES ${info.ingredients
+        `INSERT IGNORE INTO ingredients (name, user_id) VALUES ${ingredientNames
           .map(() => `(?, ${userId})`)
           .join(", ")}`,
         ingredientNames
