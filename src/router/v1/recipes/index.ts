@@ -77,7 +77,7 @@ router.get("/", async (req, res, next) => {
             GROUP_CONCAT(tag_id SEPARATOR ',') AS tag_ids,
             GROUP_CONCAT(tag_name SEPARATOR ',') AS tag_names
         FROM
-            (SELECT * FROM recipes WHERE LOWER(name) LIKE LOWER(?)) AS r
+            (SELECT * FROM recipes WHERE REPLACE(LOWER(name), ' ','-' ) LIKE LOWER(?)) AS r
         JOIN 
             users_simple_view u ON u.id = r.user_id
         JOIN 
