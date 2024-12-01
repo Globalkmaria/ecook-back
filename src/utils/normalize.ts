@@ -4,10 +4,9 @@ export const convertSpacesToDashes = (text: string) =>
 export const splitString = (
   input: string | undefined | null,
   delimiter: string = ","
-): string[] => {
-  return input?.split(delimiter) || [];
-};
+): string[] => input?.split(delimiter) || [];
 
-export const lightSlugify = (text: string) => {
-  return text.trim().toLowerCase().replace(/\s+/g, "-").replace(/-+/g, "-");
-};
+export const lightSlugify = (text: string) =>
+  text.trim().toLowerCase().replace(/\s+/g, "-").replace(/-+/g, "-");
+
+export const lightTrim = (text: string) => text.trim().replace(/\s+/g, " ");

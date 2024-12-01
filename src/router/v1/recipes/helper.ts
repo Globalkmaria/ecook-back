@@ -1,6 +1,6 @@
 import { config } from "../../../config/index.js";
 import { encrypt } from "../../../utils/encrypt.js";
-import { lightSlugify } from "../../../utils/normalize.js";
+import { lightSlugify, lightTrim } from "../../../utils/normalize.js";
 import { INewRecipe, IngredientNewProduct, RecipesSimple } from "./index.js";
 
 export const generateRecipeKey = (id: RecipesSimple["id"], name: string) =>
@@ -17,11 +17,11 @@ export const getNewRecipeData = (recipe: INewRecipe, userId: number) => {
 };
 
 export const sanitizeRecipeData = (recipe: INewRecipe) => {
-  const name = recipe.name.trim().replace(/\s+/g, " ");
+  const name = lightTrim(recipe.name);
   const hours = parseInt((recipe.hours ?? 0).toString(), 10);
   const minutes = parseInt((recipe.minutes ?? 0).toString(), 10);
-  const description = recipe.description.trim().replace(/\s+/g, " ") ?? "";
-  const steps = recipe.steps.map((step) => step.trim().replace(/\s+/g, " "));
+  const description = lightTrim(recipe.description ?? "");
+  const steps = recipe.steps.map((step) => lightTrim(step));
 
   return { name, hours, minutes, description, steps };
 };
@@ -32,7 +32,7 @@ export const getNewProductData = (product: IngredientNewProduct) => {
 };
 
 export const sanitizeProductData = (product: IngredientNewProduct) => {
-  const name = product?.name.trim() ?? "";
+  const name = lightTrim(product?.name ?? "");
   const brand = lightSlugify(product?.brand ?? "");
   const purchasedFrom = lightSlugify(product?.purchasedFrom ?? "");
   const link = product?.link?.trim() ?? "";
