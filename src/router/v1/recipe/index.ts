@@ -1,14 +1,14 @@
 import express from "express";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 
-import mysqlDB from "../../../db/mysql";
-import { upload } from "../../../db/aws";
-import { ClientProduct, Product } from "../products";
-import { config } from "../../../config";
-import { INewRecipe } from "../recipes";
-import { authGuard } from "../../../middleware/auth";
-import { validateId } from "../../../utils/numbers";
-import { SerializedUser } from "../../../config/passport";
+import mysqlDB from "../../../db/mysql.js";
+import { upload } from "../../../db/aws.js";
+import { ClientProduct, Product } from "../products.js";
+import { INewRecipe } from "../recipes.js";
+import { authGuard } from "../../../middleware/auth.js";
+import { validateId } from "../../../utils/numbers.js";
+import { SerializedUser } from "../../../config/passport.js";
+import { config } from "../../../config/index.js";
 
 const router = express.Router();
 
@@ -99,8 +99,12 @@ interface ClientRecipeDetail {
 type EditRecipe = INewRecipe & { id: number };
 
 router.get("/:recipeId", async (req, res, next) => {
+  // router.get("/:url", async (req, res, next) => {
   try {
     const { recipeId } = req.params;
+
+    // const [ciphertext] = req.params.url.split("-");
+    // const recipeId = decrypt(ciphertext);
 
     if (!validateId(recipeId)) {
       return res.status(400).json({ error: "Invalid recipe ID" });
@@ -207,6 +211,11 @@ router.get("/:recipeId", async (req, res, next) => {
 
     const info = recipe_info[0];
     const user = user_data[0];
+
+    // const link = uuidv5("hello", "small-sky");
+    // const link2 = uuidv5(info.id.toString(), "small-sky");
+    // console.log(link);
+    // console.log(link2);
 
     const recipe: ClientRecipeDetail = {
       id: info.id,

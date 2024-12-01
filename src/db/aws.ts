@@ -1,5 +1,5 @@
-import { getRandomId } from "../utils/numbers";
-import { config } from "../config/index";
+import { getRandomId } from "../utils/numbers.js";
+import { config } from "../config/index.js";
 import { S3Client } from "@aws-sdk/client-s3"; // Import AWS SDK v3 S3 client
 import multer from "multer"; // Import Multer for file uploads
 import multerS3 from "multer-s3"; // Import Multer S3 storage engine

@@ -41,6 +41,12 @@ export const config = {
   img: {
     dbUrl: required("IMG_DB_URL"),
   },
+  key: {
+    recipe: {
+      key: required("RECIPE_ENCRYPTION_KEY"),
+      iv: required("RECIPE_ENCRYPTION_IV"),
+    },
+  },
 };
 
 export const corsOption = {

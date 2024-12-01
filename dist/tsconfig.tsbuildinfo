@@ -1,1 +1,0 @@
-{"root":["../src/index.ts","../src/config/index.js","../src/db/mysql.js","../src/middleware/errorhandlers.js","../src/router/v1/img.js","../src/router/v1/index.js","../src/router/v1/recipes.ts","../src/utils/keystocamelcase.js","../src/utils/keystosnakecase.js","../src/utils/removeproperties.js"],"version":"5.6.2"}

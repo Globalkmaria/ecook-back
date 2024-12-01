@@ -1,10 +1,10 @@
 import express from "express";
 
-import recipesRouter from "./recipes";
-import recipeDetailRouter from "./recipe/index";
-import productsRouter from "./products";
-import usersRouter from "./users";
-import authRouter from "./auth";
+import recipesRouter from "./recipes.js";
+import recipeDetailRouter from "./recipe/index.js";
+import productsRouter from "./products.js";
+import usersRouter from "./users.js";
+import authRouter from "./auth/index.js";
 
 const router = express.Router();
 

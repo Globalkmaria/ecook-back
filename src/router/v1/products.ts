@@ -1,5 +1,5 @@
-import { config } from "../../config";
-import mysqlDB from "../../db/mysql";
+import { config } from "../../config/index.js";
+import mysqlDB from "../../db/mysql.js";
 import express from "express";
 import { RowDataPacket } from "mysql2";
 

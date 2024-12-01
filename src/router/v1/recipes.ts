@@ -1,11 +1,12 @@
 import express from "express";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 
-import { config } from "../../config";
-import { upload } from "../../db/aws";
-import mysqlDB from "../../db/mysql";
-import { SerializedUser } from "../../config/passport";
-import { authGuard } from "../../middleware/auth";
+import { upload } from "../../db/aws.js";
+import mysqlDB from "../../db/mysql.js";
+import { SerializedUser } from "../../config/passport.js";
+import { authGuard } from "../../middleware/auth.js";
+import { config } from "../../config/index.js";
+import { encrypt } from "../../utils/encrypt.js";
 
 const router = express.Router();
 
@@ -195,6 +196,7 @@ router.get("/", async (req, res, next) => {
         id: parseInt(id, 10),
         name: tagNames[index],
       }));
+      // const link = `${encrypt(recipe.id.toString())}-${recipe.name}`;
 
       return {
         id: recipe.id,
@@ -203,6 +205,7 @@ router.get("/", async (req, res, next) => {
         tags,
         hours: recipe.hours,
         minutes: recipe.minutes,
+        // link,
       };
     });
 

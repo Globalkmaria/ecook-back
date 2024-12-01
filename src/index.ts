@@ -3,13 +3,12 @@ import session from "express-session";
 import cors from "cors";
 import passport from "passport";
 import logger from "morgan";
-import cookieParser from "cookie-parser";
 
-import v1 from "./router/v1/index";
-import { config, corsOption, getSessions } from "./config/index";
-import { errorHandler, notFound } from "./middleware/errorHandlers";
+import v1 from "./router/v1/index.js";
+import { errorHandler, notFound } from "./middleware/errorHandlers.js";
 
 import "./config/passport";
+import { config, corsOption, getSessions } from "./config/index.js";
 
 const app = express();
 

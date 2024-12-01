@@ -3,12 +3,12 @@ import passport from "passport";
 import crypto from "crypto";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 
-import { upload } from "../../../db/aws";
-import mysqlDB from "../../../db/mysql";
-import { config } from "../../../config";
+import { upload } from "../../../db/aws.js";
+import mysqlDB from "../../../db/mysql.js";
 
-import { User } from "../recipe";
-import { validateEmail, validatePassword, validateUsername } from "./helper";
+import { validateEmail, validatePassword, validateUsername } from "./helper.js";
+import { User } from "../recipe/index.js";
+import { config } from "../../../config/index.js";
 
 const router = express.Router();
 
