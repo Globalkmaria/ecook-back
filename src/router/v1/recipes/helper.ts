@@ -1,6 +1,6 @@
 import { config } from "../../../config/index.js";
 import { encrypt } from "../../../utils/encrypt.js";
-import { convertSpacesToDashes } from "../../../utils/normalize.js";
+import { lightSlugify } from "../../../utils/normalize.js";
 import { INewRecipe, RecipesSimple } from "./index.js";
 
 export const generateRecipeKey = (id: RecipesSimple["id"], name: string) =>
@@ -8,7 +8,7 @@ export const generateRecipeKey = (id: RecipesSimple["id"], name: string) =>
     id.toString(),
     config.key.recipe.key,
     config.key.recipe.iv
-  )}-${convertSpacesToDashes(name)}`;
+  )}-${lightSlugify(name)}`;
 
 export const getNewRecipeData = (recipe: INewRecipe, userId: number) => {
   const name = recipe.name.trim().replace(/\s+/g, " ");
