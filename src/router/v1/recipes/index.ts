@@ -6,8 +6,13 @@ import mysqlDB from "../../../db/mysql.js";
 import { SerializedUser } from "../../../config/passport.js";
 import { authGuard } from "../../../middleware/auth.js";
 import { config } from "../../../config/index.js";
-import { getNewRecipeData, generateRecipeKey } from "./helper.js";
+import {
+  getNewRecipeData,
+  generateRecipeKey,
+  getNewProductData,
+} from "./helper.js";
 import { lightSlugify, splitString } from "../../../utils/normalize.js";
+import { getImgUrl } from "../../../utils/img.js";
 
 const router = express.Router();
 
@@ -203,7 +208,7 @@ router.get("/", async (req, res, next) => {
       return {
         id: recipe.id,
         name: recipe.name,
-        img: config.img.dbUrl + recipe.img,
+        img: getImgUrl(recipe.img, true),
         tags,
         hours: recipe.hours,
         minutes: recipe.minutes,
@@ -218,7 +223,7 @@ router.get("/", async (req, res, next) => {
 });
 
 // ---
-interface IngredientNewProduct {
+export interface IngredientNewProduct {
   name: string;
   brand: string | null;
   purchasedFrom: string | null;
@@ -349,13 +354,7 @@ router.post("/", authGuard, upload.any(), async (req, res, next) => {
           const newProduct = ingredient.newProduct;
           const [newProductId] = await connection.execute<ResultSetHeader>(
             `INSERT INTO products (user_id, name, brand, purchased_from, link) VALUES (?,?,?,?,?)`,
-            [
-              userId,
-              newProduct?.name ?? "",
-              newProduct?.brand ?? "",
-              newProduct?.purchasedFrom ?? "",
-              newProduct?.link ?? "",
-            ]
+            [userId, ...getNewProductData(newProduct)]
           );
 
           productId = newProductId.insertId;

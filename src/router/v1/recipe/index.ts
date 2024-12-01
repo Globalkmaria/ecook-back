@@ -9,18 +9,23 @@ import { authGuard } from "../../../middleware/auth.js";
 import { validateId } from "../../../utils/numbers.js";
 import { SerializedUser } from "../../../config/passport.js";
 import { config } from "../../../config/index.js";
-import { decryptRecipeURLAndGetRecipeId } from "./helper.js";
+import {
+  decryptRecipeURLAndGetRecipeId,
+  getUpdatedRecipeData,
+} from "./helper.js";
+import { getNewProductData } from "../recipes/helper.js";
+import { getImgUrl } from "../../../utils/img.js";
 
 const router = express.Router();
 
-interface RecipeInfo extends RowDataPacket {
+export interface RecipeInfo extends RowDataPacket {
   id: number; // Primary key, auto_increment
   name: string; // Non-nullable, varchar(50)
   user_id: number; //  foreign key
   hours: number; // Non-nullable, int
   minutes: number; // Non-nullable, int
   description?: string; // Nullable, varchar(255)
-  steps?: string[]; // Json string[] Nullable, JSON type in TypeScript as Record<string, any> or object
+  steps: string[]; // Json string[], JSON type in TypeScript as Record<string, any> or object
   created_at: Date; // Timestamp with CURRENT_TIMESTAMP default
   updated_at: Date; // Timestamp with auto-update on change
 }
@@ -97,7 +102,7 @@ interface ClientRecipeDetail {
   user: { id: number; username: string; img: string | null };
 }
 
-type EditRecipe = INewRecipe & { id: number };
+export type EditRecipe = INewRecipe & { id: number };
 
 router.get("/:key", async (req, res, next) => {
   try {
@@ -151,7 +156,7 @@ router.get("/:key", async (req, res, next) => {
         brand: product.brand,
         purchasedFrom: product.purchased_from,
         link: product.link,
-        img: config.img.dbUrl + product.img,
+        img: getImgUrl(product.img, true),
         createdAt: product.created_at,
         updatedAt: product.updated_at,
       }));
@@ -195,9 +200,7 @@ router.get("/:key", async (req, res, next) => {
               brand: ingredient_data.product_brand ?? null,
               purchasedFrom: ingredient_data.product_purchased_from ?? null,
               link: ingredient_data.product_link ?? null,
-              img: ingredient_data.product_img
-                ? config.img.dbUrl + ingredient_data.product_img
-                : null,
+              img: getImgUrl(ingredient_data.product_img),
             }
           : null,
         products: ingredient_data.ingredient_id
@@ -216,13 +219,13 @@ router.get("/:key", async (req, res, next) => {
       hours: info.hours,
       minutes: info.minutes,
       steps: info.steps ? info.steps : [],
-      img: config.img.dbUrl + imgs[0].recipe_img,
+      img: getImgUrl(imgs[0].recipe_img, true),
       ingredients,
       tags: tags_data.map((tag) => ({ id: tag.tag_id, name: tag.tag_name })),
       user: {
         id: user.id,
         username: user.username,
-        img: user.img ? config.img.dbUrl + user.img : "",
+        img: getImgUrl(user.img, true),
       },
     };
 
@@ -325,16 +328,7 @@ router.put("/:key", authGuard, upload.any(), async (req, res, next) => {
       return res.status(403).json({ error: "Forbidden" });
     }
 
-    const updates = new Map<string, any>();
-    if (info.name !== currentRecipe.name) updates.set("name", info.name);
-    if (Number(info.hours) !== currentRecipe.hours)
-      updates.set("hours", Number(info.hours));
-    if (Number(info.minutes) !== currentRecipe.minutes)
-      updates.set("minutes", Number(info.minutes));
-    if (info.description !== currentRecipe.description)
-      updates.set("description", info.description);
-    if (info.steps?.join("") !== currentRecipe.steps?.join(""))
-      updates.set("steps", info.steps);
+    const updates = getUpdatedRecipeData(info, currentRecipe);
 
     if (updates.size > 0) {
       const updateFields = [...updates.keys()]
@@ -476,13 +470,7 @@ router.put("/:key", authGuard, upload.any(), async (req, res, next) => {
           const newProduct = ingredient.newProduct;
           const [newProductId] = await connection.execute<ResultSetHeader>(
             `INSERT INTO products (user_id, name, brand, purchased_from, link) VALUES (?,?,?,?,?)`,
-            [
-              userId,
-              newProduct?.name ?? "",
-              newProduct?.brand ?? "",
-              newProduct?.purchasedFrom ?? "",
-              newProduct?.link ?? "",
-            ]
+            [userId, ...getNewProductData(newProduct)]
           );
 
           productId = newProductId.insertId;

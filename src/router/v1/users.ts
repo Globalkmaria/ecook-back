@@ -5,6 +5,7 @@ import mysqlDB from "../../db/mysql.js";
 import { ClientRecipeSimple, RecipesSimple } from "./recipes/index.js";
 import { UserSimple } from "./recipe/index.js";
 import { generateRecipeKey } from "./recipes/helper.js";
+import { getImgUrl } from "../../utils/img.js";
 
 const router = express.Router();
 
@@ -38,7 +39,7 @@ router.get("/:username", async (req, res, next) => {
       return {
         id: recipe.id,
         name: recipe.name,
-        img: config.img.dbUrl + recipe.img,
+        img: getImgUrl(recipe.img) ?? "",
         tags,
         hours: recipe.hours,
         minutes: recipe.minutes,
@@ -48,7 +49,7 @@ router.get("/:username", async (req, res, next) => {
 
     const user = {
       id: userData[0].id,
-      img: config.img.dbUrl + userData[0].img,
+      img: getImgUrl(userData[0].img),
       username: userData[0].username,
     };
 

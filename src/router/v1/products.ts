@@ -4,6 +4,7 @@ import express from "express";
 import { RowDataPacket } from "mysql2";
 import { authGuard } from "../../middleware/auth.js";
 import { lightSlugify } from "../../utils/normalize.js";
+import { getImgUrl } from "../../utils/img.js";
 
 const router = express.Router();
 
@@ -82,7 +83,7 @@ router.get("/", authGuard, async (req, res, next) => {
         brand: product.brand,
         purchasedFrom: product.purchased_from,
         link: product.link,
-        img: config.img.dbUrl + product.img,
+        img: getImgUrl(product.img, true),
         createdAt: product.created_at,
         updatedAt: product.updated_at,
       }));
@@ -118,7 +119,7 @@ router.get("/:ingredientId", async (req, res, next) => {
       brand: product.brand,
       purchasedFrom: product.purchased_from,
       link: product.link,
-      img: config.img.dbUrl + product.img,
+      img: getImgUrl(product.img) ?? "",
       createdAt: product.created_at,
       updatedAt: product.updated_at,
     }));
