@@ -222,6 +222,39 @@ router.get("/", async (req, res, next) => {
   }
 });
 
+router.get("/home", async (req, res, next) => {
+  try {
+    const [data] = await mysqlDB.query<RecipesSimple[]>(
+      `SELECT * FROM recipes_simple_view ORDER BY created_at DESC LIMIT 18`
+    );
+
+    const result: ClientRecipeSimple[] = data.map((recipe) => {
+      const tagIds = splitString(recipe.tag_ids);
+      const tagNames = splitString(recipe.tag_names);
+      const tags = tagIds.map((id, index) => ({
+        id: parseInt(id, 10),
+        name: tagNames[index],
+      }));
+
+      const key = generateRecipeKey(recipe.id, recipe.name);
+
+      return {
+        id: recipe.id,
+        name: recipe.name,
+        img: getImgUrl(recipe.img, true),
+        tags,
+        hours: recipe.hours,
+        minutes: recipe.minutes,
+        key,
+      };
+    });
+
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+});
+
 // ---
 export interface IngredientNewProduct {
   name: string;
