@@ -15,7 +15,7 @@ import {
 } from "./helper.js";
 import { getNewProductData } from "../recipes/helper.js";
 import { getImgUrl } from "../../../utils/img.js";
-import { convertSpacesToDashes } from "../../../utils/normalize.js";
+import { lightSlugify } from "../../../utils/normalize.js";
 
 const router = express.Router();
 
@@ -119,7 +119,7 @@ router.get("/:key", async (req, res, next) => {
 
     const recipeName = getRecipeName(req.params.key);
 
-    if (convertSpacesToDashes(recipe_info[0].name) !== recipeName) {
+    if (lightSlugify(recipe_info[0].name) !== recipeName) {
       return res.status(400).json({ error: "Invalid recipe name" });
     }
 
