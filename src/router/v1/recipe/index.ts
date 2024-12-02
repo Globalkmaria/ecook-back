@@ -8,13 +8,14 @@ import { INewRecipe } from "../recipes/index.js";
 import { authGuard } from "../../../middleware/auth.js";
 import { validateId } from "../../../utils/numbers.js";
 import { SerializedUser } from "../../../config/passport.js";
-import { config } from "../../../config/index.js";
 import {
   decryptRecipeURLAndGetRecipeId,
+  getRecipeName,
   getUpdatedRecipeData,
 } from "./helper.js";
 import { getNewProductData } from "../recipes/helper.js";
 import { getImgUrl } from "../../../utils/img.js";
+import { convertSpacesToDashes } from "../../../utils/normalize.js";
 
 const router = express.Router();
 
@@ -108,13 +109,19 @@ router.get("/:key", async (req, res, next) => {
   try {
     const recipeId = decryptRecipeURLAndGetRecipeId(req.params.key);
 
-    if (!validateId(recipeId)) {
+    if (!recipeId || !validateId(recipeId)) {
       return res.status(400).json({ error: "Invalid recipe ID" });
     }
 
     const [recipe_info] = await mysqlDB.query<RecipeInfo[]>(
       `SELECT * FROM recipes where recipes.id = ${recipeId}`
     );
+
+    const recipeName = getRecipeName(req.params.key);
+
+    if (convertSpacesToDashes(recipe_info[0].name) !== recipeName) {
+      return res.status(400).json({ error: "Invalid recipe name" });
+    }
 
     if (!recipe_info)
       return res.status(404).json({ error: "Recipe not found" });
@@ -241,7 +248,7 @@ router.delete("/:key", authGuard, async (req, res, next) => {
   try {
     const recipeId = decryptRecipeURLAndGetRecipeId(req.params.key);
 
-    if (!validateId(recipeId))
+    if (!recipeId || !validateId(recipeId))
       return res.status(400).json({ error: "Invalid recipe ID" });
 
     await connection.beginTransaction();
@@ -292,7 +299,7 @@ router.put("/:key", authGuard, upload.any(), async (req, res, next) => {
   const connection = await mysqlDB.getConnection();
   try {
     const recipeId = decryptRecipeURLAndGetRecipeId(req.params.key);
-    if (!validateId(recipeId))
+    if (!recipeId || !validateId(recipeId))
       return res.status(400).json({ error: "Invalid recipe ID" });
 
     const files = req.files as Express.MulterS3.File[];

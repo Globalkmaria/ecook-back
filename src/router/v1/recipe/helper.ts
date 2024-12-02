@@ -6,6 +6,10 @@ import { EditRecipe, RecipeInfo } from "./index.js";
 export const decryptRecipeURLAndGetRecipeId = (url: string) => {
   const [ciphertext] = url.split("-");
 
+  if (ciphertext.length !== 32) {
+    return null;
+  }
+
   const recipeId = decrypt(
     ciphertext,
     config.key.recipe.key,
@@ -33,3 +37,6 @@ export const getUpdatedRecipeData = (
 
   return updates;
 };
+
+export const getRecipeName = (url: string): string =>
+  url.split("-").slice(1).join("-");
