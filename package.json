@@ -10,7 +10,8 @@
     "dev": "NODE_ENV=dev tsx watch ./src/index.ts"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.654.0",
+    "@aws-sdk/client-s3": "^3.703.0",
+    "@aws-sdk/s3-request-presigner": "^3.703.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
