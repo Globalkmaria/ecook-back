@@ -7,7 +7,7 @@ import logger from "morgan";
 import v1 from "./router/v1/index.js";
 import { errorHandler, notFound } from "./middleware/errorHandlers.js";
 
-import "./config/passport";
+import "./config/passport.js";
 import { config, corsOption, getSessions } from "./config/index.js";
 
 const app = express();
