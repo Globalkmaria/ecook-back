@@ -23,7 +23,7 @@ router.get("/:key", async (req, res) => {
     res.set("Content-Length", response.ContentLength?.toString() || "");
     res.set("Last-Modified", response.LastModified?.toUTCString() || "");
     res.set("ETag", response.ETag || "");
-    res.set("Cache-Control", "public, max-age=7776000");
+    res.set("Cache-Control", "public, max-age=31536000"); // cache for 1 year
 
     // Check if Body exists and is a readable stream
     if (response.Body) {
