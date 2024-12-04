@@ -5,7 +5,6 @@ import { upload } from "../../../db/aws.js";
 import mysqlDB from "../../../db/mysql.js";
 import { SerializedUser } from "../../../config/passport.js";
 import { authGuard } from "../../../middleware/auth.js";
-import { config } from "../../../config/index.js";
 import {
   getNewRecipeData,
   generateRecipeKey,

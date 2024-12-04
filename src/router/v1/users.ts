@@ -1,6 +1,5 @@
 import express from "express";
 
-import { config } from "../../config/index.js";
 import mysqlDB from "../../db/mysql.js";
 import { ClientRecipeSimple, RecipesSimple } from "./recipes/index.js";
 import { UserSimple } from "./recipe/index.js";

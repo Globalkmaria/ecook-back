@@ -14,15 +14,9 @@ export const config = {
   session: {
     secret: required("SESSION_SECRET"),
   },
-  server: {
-    url: required("SERVER_URL"),
-  },
   port: parseInt(required("PORT")),
   cors: {
     allowedOrigin: required("CORS_ALLOW_ORIGIN"),
-  },
-  frontend: {
-    url: required("FRONTEND_URL"),
   },
   mysql: {
     host: required("MYSQL_HOST"),
