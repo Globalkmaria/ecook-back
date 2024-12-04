@@ -1,8 +1,6 @@
-import { config } from "../../config/index.js";
 import mysqlDB from "../../db/mysql.js";
 import express from "express";
 import { RowDataPacket } from "mysql2";
-import { authGuard } from "../../middleware/auth.js";
 import { lightSlugify } from "../../utils/normalize.js";
 import { getImgUrl } from "../../utils/img.js";
 
@@ -71,7 +69,8 @@ router.get("/", async (req, res, next) => {
       const [productsData] = await mysqlDB.query<Product[]>(
         `SELECT * FROM ingredient_products
          JOIN product_detail_view ON product_detail_view.id = ingredient_products.product_id
-         WHERE ingredient_id = ?`,
+         WHERE ingredient_id = ? ORDER BY product_detail_view.created_at DESC
+         `,
         [ingredientInfo.id]
       );
 
@@ -92,39 +91,6 @@ router.get("/", async (req, res, next) => {
     } else {
       res.status(400).json({ error: "Invalid query type" });
     }
-  } catch (error) {
-    next(error);
-  }
-});
-
-router.get("/:ingredientId", async (req, res, next) => {
-  try {
-    const { ingredientId } = req.params;
-
-    if (isNaN(Number(ingredientId)))
-      return res.status(400).json({ error: "Invalid ingredient ID" });
-
-    const [data] = await mysqlDB.query<Product[]>(
-      `SELECT * FROM ingredient_products
-        JOIN product_detail_view ON product_detail_view.id = ingredient_products.product_id
-        WHERE ingredient_id = ?`,
-      [ingredientId] // Pass ingredientId as a parameter
-    );
-
-    const products: ClientProduct[] = data.map((product) => ({
-      id: product.id,
-      ingredientId: product.ingredient_id,
-      userId: product.user_id,
-      name: product.name,
-      brand: product.brand,
-      purchasedFrom: product.purchased_from,
-      link: product.link,
-      img: getImgUrl(product.img) ?? "",
-      createdAt: product.created_at,
-      updatedAt: product.updated_at,
-    }));
-
-    res.status(200).json(products);
   } catch (error) {
     next(error);
   }

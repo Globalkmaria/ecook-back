@@ -57,7 +57,7 @@ router.get("/", async (req, res, next) => {
 
     if (!q) {
       const result = await mysqlDB.query<RecipesSimple[]>(
-        `SELECT * FROM recipes_simple_view`
+        `SELECT * FROM recipes_simple_view ORDER BY created_at DESC`
       );
 
       data = result[0];
@@ -84,7 +84,9 @@ router.get("/", async (req, res, next) => {
             recipe_img_view ri ON ri.recipe_id = r.id
         LEFT JOIN 
             recipe_tags_view rt ON rt.recipe_id = r.id
-        GROUP BY r.id , ri.recipe_img`,
+        GROUP BY r.id , ri.recipe_img 
+        ORDER BY r.created_at DESC;
+        `,
         [`%${q}%`]
       );
 
@@ -115,7 +117,9 @@ router.get("/", async (req, res, next) => {
             recipe_tags_view rt ON rt.recipe_id = r.id
           JOIN 
             users_simple_view u ON u.id = r.user_id
-          GROUP BY r.id , ri.recipe_img`,
+          GROUP BY r.id , ri.recipe_img 
+          ORDER BY r.created_at DESC;
+          `,
         [`${q}`]
       );
 
@@ -147,7 +151,10 @@ router.get("/", async (req, res, next) => {
         JOIN 
             users_simple_view u ON u.id = r.user_id
         GROUP BY 
-            r.id, ri.recipe_img;`,
+            r.id, ri.recipe_img
+            ORDER BY 
+            r.created_at DESC;
+        `,
         [q]
       );
 
@@ -186,7 +193,8 @@ router.get("/", async (req, res, next) => {
           JOIN 
               users_simple_view u ON u.id = r.user_id
           GROUP BY r.id, r.name, r.created_at, r.updated_at, r.hours, r.minutes, ri.recipe_img, u.img, u.username, u.id
-        `,
+          ORDER BY r.created_at DESC;
+          `,
         [q]
       );
 
