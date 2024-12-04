@@ -45,7 +45,7 @@ export interface ClientProduct {
 
 const QUERY_TYPES = ["ingredientName"];
 
-router.get("/", authGuard, async (req, res, next) => {
+router.get("/", async (req, res, next) => {
   try {
     const { type, q } = req.query as { type: string; q: string };
 

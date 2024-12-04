@@ -12,21 +12,6 @@ import { getImgUrl } from "../../../utils/img.js";
 
 const router = express.Router();
 
-router.get("/me", (req, res) => {
-  if (req.isAuthenticated()) {
-    const user = req.user as User;
-
-    res.status(200).json({
-      username: user.username,
-      img: getImgUrl(user.img),
-    });
-
-    return;
-  }
-
-  res.status(200).json({ message: "Unauthorized" });
-});
-
 router.post("/login", (req, res, next) => {
   const loginInfo = {
     username: req.body.username,
