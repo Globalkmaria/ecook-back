@@ -46,16 +46,11 @@ router.post("/signup", upload.single("img"), async (req, res, next) => {
   const body = req.body;
   const file = req.file as Express.MulterS3.File;
 
-  if (!file) {
-    res.status(400).json({ message: "Image is required" });
-    return;
-  }
-
   const user = {
     username: body.username,
     password: body.password,
     email: body.email,
-    img: file.key,
+    img: file?.key ?? null,
   };
 
   if (!validateUsername(user.username)) {
