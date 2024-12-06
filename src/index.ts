@@ -9,6 +9,7 @@ import { errorHandler, notFound } from "./middleware/errorHandlers.js";
 
 import "./config/passport.js";
 import { config, corsOption, getSessions } from "./config/index.js";
+import { errorLogger, logRequest } from "./middleware/log.js";
 
 const app = express();
 
@@ -18,12 +19,14 @@ app.use(logger("dev"));
 app.use(cors(corsOption));
 
 app.use(session(getSessions()));
+app.use(logRequest);
 
 app.use(passport.initialize());
 app.use(passport.session());
 
 app.use("/api/v1", v1);
 
+app.use(errorLogger);
 app.use(notFound);
 app.use(errorHandler);
 
