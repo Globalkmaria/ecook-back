@@ -10,6 +10,8 @@ export const logRequest = async (
   res: Response,
   next: NextFunction
 ) => {
+  if (process.env.NODE_ENV === "dev") return next();
+
   const startTime = Date.now();
   const originalSend = res.send;
 
