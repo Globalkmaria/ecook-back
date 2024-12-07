@@ -42,7 +42,7 @@ interface QueryParams {
   type?: string;
 }
 
-const SEARCH_TYPES = ["name", "tag", "ingredient", "product"];
+const SEARCH_TYPES = ["name", "tag", "ingredient", "product", "username"];
 
 router.get("/", async (req, res, next) => {
   try {
@@ -194,6 +194,13 @@ router.get("/", async (req, res, next) => {
           GROUP BY r.id, r.name, r.created_at, r.updated_at, r.hours, r.minutes, ri.recipe_img, u.img, u.username, u.id
           ORDER BY r.created_at DESC;
           `,
+        [q]
+      );
+
+      data = result[0];
+    } else if (type === "username") {
+      const result = await mysqlDB.execute<RecipesSimple[]>(
+        `SELECT * FROM recipes_simple_view WHERE user_username = ? ORDER BY created_at DESC`,
         [q]
       );
 
