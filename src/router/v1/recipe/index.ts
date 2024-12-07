@@ -13,7 +13,7 @@ import {
   getRecipeName,
   getUpdatedRecipeData,
 } from "./helper.js";
-import { getNewProductData } from "../recipes/helper.js";
+import { generateRecipeKey, getNewProductData } from "../recipes/helper.js";
 import { getImgUrl } from "../../../utils/img.js";
 import { lightSlugify } from "../../../utils/normalize.js";
 
@@ -518,9 +518,9 @@ router.put("/:key", authGuard, upload.any(), async (req, res, next) => {
 
     await connection.commit();
 
-    res
-      .status(200)
-      .json({ message: "Recipe updated successfully", id: recipeId });
+    const key = generateRecipeKey(Number(recipeId), info.name);
+
+    res.status(200).json({ message: "Recipe updated successfully", key });
   } catch (error) {
     await connection.rollback();
     next(error);
