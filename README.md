@@ -15,10 +15,10 @@ Project Link : <https://www.ecook.online/>
 ## About
 
 E-COOK과 함께 재료를 최대한 활용하고, 새로운 요리를 발견하고 공유해 보세요!
-새로운 레시피를 탐색하거나 재료를 재사용할 방법을 찾고 싶을 때, RecipeHub가 도와드립니다.
+새로운 레시피를 탐색하거나 재료를 재사용할 방법을 찾고 싶을 때, E-COOK가 도와드립니다.
 
 Discover, share, and make the most of your ingredients with E-COOK!
-Whether you're exploring new recipes or looking for ways to reuse ingredients, RecipeHub has you covered.
+Whether you're exploring new recipes or looking for ways to reuse ingredients, E-COOK has you covered.
 
 ## Features
 
