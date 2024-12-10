@@ -88,7 +88,7 @@ Whether you're exploring new recipes or looking for ways to reuse ingredients, E
   - Deployment : AWS EC2
 - **Backend**
 - github: https://github.com/Globalkmaria/ecook-back
-  - Skills : Node.js
+  - Skills : Node.js, TypeScript
   - Database: MySQL, AWS S3
   - Authentication: Passport
   - Deployment: AWS EC2
