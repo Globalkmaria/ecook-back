@@ -5,3 +5,5 @@ node_modules
 .vscode
 
 dist/*
+
+src/middleware/log.ts
