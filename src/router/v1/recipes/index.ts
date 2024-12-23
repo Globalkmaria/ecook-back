@@ -22,7 +22,7 @@ export interface RecipesSimple extends RowDataPacket {
   updated_at: Date; // Timestamp for when the record was updated
   img: string; // Non-nullable, varchar(255)
   user_img?: string | null; // Nullable, varchar(255)
-  user_username?: string | null; // Nullable, varchar(100)
+  user_username: string; //  varchar(100)
   user_id: number; // Non-nullable, int, default 0
   tag_ids?: string | null; // Nullable, text (could store a list of tag IDs as a string)
   tag_names?: string | null; // Nullable, text (could store a list of tag names as a string)
@@ -35,6 +35,13 @@ export interface ClientRecipeSimple {
   name: string;
   img: string;
   tags: { id: number; name: string }[];
+}
+
+export interface HomeRecipe extends ClientRecipeSimple {
+  hours: number;
+  minutes: number;
+  key: string;
+  user: { username: string };
 }
 
 interface QueryParams {
@@ -242,7 +249,7 @@ router.get("/home", async (req, res, next) => {
       `SELECT * FROM recipes_simple_view ORDER BY created_at DESC LIMIT 18`
     );
 
-    const result: ClientRecipeSimple[] = data.map((recipe) => {
+    const result: HomeRecipe[] = data.map((recipe) => {
       const tagIds = splitString(recipe.tag_ids);
       const tagNames = splitString(recipe.tag_names);
       const tags = tagIds.map((id, index) => ({
@@ -260,6 +267,9 @@ router.get("/home", async (req, res, next) => {
         hours: recipe.hours,
         minutes: recipe.minutes,
         key,
+        user: {
+          username: recipe.user_username,
+        },
       };
     });
 
