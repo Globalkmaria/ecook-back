@@ -1,6 +1,6 @@
 # E-COOK
 
-Project Link : <https://www.ecook.online/>
+Project Link : <https://www.ecook.online>
 
 - Test ID : testme
 - PW : Helloworld1!
@@ -83,11 +83,11 @@ Whether you're exploring new recipes or looking for ways to reuse ingredients, E
 ## Skills and Technologies Used
 
 - **Frontend**
-- github: https://github.com/Globalkmaria/ecook-front
+- Github: https://github.com/Globalkmaria/ecook-front
   - Skills : Next.js, TypeScript, SCSS
   - Deployment : AWS EC2
 - **Backend**
-- github: https://github.com/Globalkmaria/ecook-back
+- Github: https://github.com/Globalkmaria/ecook-back
   - Skills : Node.js, TypeScript
   - Database: MySQL, AWS S3
   - Authentication: Passport
