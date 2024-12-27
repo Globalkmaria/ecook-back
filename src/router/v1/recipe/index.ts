@@ -10,12 +10,11 @@ import { validateId } from "../../../utils/numbers.js";
 import { SerializedUser } from "../../../config/passport.js";
 import {
   decryptRecipeURLAndGetRecipeId,
-  getRecipeName,
   getUpdatedRecipeData,
 } from "./helper.js";
 import { generateRecipeKey, getNewProductData } from "../recipes/helper.js";
 import { getImgUrl } from "../../../utils/img.js";
-import { lightSlugify } from "../../../utils/normalize.js";
+import { replaceHyphensWithSpaces } from "../../../utils/normalize.js";
 
 const router = express.Router();
 
@@ -161,7 +160,7 @@ router.get("/:key", async (req, res, next) => {
         id: product.id,
         ingredientId: product.ingredient_id,
         userId: product.user_id,
-        name: product.name,
+        name: replaceHyphensWithSpaces(product.name),
         brand: product.brand,
         purchasedFrom: product.purchased_from,
         link: product.link,
@@ -199,13 +198,15 @@ router.get("/:key", async (req, res, next) => {
     const ingredients: Ingredient[] = ingredients_data.map(
       (ingredient_data) => ({
         id: ingredient_data.id,
-        name: ingredient_data.ingredient_name,
+        name: replaceHyphensWithSpaces(ingredient_data.ingredient_name),
         quantity: ingredient_data.ingredient_quantity ?? "",
         ingredientId: ingredient_data.ingredient_id ?? null,
         userProduct: ingredient_data.product_id
           ? {
               id: ingredient_data.product_id,
-              name: ingredient_data.product_name ?? "",
+              name: replaceHyphensWithSpaces(
+                ingredient_data.product_name ?? ""
+              ),
               brand: ingredient_data.product_brand ?? null,
               purchasedFrom: ingredient_data.product_purchased_from ?? null,
               link: ingredient_data.product_link ?? null,
