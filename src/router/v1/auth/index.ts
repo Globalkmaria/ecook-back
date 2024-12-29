@@ -24,6 +24,9 @@ router.post("/login", (req, res, next) => {
     } else {
       passport.authenticate("local")(req, res, function () {
         const user = req.user as User;
+        res.cookie("username", user.username, { httpOnly: true });
+        res.cookie("img", getImgUrl(user.img), { httpOnly: true });
+
         res.status(200).json({
           username: user.username,
           img: getImgUrl(user.img),
@@ -38,6 +41,8 @@ router.post("/logout", function (req, res, next) {
     if (err) {
       return next(err);
     }
+    res.clearCookie("username");
+    res.clearCookie("img");
     res.status(200).send();
   });
 });
@@ -103,6 +108,9 @@ router.post("/signup", upload.single("img"), async (req, res, next) => {
 
         req.login(newUser, (error: any) => {
           if (error) return next(error);
+
+          res.cookie("username", user.username, { httpOnly: true });
+          res.cookie("img", getImgUrl(user.img), { httpOnly: true });
 
           res.status(201).json({
             username: user.username,
