@@ -14,7 +14,7 @@ import {
 } from "./helper.js";
 import { generateRecipeKey, getNewProductData } from "../recipes/helper.js";
 import { getImgUrl } from "../../../utils/img.js";
-import { replaceHyphensWithSpaces } from "../../../utils/normalize.js";
+import { lightSlugify } from "../../../utils/normalize.js";
 
 const router = express.Router();
 
@@ -160,7 +160,7 @@ router.get("/:key", async (req, res, next) => {
         id: product.id,
         ingredientId: product.ingredient_id,
         userId: product.user_id,
-        name: replaceHyphensWithSpaces(product.name),
+        name: product.name,
         brand: product.brand,
         purchasedFrom: product.purchased_from,
         link: product.link,
@@ -198,15 +198,13 @@ router.get("/:key", async (req, res, next) => {
     const ingredients: Ingredient[] = ingredients_data.map(
       (ingredient_data) => ({
         id: ingredient_data.id,
-        name: replaceHyphensWithSpaces(ingredient_data.ingredient_name),
+        name: ingredient_data.ingredient_name,
         quantity: ingredient_data.ingredient_quantity ?? "",
         ingredientId: ingredient_data.ingredient_id ?? null,
         userProduct: ingredient_data.product_id
           ? {
               id: ingredient_data.product_id,
-              name: replaceHyphensWithSpaces(
-                ingredient_data.product_name ?? ""
-              ),
+              name: ingredient_data.product_name ?? "",
               brand: ingredient_data.product_brand ?? null,
               purchasedFrom: ingredient_data.product_purchased_from ?? null,
               link: ingredient_data.product_link ?? null,
@@ -443,12 +441,12 @@ router.put("/:key", authGuard, upload.any(), async (req, res, next) => {
     // ingredients
 
     const ingredientNames = info.ingredients.map((ingredient) =>
-      ingredient.name.toLowerCase()
+      lightSlugify(ingredient.name)
     );
 
     if (info.ingredients.length) {
       await connection.execute(
-        `INSERT IGNORE INTO ingredients (name, user_id) VALUES ${info.ingredients
+        `INSERT IGNORE INTO ingredients (name, user_id) VALUES ${ingredientNames
           .map(() => `(?, ${userId})`)
           .join(", ")}`,
         ingredientNames
