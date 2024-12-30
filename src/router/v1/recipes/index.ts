@@ -10,7 +10,11 @@ import {
   generateRecipeKey,
   getNewProductData,
 } from "./helper.js";
-import { lightSlugify, splitString } from "../../../utils/normalize.js";
+import {
+  lightSlugify,
+  lightTrim,
+  splitString,
+} from "../../../utils/normalize.js";
 import { getImgUrl } from "../../../utils/img.js";
 
 const router = express.Router();
@@ -56,12 +60,13 @@ router.get("/", async (req, res, next) => {
     const { q, type } = req.query as QueryParams;
 
     let data: RecipesSimple[] = [];
+    const trimmedQ = lightTrim(q ?? "");
 
     if (type && !SEARCH_TYPES.includes(type)) {
       return res.status(400).json({ error: "Invalid search type" });
     }
 
-    if (!q) {
+    if (!trimmedQ) {
       const result = await mysqlDB.query<RecipesSimple[]>(
         `SELECT * FROM recipes_simple_view ORDER BY created_at DESC`
       );
@@ -93,7 +98,7 @@ router.get("/", async (req, res, next) => {
         GROUP BY r.id , ri.recipe_img 
         ORDER BY r.created_at DESC;
         `,
-        [`%${q}%`]
+        [`%${trimmedQ}%`]
       );
 
       data = result[0];
@@ -126,7 +131,7 @@ router.get("/", async (req, res, next) => {
           GROUP BY r.id , ri.recipe_img 
           ORDER BY r.created_at DESC;
           `,
-        [`${q}`]
+        [`${trimmedQ}`]
       );
 
       data = result[0];
@@ -161,7 +166,7 @@ router.get("/", async (req, res, next) => {
             ORDER BY 
             r.created_at DESC;
         `,
-        [q]
+        [lightSlugify(trimmedQ)]
       );
 
       data = result[0];
@@ -201,14 +206,14 @@ router.get("/", async (req, res, next) => {
           GROUP BY r.id, r.name, r.created_at, r.updated_at, r.hours, r.minutes, ri.recipe_img, u.img, u.username, u.id
           ORDER BY r.created_at DESC;
           `,
-        [q]
+        [trimmedQ]
       );
 
       data = result[0];
     } else if (type === "username") {
       const result = await mysqlDB.execute<RecipesSimple[]>(
         `SELECT * FROM recipes_simple_view WHERE user_username = ? ORDER BY created_at DESC`,
-        [q]
+        [trimmedQ]
       );
 
       data = result[0];
