@@ -84,7 +84,7 @@ Whether you're exploring new recipes or looking for ways to reuse ingredients, E
 
 - **Frontend**
 - Github: https://github.com/Globalkmaria/ecook-front
-  - Skills : Next.js, TypeScript, SCSS
+  - Skills : Next.js, TypeScript, TanStack Query, Zustand, SCSS
   - Deployment : AWS EC2
 - **Backend**
 - Github: https://github.com/Globalkmaria/ecook-back
