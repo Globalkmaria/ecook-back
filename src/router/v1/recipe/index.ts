@@ -115,14 +115,6 @@ router.get("/:key", async (req, res, next) => {
     const [recipe_info] = await mysqlDB.query<RecipeInfo[]>(
       `SELECT * FROM recipes where recipes.id = ${recipeId}`
     );
-    const original_key = generateRecipeKey(
-      recipe_info[0].id,
-      recipe_info[0].name
-    );
-
-    if (req.params.key !== original_key) {
-      return res.status(400).json({ error: "Invalid recipe key" });
-    }
 
     if (!recipe_info)
       return res.status(404).json({ error: "Recipe not found" });

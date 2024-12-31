@@ -1,4 +1,5 @@
 import dotenv from "dotenv";
+import { SessionOptions } from "express-session";
 
 dotenv.config({ path: `.env.${process.env.NODE_ENV}` });
 
@@ -49,7 +50,7 @@ export const corsOption = {
   credentials: true,
 };
 
-const sessionOptions = {
+const sessionOptions: SessionOptions = {
   secret: config.session.secret,
   resave: false,
   saveUninitialized: false,
