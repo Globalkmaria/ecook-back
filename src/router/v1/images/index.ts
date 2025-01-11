@@ -19,10 +19,10 @@ router.get("/:key", async (req, res) => {
     const response = await s3Client.send(command);
 
     // Set headers for the content type and length
-    res.set("Content-Type", response.ContentType || "application/octet-stream");
-    res.set("Content-Length", response.ContentLength?.toString() || "");
-    res.set("Last-Modified", response.LastModified?.toUTCString() || "");
-    res.set("ETag", response.ETag || "");
+    res.set("Content-Type", response.ContentType ?? "application/octet-stream");
+    res.set("Content-Length", response.ContentLength?.toString() ?? "");
+    res.set("Last-Modified", response.LastModified?.toUTCString() ?? "");
+    res.set("ETag", response.ETag ?? "");
     res.set("Cache-Control", "public, max-age=31536000"); // cache for 1 year
 
     // Check if Body exists and is a readable stream

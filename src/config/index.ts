@@ -24,6 +24,7 @@ export const config = {
     user: required("MYSQL_USER"),
     password: required("MYSQL_PASSWORD"),
     database: required("MYSQL_NAME"),
+    database2: required("MYSQL_NAME2"),
     port: required("MYSQL_PORT"),
   },
   s3: {
