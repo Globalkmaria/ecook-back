@@ -5,7 +5,11 @@ import mysqlDB from "../../../../db/mysql.js";
 import { validateId } from "../../../../utils/numbers.js";
 import { arrayToPlaceholders } from "../../../../utils/query.js";
 import { RecipeInfo } from "./recipe.js";
-import { decryptRecipeURLAndGetRecipeId, getUniqueRecipes } from "./helper.js";
+import {
+  decryptRecipeURLAndGetRecipeId,
+  formatRecipeData,
+  getUniqueRecipes,
+} from "./helper.js";
 import { RecommendRecipe } from "../../recommend/type.js";
 
 const router = express.Router();
@@ -60,10 +64,11 @@ router.get("/:key/recommend", async (req, res, next) => {
         (SELECT DISTINCT recipes.id as recipe_id, recipes.name as recipe_name, recipes.user_id as user_id
             FROM recipes 
             JOIN (
-                SELECT * FROM recipe_ingredients
-                WHERE recipe_ingredients.ingredient_id IN (${ingredientPlaceholders})
-                ) as recipe_ingredients
+              SELECT * FROM recipe_ingredients
+              WHERE recipe_ingredients.ingredient_id IN (${ingredientPlaceholders})
+              ) as recipe_ingredients
             ON recipe_ingredients.recipe_id = recipes.id
+            WHERE recipes.id != ${recipeId} 
             LIMIT 8
         )
     SELECT recipes.recipe_id , recipes.recipe_name, img.recipe_img as recipe_img, user.username as user_username, user.img as user_img
@@ -82,34 +87,38 @@ router.get("/:key/recommend", async (req, res, next) => {
     LIMIT 5;
     `
     );
-    const tagIds = tag_ids.map((tag) => tag.tag_id);
-    const tagPlaceholders = arrayToPlaceholders(tagIds);
+    if (tag_ids.length) {
+      const tagIds = tag_ids.map((tag) => tag.tag_id);
+      const tagPlaceholders = arrayToPlaceholders(tagIds);
 
-    const [tag_recipes] = await mysqlDB.query<RecommendRecipe[]>(
-      `
-    WITH filtered_recipes AS
+      const [tag_recipes] = await mysqlDB.query<RecommendRecipe[]>(
+        `
+        WITH filtered_recipes AS
         (SELECT DISTINCT recipes.id as recipe_id, recipes.name as recipe_name, recipes.user_id as user_id
-            FROM recipes 
-            JOIN (
-                SELECT * FROM recipe_tags
-                WHERE recipe_tags.tag_id IN (${tagPlaceholders})
-                ) as recipe_tags
-            ON recipe_tags.recipe_id = recipes.id
-            LIMIT 8
-        )
-    SELECT recipes.recipe_id , recipes.recipe_name, img.recipe_img as recipe_img, user.username as user_username, user.img as user_img
-    FROM filtered_recipes as recipes
-    JOIN recipe_img_view img ON recipes.recipe_id = img.recipe_id
-    JOIN users_simple_view user ON user.id = recipes.user_id;
-			`,
-      [...tagIds]
-    );
+        FROM recipes 
+        JOIN (
+          SELECT * FROM recipe_tags
+          WHERE recipe_tags.tag_id IN (${tagPlaceholders})
+          ) as recipe_tags
+          ON recipe_tags.recipe_id = recipes.id
+          WHERE recipes.id != ${recipeId} 
+          LIMIT 8
+          )
+          SELECT recipes.recipe_id , recipes.recipe_name, img.recipe_img as recipe_img, user.username as user_username, user.img as user_img
+          FROM filtered_recipes as recipes
+          JOIN recipe_img_view img ON recipes.recipe_id = img.recipe_id
+          JOIN users_simple_view user ON user.id = recipes.user_id;
+          `,
+        [...tagIds]
+      );
 
-    result.push(...tag_recipes);
+      result.push(...tag_recipes);
+    }
 
     const uniqueRecipes = getUniqueRecipes(result, 8);
+    const formattedRecipes = formatRecipeData(uniqueRecipes);
 
-    res.status(200).json(uniqueRecipes);
+    res.status(200).json(formattedRecipes);
   } catch (error) {
     next(error);
   }

@@ -1,7 +1,8 @@
 import { config } from "../../../../config/index.js";
 import { decrypt } from "../../../../utils/encrypt.js";
+import { getImgUrl } from "../../../../utils/img.js";
 import { shuffleArray } from "../../../../utils/shuffle.js";
-import { sanitizeRecipeData } from "../../recipes/helper.js";
+import { generateRecipeKey, sanitizeRecipeData } from "../../recipes/helper.js";
 import { RecommendRecipe } from "../../recommend/type.js";
 import { EditRecipe, RecipeInfo } from "./recipe.js";
 
@@ -64,3 +65,17 @@ export const getUniqueRecipes = (
 
   return uniqueRecipes;
 };
+
+export const formatRecipeData = (recipes: RecommendRecipe[]) =>
+  recipes.map((recipe) => {
+    const key = generateRecipeKey(recipe.recipe_id, recipe.recipe_name);
+    return {
+      key,
+      name: recipe.recipe_name,
+      img: getImgUrl(recipe.recipe_img),
+      user: {
+        username: recipe.user_username,
+        img: getImgUrl(recipe.user_img),
+      },
+    };
+  });
