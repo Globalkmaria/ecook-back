@@ -4,8 +4,11 @@ import { RowDataPacket } from "mysql2";
 import mysqlDB2 from "../../../db/mysql2.js";
 import mysqlDB from "../../../db/mysql.js";
 
+import recipeRouter from "./recipes/index.js";
+
 import { getImgUrl } from "../../../utils/img.js";
 import { generateRecipeKey } from "../recipes/helper.js";
+import { RecommendRecipe } from "./type.js";
 
 interface Recommend extends RowDataPacket {
   id: number;
@@ -13,12 +16,6 @@ interface Recommend extends RowDataPacket {
   type: string;
   value: string;
   label: string;
-}
-
-interface RecommendRecipe extends RowDataPacket {
-  id: number;
-  name: string;
-  img: string;
 }
 
 const router = express.Router();
@@ -35,11 +32,20 @@ router.get("/home", async (req, res, next) => {
 
     const recipesPromises = types.map((type) =>
       mysqlDB.query<RecommendRecipe[]>(
-        `SELECT recipes.id , recipes.name, img.recipe_img as img
-        FROM (SELECT * FROM recipe_tags WHERE tag_id = ?) AS filtered_tags
-        JOIN recipes ON recipes.id = filtered_tags.recipe_id
-        JOIN recipe_img_view img ON recipes.id = img.recipe_id
-        LIMIT 5;
+        `WITH limited_filtered_recipes AS (
+          SELECT tag_id, recipe_id, recipes.name as recipe_name, recipes.user_id as user_id
+          FROM (
+              SELECT *
+              FROM recipe_tags
+              WHERE tag_id = ?
+            ) AS filtered_recipe_tags
+            JOIN recipes ON recipes.id = filtered_recipe_tags.recipe_id
+            LIMIT 5
+          )
+          SELECT recipes.recipe_id , recipes.recipe_name, img.recipe_img as recipe_img, user.username as user_username, user.img as user_img
+          FROM limited_filtered_recipes as recipes
+          JOIN recipe_img_view img ON recipes.recipe_id = img.recipe_id
+          JOIN users_simple_view user ON user.id = recipes.user_id;
         `,
         [Number(type.value)]
       )
@@ -49,10 +55,14 @@ router.get("/home", async (req, res, next) => {
 
     const result = types.map((type, i) => {
       const typeRecipes = recipes[i][0].map((recipe) => {
-        const key = generateRecipeKey(recipe.id, recipe.name);
+        const key = generateRecipeKey(recipe.recipe_id, recipe.recipe_name);
         return {
-          name: recipe.name,
-          img: getImgUrl(recipe.img, true),
+          name: recipe.recipe_name,
+          img: getImgUrl(recipe.recipe_img, true),
+          user: {
+            username: recipe.user_username,
+            img: getImgUrl(recipe.user_img, true),
+          },
           key,
         };
       });
@@ -68,5 +78,7 @@ router.get("/home", async (req, res, next) => {
     next(error);
   }
 });
+
+router.use("/recipes", recipeRouter);
 
 export default router;
