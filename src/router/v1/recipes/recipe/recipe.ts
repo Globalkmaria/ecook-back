@@ -375,7 +375,11 @@ router.put("/:key", authGuard, upload.any(), async (req, res, next) => {
 
     // tags
 
-    if (info.tags.length) {
+    if (!info.tags.length) {
+      await connection.execute(`DELETE FROM recipe_tags WHERE recipe_id = ?`, [
+        recipeId,
+      ]);
+    } else if (info.tags.length) {
       const [existingTags] = await connection.query<RowDataPacket[]>(
         `SELECT name FROM tags WHERE id IN (SELECT tag_id FROM recipe_tags WHERE recipe_id = ?)`,
         [recipeId]
