@@ -1,9 +1,9 @@
 import express from "express";
 
 import mysqlDB from "../../db/mysql.js";
-import { UserSimple } from "./recipe/index.js";
 import { getImgUrl } from "../../utils/img.js";
-import { RecipesSimple } from "./recipes/index.js";
+import { RecipesSimple } from "./recipes/recipes.js";
+import { UserSimple } from "./recipes/recipe/recipe.js";
 
 const router = express.Router();
 

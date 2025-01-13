@@ -1,7 +1,9 @@
-import { config } from "../../../config/index.js";
-import { decrypt } from "../../../utils/encrypt.js";
-import { sanitizeRecipeData } from "../recipes/helper.js";
-import { EditRecipe, RecipeInfo } from "./index.js";
+import { config } from "../../../../config/index.js";
+import { decrypt } from "../../../../utils/encrypt.js";
+import { shuffleArray } from "../../../../utils/shuffle.js";
+import { sanitizeRecipeData } from "../../recipes/helper.js";
+import { RecommendRecipe } from "../../recommend/type.js";
+import { EditRecipe, RecipeInfo } from "./recipe.js";
 
 export const decryptRecipeURLAndGetRecipeId = (url: string) => {
   const [ciphertext] = url.split("-");
@@ -40,3 +42,25 @@ export const getUpdatedRecipeData = (
 
 export const getRecipeName = (url: string): string =>
   url.split("-").slice(1).join("-");
+
+export const getUniqueRecipes = (
+  recipes: RecommendRecipe[],
+  limit: number
+): RecommendRecipe[] => {
+  const recipeIdIndex = recipes.reduce<Record<number, number>>(
+    (acc, recipe, index) => {
+      acc[recipe.recipe_id] = index;
+      return acc;
+    },
+    []
+  );
+
+  const uniqueIds = Array.from(
+    new Set(recipes.map((recipe) => recipe.recipe_id))
+  ).slice(0, limit);
+
+  const uniqueRecipes = uniqueIds.map((id) => recipes[recipeIdIndex[id]]);
+  shuffleArray(uniqueRecipes);
+
+  return uniqueRecipes;
+};

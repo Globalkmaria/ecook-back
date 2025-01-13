@@ -1,17 +1,16 @@
 import express from "express";
+import { RowDataPacket } from "mysql2";
 
 import mysqlDB from "../../../../db/mysql.js";
-import { decryptRecipeURLAndGetRecipeId } from "../../recipe/helper.js";
 import { validateId } from "../../../../utils/numbers.js";
-import { RecipeInfo } from "../../recipe/index.js";
 import { arrayToPlaceholders } from "../../../../utils/query.js";
-import { RecommendRecipe } from "../type.js";
-import { RowDataPacket } from "mysql2";
-import { getUniqueRecipes } from "./helper.js";
+import { RecipeInfo } from "./recipe.js";
+import { decryptRecipeURLAndGetRecipeId, getUniqueRecipes } from "./helper.js";
+import { RecommendRecipe } from "../../recommend/type.js";
 
 const router = express.Router();
 
-router.get("/:key", async (req, res, next) => {
+router.get("/:key/recommend", async (req, res, next) => {
   try {
     const recipeId = decryptRecipeURLAndGetRecipeId(req.params.key);
 

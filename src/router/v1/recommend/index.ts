@@ -4,7 +4,7 @@ import { RowDataPacket } from "mysql2";
 import mysqlDB2 from "../../../db/mysql2.js";
 import mysqlDB from "../../../db/mysql.js";
 
-import recipeRouter from "./recipes/index.js";
+import recipeRouter from "../recipes/recipe/recommend.js";
 
 import { getImgUrl } from "../../../utils/img.js";
 import { generateRecipeKey } from "../recipes/helper.js";

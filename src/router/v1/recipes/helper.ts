@@ -1,7 +1,7 @@
 import { config } from "../../../config/index.js";
 import { encrypt } from "../../../utils/encrypt.js";
 import { lightSlugify, lightTrim } from "../../../utils/normalize.js";
-import { INewRecipe, IngredientNewProduct, RecipesSimple } from "./index.js";
+import { INewRecipe, IngredientNewProduct, RecipesSimple } from "./recipes.js";
 
 export const generateRecipeKey = (id: RecipesSimple["id"], name: string) =>
   `${encrypt(

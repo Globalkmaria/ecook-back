@@ -1,20 +1,20 @@
 import express from "express";
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 
-import mysqlDB from "../../../db/mysql.js";
-import { upload } from "../../../db/aws.js";
-import { ClientProduct, Product } from "../products.js";
-import { INewRecipe } from "../recipes/index.js";
-import { authGuard } from "../../../middleware/auth.js";
-import { validateId } from "../../../utils/numbers.js";
-import { SerializedUser } from "../../../config/passport.js";
+import mysqlDB from "../../../../db/mysql.js";
+import { upload } from "../../../../db/aws.js";
+import { ClientProduct, Product } from "../../products.js";
+import { INewRecipe } from "../recipes.js";
+import { authGuard } from "../../../../middleware/auth.js";
+import { validateId } from "../../../../utils/numbers.js";
+import { SerializedUser } from "../../../../config/passport.js";
 import {
   decryptRecipeURLAndGetRecipeId,
   getUpdatedRecipeData,
 } from "./helper.js";
-import { generateRecipeKey, getNewProductData } from "../recipes/helper.js";
-import { getImgUrl } from "../../../utils/img.js";
-import { lightSlugify } from "../../../utils/normalize.js";
+import { generateRecipeKey, getNewProductData } from "../helper.js";
+import { getImgUrl } from "../../../../utils/img.js";
+import { lightSlugify } from "../../../../utils/normalize.js";
 
 const router = express.Router();
 
