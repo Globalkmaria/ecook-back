@@ -40,6 +40,7 @@ router.get("/home", async (req, res, next) => {
               WHERE tag_id = ?
             ) AS filtered_recipe_tags
             JOIN recipes ON recipes.id = filtered_recipe_tags.recipe_id
+            ORDER BY recipes.created_at DESC
             LIMIT 5
           )
           SELECT recipes.recipe_id , recipes.recipe_name, img.recipe_img as recipe_img, user.username as user_username, user.img as user_img
