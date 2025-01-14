@@ -2,15 +2,16 @@ import express from "express";
 import { RowDataPacket } from "mysql2";
 
 import mysqlDB from "../../../../db/mysql.js";
+
 import { validateId } from "../../../../utils/numbers.js";
 import { arrayToPlaceholders } from "../../../../utils/query.js";
+import { RecommendRecipe } from "../../recommend/type.js";
 import { RecipeInfo } from "./recipe.js";
 import {
   decryptRecipeURLAndGetRecipeId,
   formatRecipeData,
   getUniqueRecipes,
 } from "./helper.js";
-import { RecommendRecipe } from "../../recommend/type.js";
 
 const router = express.Router();
 
@@ -35,6 +36,7 @@ router.get("/:key/recommend", async (req, res, next) => {
         (SELECT * FROM recipes 
             WHERE user_id = ${recipe[0].user_id} 
             AND recipes.id != ${recipeId} 
+            ORDER BY created_at DESC
             LIMIT 8
         )
     SELECT recipes.id as recipe_id, recipes.name as recipe_name, img.recipe_img as recipe_img, user.username as user_username, user.img as user_img
@@ -62,18 +64,23 @@ router.get("/:key/recommend", async (req, res, next) => {
     const [ingredient_recipes] = await mysqlDB.query<RecommendRecipe[]>(
       `
     WITH filtered_recipes AS
-        (SELECT DISTINCT recipes.id as recipe_id, recipes.name as recipe_name, recipes.user_id as user_id
-            FROM recipes 
-            JOIN (
+        (
+          SELECT DISTINCT recipes.id as recipe_id, recipes.name as recipe_name, recipes.user_id as user_id, recipes.created_at
+          FROM recipes 
+          JOIN (
               SELECT * FROM recipe_ingredients
               WHERE recipe_ingredients.ingredient_id IN (${ingredientPlaceholders})
-              ) as recipe_ingredients
-            ON recipe_ingredients.recipe_id = recipes.id
-            WHERE recipes.id != ${recipeId} 
-            LIMIT 8
+            ) as recipe_ingredients
+          ON recipe_ingredients.recipe_id = recipes.id
+          WHERE recipes.id != ${recipeId} 
         )
     SELECT recipes.recipe_id , recipes.recipe_name, img.recipe_img as recipe_img, user.username as user_username, user.img as user_img
-    FROM filtered_recipes as recipes
+    FROM  (
+          SELECT *
+          FROM filtered_recipes
+          ORDER BY created_at DESC 
+          LIMIT 8
+        ) as recipes
     JOIN recipe_img_view img ON recipes.recipe_id = img.recipe_id
     JOIN users_simple_view user ON user.id = recipes.user_id;
 			`,
@@ -95,18 +102,23 @@ router.get("/:key/recommend", async (req, res, next) => {
       const [tag_recipes] = await mysqlDB.query<RecommendRecipe[]>(
         `
         WITH filtered_recipes AS
-        (SELECT DISTINCT recipes.id as recipe_id, recipes.name as recipe_name, recipes.user_id as user_id
-        FROM recipes 
-        JOIN (
-            SELECT * FROM recipe_tags
-            WHERE recipe_tags.tag_id IN (${tagPlaceholders})
+        (
+          SELECT DISTINCT recipes.id as recipe_id, recipes.name as recipe_name, recipes.user_id as user_id, recipes.created_at
+          FROM recipes 
+          JOIN (
+              SELECT * FROM recipe_tags
+              WHERE recipe_tags.tag_id IN (${tagPlaceholders})
           ) as recipe_tags
           ON recipe_tags.recipe_id = recipes.id
           WHERE recipes.id != ${recipeId} 
-          LIMIT 8
         )
         SELECT recipes.recipe_id , recipes.recipe_name, img.recipe_img as recipe_img, user.username as user_username, user.img as user_img
-        FROM filtered_recipes as recipes
+        FROM  (
+          SELECT *
+          FROM filtered_recipes
+          ORDER BY created_at DESC 
+          LIMIT 8
+          ) as recipes
         JOIN recipe_img_view img ON recipes.recipe_id = img.recipe_id
         JOIN users_simple_view user ON user.id = recipes.user_id;
           `,
@@ -116,9 +128,22 @@ router.get("/:key/recommend", async (req, res, next) => {
       result.push(...tag_recipes);
     }
 
+    if (result.length < 8) {
+      const [recent_recipes] = await mysqlDB.query<RecommendRecipe[]>(
+        `
+        SELECT recipes.id as recipe_id, recipes.name as recipe_name, img.recipe_img as recipe_img, user.username as user_username, user.img as user_img
+        FROM recipes
+        JOIN recipe_img_view img ON recipes.id = img.recipe_id
+        JOIN users_simple_view user ON user.id = recipes.user_id
+        ORDER BY recipes.created_at DESC
+        LIMIT 8;
+          `
+      );
+      result.push(...recent_recipes);
+    }
+
     const uniqueRecipes = getUniqueRecipes(result, 8);
     const formattedRecipes = formatRecipeData(uniqueRecipes);
-
     res.status(200).json(formattedRecipes);
   } catch (error) {
     next(error);
