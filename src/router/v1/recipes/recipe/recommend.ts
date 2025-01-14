@@ -53,9 +53,10 @@ router.get("/:key/recommend", async (req, res, next) => {
     `
     );
 
-    const ingredientIds = ingredient_ids.map(
-      (ingredient) => ingredient.ingredient_id
-    );
+    const ingredientIds = ingredient_ids
+      .map((ingredient) => ingredient.ingredient_id)
+      .slice(0, 8);
+
     const ingredientPlaceholders = arrayToPlaceholders(ingredientIds);
 
     const [ingredient_recipes] = await mysqlDB.query<RecommendRecipe[]>(
@@ -97,17 +98,17 @@ router.get("/:key/recommend", async (req, res, next) => {
         (SELECT DISTINCT recipes.id as recipe_id, recipes.name as recipe_name, recipes.user_id as user_id
         FROM recipes 
         JOIN (
-          SELECT * FROM recipe_tags
-          WHERE recipe_tags.tag_id IN (${tagPlaceholders})
+            SELECT * FROM recipe_tags
+            WHERE recipe_tags.tag_id IN (${tagPlaceholders})
           ) as recipe_tags
           ON recipe_tags.recipe_id = recipes.id
           WHERE recipes.id != ${recipeId} 
           LIMIT 8
-          )
-          SELECT recipes.recipe_id , recipes.recipe_name, img.recipe_img as recipe_img, user.username as user_username, user.img as user_img
-          FROM filtered_recipes as recipes
-          JOIN recipe_img_view img ON recipes.recipe_id = img.recipe_id
-          JOIN users_simple_view user ON user.id = recipes.user_id;
+        )
+        SELECT recipes.recipe_id , recipes.recipe_name, img.recipe_img as recipe_img, user.username as user_username, user.img as user_img
+        FROM filtered_recipes as recipes
+        JOIN recipe_img_view img ON recipes.recipe_id = img.recipe_id
+        JOIN users_simple_view user ON user.id = recipes.user_id;
           `,
         [...tagIds]
       );
