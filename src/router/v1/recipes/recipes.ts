@@ -239,6 +239,10 @@ router.get("/", async (req, res, next) => {
         hours: recipe.hours,
         minutes: recipe.minutes,
         key,
+        user: {
+          username: recipe.user_username,
+          img: getImgUrl(recipe.user_img),
+        },
       };
     });
 

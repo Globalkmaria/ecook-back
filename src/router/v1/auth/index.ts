@@ -5,9 +5,9 @@ import { ResultSetHeader, RowDataPacket } from "mysql2";
 
 import { upload } from "../../../db/aws.js";
 import mysqlDB from "../../../db/mysql.js";
+import { User } from "../recipes/recipe/recipe.js";
 
 import { validateEmail, validatePassword, validateUsername } from "./helper.js";
-import { User } from "../recipe/index.js";
 import { getImgUrl } from "../../../utils/img.js";
 
 const router = express.Router();
