@@ -10,6 +10,7 @@ import { validateId } from "../../../../utils/numbers.js";
 import { SerializedUser } from "../../../../config/passport.js";
 import {
   decryptRecipeURLAndGetRecipeId,
+  getTagsToInsertAndDelete,
   getUpdatedRecipeData,
 } from "./helper.js";
 import { generateRecipeKey, getNewProductData } from "../helper.js";
@@ -380,26 +381,24 @@ router.put("/:key", authGuard, upload.any(), async (req, res, next) => {
         recipeId,
       ]);
     } else if (info.tags.length) {
-      const [existingTags] = await connection.query<RowDataPacket[]>(
+      const [existingTags] = await connection.query<
+        (RowDataPacket & { name: string })[]
+      >(
         `SELECT name FROM tags WHERE id IN (SELECT tag_id FROM recipe_tags WHERE recipe_id = ?)`,
         [recipeId]
       );
 
-      const existingTagsNames = existingTags.map((tag) => tag.name);
-
-      const newTags = info.tags;
-      const tagsToAdd = newTags.filter(
-        (tag) => !existingTagsNames.includes(tag)
-      );
-      const tagsToRemove = existingTagsNames.filter(
-        (tag) => !newTags.includes(tag)
+      const oldTagsNames = existingTags.map((tag) => tag.name);
+      const { tagsToInsert, tagsToDelete } = getTagsToInsertAndDelete(
+        oldTagsNames,
+        info.tags
       );
 
       // Remove only unnecessary tags
-      if (tagsToRemove.length) {
+      if (tagsToDelete.length) {
         const [tagsIds] = await connection.query<RowDataPacket[]>(
           `SELECT id FROM tags WHERE name IN (?)`,
-          [tagsToRemove]
+          [tagsToDelete]
         );
 
         const tagIdsArray = tagsIds.map((tag) => tag.id);
@@ -412,21 +411,21 @@ router.put("/:key", authGuard, upload.any(), async (req, res, next) => {
       }
 
       // Insert only new tags
-      if (tagsToAdd.length) {
+      if (tagsToInsert.length) {
         await connection.execute(
-          `INSERT IGNORE INTO tags (user_id, name) VALUES ${tagsToAdd
+          `INSERT IGNORE INTO tags (user_id, name) VALUES ${tagsToInsert
             .map(() => "(?, ?)")
             .join(", ")}`,
-          tagsToAdd.flatMap((tag) => [userId, tag])
+          tagsToInsert.flatMap((tag) => [userId, tag])
         );
 
         const [tagsIds] = await connection.query<RowDataPacket[]>(
           `SELECT id FROM tags WHERE name IN (?)`,
-          [tagsToAdd]
+          [tagsToInsert]
         );
 
         await connection.execute(
-          `INSERT INTO recipe_tags (recipe_id, tag_id) VALUES ${tagsToAdd
+          `INSERT INTO recipe_tags (recipe_id, tag_id) VALUES ${tagsToInsert
             .map(() => `(${recipeId}, ?)`)
             .join(", ")}`,
           tagsIds.map((tag) => tag.id)

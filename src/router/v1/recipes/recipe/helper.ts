@@ -79,3 +79,19 @@ export const formatRecipeData = (recipes: RecommendRecipe[]) =>
       },
     };
   });
+
+export const getTagsToInsertAndDelete = (
+  oldTags: string[],
+  newTags: string[]
+) => {
+  const oldTagsNames = new Set([...oldTags]);
+  const tagsToInsert: string[] = [];
+
+  newTags.forEach((tag) =>
+    oldTagsNames.has(tag) ? oldTagsNames.delete(tag) : tagsToInsert.push(tag)
+  );
+
+  const tagsToDelete = [...oldTagsNames];
+
+  return { tagsToInsert, tagsToDelete };
+};
