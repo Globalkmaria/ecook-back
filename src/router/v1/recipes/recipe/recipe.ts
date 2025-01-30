@@ -87,7 +87,7 @@ interface Ingredient {
   quantity: string;
   ingredientId: number | null;
   userProduct: RecipeProduct | null;
-  products: ClientProduct[] | null;
+  products: ClientRecipeProduct[] | null;
 }
 
 interface ClientRecipeDetail {
@@ -104,6 +104,10 @@ interface ClientRecipeDetail {
 }
 
 export type EditRecipe = INewRecipe & { id: number };
+
+type ClientRecipeProduct = Omit<ClientProduct, "ingredient" | "key"> & {
+  ingredientId: number;
+};
 
 router.get("/:key", async (req, res, next) => {
   try {
@@ -149,7 +153,7 @@ router.get("/:key", async (req, res, next) => {
         [ingredientId, productId]
       );
 
-      const products: ClientProduct[] = productsData.map((product) => ({
+      const products: ClientRecipeProduct[] = productsData.map((product) => ({
         id: product.id,
         ingredientId: product.ingredient_id,
         userId: product.user_id,
@@ -185,7 +189,7 @@ router.get("/:key", async (req, res, next) => {
 
         return map;
       },
-      {} as { [ingredientId: number]: ClientProduct[] | null }
+      {} as { [ingredientId: number]: ClientRecipeProduct[] | null }
     );
 
     const ingredients: Ingredient[] = ingredients_data.map(

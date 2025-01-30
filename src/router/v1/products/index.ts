@@ -58,7 +58,6 @@ router.get("/", async (req, res, next) => {
       return res.status(400).json({ error: "Invalid query" });
     }
 
-    console.log(type, q);
     if (!QUERY_TYPES.includes(type)) {
       return res.status(400).json({ error: "Invalid query type" });
     }
