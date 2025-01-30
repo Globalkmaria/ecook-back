@@ -12,7 +12,6 @@ export interface Product extends RowDataPacket {
   id: number; // Primary key for the ingredient
   ingredient_id: number; // Foreign key referencing ingredient
   ingredient_name: string;
-  product_id: number; // Foreign key referencing product
   user_id: number; // Foreign key referencing user
   name: string; // Name of the product or ingredient
   brand: string; // Brand of the product
