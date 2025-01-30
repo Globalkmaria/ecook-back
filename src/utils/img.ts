@@ -11,3 +11,5 @@ export function getImgUrl(
 ): string | null {
   return img ? config.img.dbUrl + img : needDefaultValue ? "" : null;
 }
+
+export const IMG_DB_URL = config.img.dbUrl;

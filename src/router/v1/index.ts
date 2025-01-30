@@ -1,7 +1,7 @@
 import express from "express";
 
 import recipesRouter from "./recipes/index.js";
-import productsRouter from "./products.js";
+import productsRouter from "./products/index.js";
 import usersRouter from "./users.js";
 import authRouter from "./auth/index.js";
 import imagesRouter from "./images/index.js";

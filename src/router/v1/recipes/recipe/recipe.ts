@@ -3,7 +3,7 @@ import { ResultSetHeader, RowDataPacket } from "mysql2";
 
 import mysqlDB from "../../../../db/mysql.js";
 import { upload } from "../../../../db/aws.js";
-import { ClientProduct, Product } from "../../products.js";
+import { ClientProduct, Product } from "../../products/index.js";
 import { INewRecipe } from "../recipes.js";
 import { authGuard } from "../../../../middleware/auth.js";
 import { validateId } from "../../../../utils/numbers.js";
