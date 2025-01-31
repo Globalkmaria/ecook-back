@@ -1,14 +1,14 @@
 import express from "express";
 
-import { validateId } from "../../../../utils/numbers";
-import { decryptRecipeURLAndGetProductId } from "../helper";
-import { RecommendRecipe } from "../../recommend/type";
-import mysqlDB from "../../../../db/mysql";
-import { Product } from "../products";
+import { validateId } from "../../../../utils/numbers.js";
+import { decryptRecipeURLAndGetProductId } from "../helper.js";
+import { RecommendRecipe } from "../../recommend/type.js";
+import mysqlDB from "../../../../db/mysql.js";
+import { Product } from "../products.js";
 import {
   formatRecipeData,
   getUniqueRecipes,
-} from "../../recipes/recipe/helper";
+} from "../../recipes/recipe/helper.js";
 
 const router = express.Router();
 

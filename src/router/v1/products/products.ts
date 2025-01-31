@@ -1,6 +1,7 @@
-import mysqlDB from "../../../db/mysql.js";
 import express from "express";
 import { RowDataPacket } from "mysql2";
+
+import mysqlDB from "../../../db/mysql.js";
 import { lightSlugify, lightTrim } from "../../../utils/normalize.js";
 import { getImgUrl } from "../../../utils/img.js";
 import { User } from "../recipes/recipe/recipe.js";

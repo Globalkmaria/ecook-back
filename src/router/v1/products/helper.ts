@@ -1,5 +1,5 @@
 import { config } from "../../../config/index.js";
-import { decrypt, encrypt } from "../../../utils/encrypt";
+import { decrypt, encrypt } from "../../../utils/encrypt.js";
 import { lightSlugify } from "../../../utils/normalize.js";
 import { Product } from "./products.js";
 
