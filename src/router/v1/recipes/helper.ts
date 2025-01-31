@@ -1,6 +1,10 @@
 import { config } from "../../../config/index.js";
 import { encrypt } from "../../../utils/encrypt.js";
-import { lightSlugify, lightTrim } from "../../../utils/normalize.js";
+import {
+  lightSlugify,
+  lightTrim,
+  sanitizeURL,
+} from "../../../utils/normalize.js";
 import { INewRecipe, IngredientNewProduct, RecipesSimple } from "./recipes.js";
 
 export const generateRecipeKey = (id: RecipesSimple["id"], name: string) =>
@@ -8,7 +12,7 @@ export const generateRecipeKey = (id: RecipesSimple["id"], name: string) =>
     id.toString(),
     config.key.recipe.key,
     config.key.recipe.iv
-  )}-${lightSlugify(name)}`;
+  )}-${sanitizeURL(name)}`;
 
 export const getNewRecipeData = (recipe: INewRecipe, userId: number) => {
   const { name, hours, minutes, description, steps } =

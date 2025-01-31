@@ -9,6 +9,14 @@ export const splitString = (
 export const lightSlugify = (text: string) =>
   text.trim().toLowerCase().replace(/\s+/g, "-").replace(/-+/g, "-");
 
+export const sanitizeURL = (str: string) =>
+  str
+    .toLowerCase()
+    .trim()
+    .replace(/[^\w\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+
 export const lightTrim = (text: string) => text.trim().replace(/\s+/g, " ");
 
 export const replaceHyphensWithSpaces = (text: string) =>
