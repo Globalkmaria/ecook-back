@@ -131,12 +131,18 @@ router.get("/:key/recommend", async (req, res, next) => {
     if (result.length < 8) {
       const [recent_recipes] = await mysqlDB.query<RecommendRecipe[]>(
         `
-        SELECT recipes.id as recipe_id, recipes.name as recipe_name, img.recipe_img as recipe_img, user.username as user_username, user.img as user_img
-        FROM recipes
-        JOIN recipe_img_view img ON recipes.id = img.recipe_id
-        JOIN users_simple_view user ON user.id = recipes.user_id
-        ORDER BY recipes.created_at DESC
-        LIMIT 8;
+        SELECT r.id as recipe_id, r.name as recipe_name, img.recipe_img as recipe_img, user.username as user_username, user.img as user_img
+            FROM (
+                SELECT *
+                FROM recipes
+                ORDER BY recipes.created_at DESC
+                LIMIT 8
+            ) r
+            JOIN recipe_img_view img 
+                ON r.id = img.recipe_id
+            JOIN users_simple_view user 
+                ON user.id = r.user_id
+        ;
           `
       );
       result.push(...recent_recipes);
