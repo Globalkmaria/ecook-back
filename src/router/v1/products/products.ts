@@ -50,7 +50,7 @@ export interface ClientProduct {
 }
 
 const QUERY_TYPES = {
-  INGREDIENT_NAME: "ingredientName",
+  INGREDIENT_NAME: "ingredient",
   USERNAME: "username",
 };
 
