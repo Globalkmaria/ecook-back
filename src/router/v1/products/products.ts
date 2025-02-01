@@ -6,6 +6,7 @@ import { lightSlugify, lightTrim } from "../../../utils/normalize.js";
 import { getImgUrl } from "../../../utils/img.js";
 import { User } from "../recipes/recipe/recipe.js";
 import { generateProductKey } from "./helper.js";
+import { arrayToPlaceholders } from "../../../utils/query.js";
 
 const router = express.Router();
 
@@ -48,7 +49,12 @@ export interface ClientProduct {
   key: string;
 }
 
-const QUERY_TYPES = ["ingredientName", "username"];
+const QUERY_TYPES = {
+  INGREDIENT_NAME: "ingredientName",
+  USERNAME: "username",
+};
+
+const QUERY_TYPES_VALUES = Object.values(QUERY_TYPES);
 
 router.get("/", async (req, res, next) => {
   try {
@@ -58,38 +64,50 @@ router.get("/", async (req, res, next) => {
       return res.status(400).json({ error: "Invalid query" });
     }
 
-    if (!QUERY_TYPES.includes(type)) {
+    if (!QUERY_TYPES_VALUES.includes(type)) {
       return res.status(400).json({ error: "Invalid query type" });
     }
 
     let data: Product[] = [];
+    let ingredientId: number | null = null;
 
     switch (type) {
-      case "ingredientName":
-        const [ingredientData] = await mysqlDB.query<Ingredient[]>(
+      case QUERY_TYPES.INGREDIENT_NAME:
+        const [exactIngredientData] = await mysqlDB.query<Ingredient[]>(
           `SELECT * FROM ingredients WHERE name = ?`,
           [lightSlugify(q)]
         );
 
-        const ingredientInfo = ingredientData[0];
-        if (!ingredientInfo) {
+        ingredientId = exactIngredientData[0]?.id;
+
+        const searchQuery = `%${lightSlugify(q)}%`;
+
+        const [ingredientData] = await mysqlDB.query<Ingredient[]>(
+          `SELECT * FROM ingredients WHERE name LIKE ?`,
+          [searchQuery]
+        );
+
+        if (!ingredientData.length) {
           return res.json([]);
         }
+
+        const ingredientIds = ingredientData.map((ingredient) => ingredient.id);
+        const ingredientPlaceholder = arrayToPlaceholders(ingredientIds);
 
         [data] = await mysqlDB.query<Product[]>(
           `SELECT DISTINCT p.*, i.id ingredient_id, i.name ingredient_name
               FROM ingredient_products ip
               JOIN product_detail_view p ON p.id = ip.product_id
               JOIN ingredients i ON i.id = ip.ingredient_id
-              WHERE i.id = ? 
+              WHERE i.id IN (${ingredientPlaceholder}) 
               ORDER BY p.created_at DESC;
            `,
-          [ingredientInfo.id]
+          [...ingredientIds]
         );
 
         break;
 
-      case "username":
+      case QUERY_TYPES.USERNAME:
         const [userData] = await mysqlDB.query<User[]>(
           `SELECT * FROM users WHERE username = ?`,
           [lightTrim(q)]
@@ -134,7 +152,10 @@ router.get("/", async (req, res, next) => {
       key: generateProductKey(product.id, product.name),
     }));
 
-    res.json(products);
+    res.json({
+      ingredientId,
+      products,
+    });
   } catch (error) {
     next(error);
   }
