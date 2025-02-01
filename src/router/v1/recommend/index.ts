@@ -6,9 +6,9 @@ import mysqlDB from "../../../db/mysql.js";
 
 import recipeRouter from "../recipes/recipe/recommend.js";
 
-import { getImgUrl } from "../../../utils/img.js";
-import { generateRecipeKey } from "../recipes/helper.js";
-import { RecommendRecipe } from "./type.js";
+import { HomeRecommendRecipe, RecommendRecipe } from "./type.js";
+import { groupRecommendRecipesByOptionName } from "./helper.js";
+import { arrayToPlaceholders } from "../../../utils/query.js";
 
 interface Recommend extends RowDataPacket {
   id: number;
@@ -20,59 +20,116 @@ interface Recommend extends RowDataPacket {
 
 const router = express.Router();
 
+const recommendType = ["tag", "ingredient"];
+
 router.get("/home", async (req, res, next) => {
   try {
-    const [types] = await mysqlDB2.query<Recommend[]>(
+    const result: {
+      [K in (typeof recommendType)[number]]: {
+        [typeOption: string]: HomeRecommendRecipe[];
+      };
+    } = {
+      tag: {},
+      ingredient: {},
+    };
+
+    const [tagsData] = await mysqlDB2.query<Recommend[]>(
       `SELECT * FROM recommend WHERE page='home' AND type='tag';`
     );
 
-    if (types.length === 0) {
-      return res.status(200).json([]);
-    }
-
-    const recipesPromises = types.map((type) =>
-      mysqlDB.query<RecommendRecipe[]>(
-        `WITH limited_filtered_recipes AS (
-          SELECT tag_id, recipe_id, recipes.name as recipe_name, recipes.user_id as user_id
+    if (tagsData.length) {
+      const tagValues = tagsData.map((type) => type.value);
+      const tagPlaceholder = arrayToPlaceholders(tagValues);
+      const [tagRecipes] = await mysqlDB.query<RecommendRecipe[]>(
+        `WITH RankedRecipes AS (
+          SELECT	
+              tag_id, 
+              tag_name,
+              r.user_id,  
+              r.id recipe_id,
+              r.name recipe_name,
+              ROW_NUMBER() OVER (PARTITION BY tag_id ORDER BY r.id DESC) AS row_num
           FROM (
               SELECT *
-              FROM recipe_tags
-              WHERE tag_id = ?
-            ) AS filtered_recipe_tags
-            JOIN recipes ON recipes.id = filtered_recipe_tags.recipe_id
-            ORDER BY recipes.created_at DESC
-            LIMIT 5
-          )
-          SELECT recipes.recipe_id , recipes.recipe_name, img.recipe_img as recipe_img, user.username as user_username, user.img as user_img
-          FROM limited_filtered_recipes as recipes
-          JOIN recipe_img_view img ON recipes.recipe_id = img.recipe_id
-          JOIN users_simple_view user ON user.id = recipes.user_id;
-        `,
-        [Number(type.value)]
+              FROM recipe_tags_view
+              WHERE tag_id IN (${tagPlaceholder})
+          ) AS t
+          JOIN recipes r ON r.id = t.recipe_id
       )
+      SELECT 
+          rr.tag_name option_name, 
+          rr.recipe_id, 
+          rr.recipe_name,
+          r_img.recipe_img, 
+          u.username AS user_username, 
+          u.img AS user_img
+      FROM (
+          SELECT *
+          FROM RankedRecipes
+          WHERE row_num <= 5
+      ) AS rr
+      JOIN recipe_img_view r_img
+          ON rr.recipe_id = r_img.recipe_id
+      JOIN users_simple_view u
+          ON rr.user_id = u.id;
+        `,
+        [...tagValues]
+      );
+
+      const tagResult = groupRecommendRecipesByOptionName(tagRecipes);
+      result.tag = tagResult;
+    }
+    // ingredient 타입은 레시피 이름을 타입으로 사용
+
+    const [ingredientsData] = await mysqlDB2.query<Recommend[]>(
+      `SELECT * FROM recommend WHERE page='home' AND type='ingredient';`
     );
 
-    const recipes = await Promise.all(recipesPromises);
+    if (ingredientsData.length) {
+      const ingredientValues = ingredientsData.map((type) => type.value);
+      const ingredientPlaceholder = arrayToPlaceholders(ingredientValues);
 
-    const result = types.map((type, i) => {
-      const typeRecipes = recipes[i][0].map((recipe) => {
-        const key = generateRecipeKey(recipe.recipe_id, recipe.recipe_name);
-        return {
-          name: recipe.recipe_name,
-          img: getImgUrl(recipe.recipe_img, true),
-          user: {
-            username: recipe.user_username,
-            img: getImgUrl(recipe.user_img, true),
-          },
-          key,
-        };
-      });
+      const [ingredientsRecipes] = await mysqlDB.query<RecommendRecipe[]>(
+        `WITH LatestRecipes AS (
+          SELECT 
+            r.id recipe_id, 
+            r.user_id, 
+            r.name recipe_name, 
+            i.ingredient_id,
+            i.ingredient_name,
+            ROW_NUMBER() OVER (PARTITION BY i.ingredient_id ORDER BY r.id DESC) AS row_num
+          FROM recipes r
+            JOIN 
+              (SELECT recipe_id, ingredient_id, name ingredient_name
+                FROM recipe_ingredients 
+                WHERE ingredient_id IN (${ingredientPlaceholder})
+              ) i
+            ON r.id = i.recipe_id
+        )
+        SELECT 
+          lr.recipe_id, 
+          lr.recipe_name, 
+          recipe_img, 
+          u.username user_username, 
+          u.img user_img, 
+          lr.ingredient_name option_name
+        FROM (
+          SELECT *
+          FROM LatestRecipes
+          WHERE row_num <= 5
+        ) AS lr
+        JOIN recipe_img_view r_img
+          ON lr.recipe_id = r_img.recipe_id
+        JOIN users_simple_view u
+          ON lr.user_id = u.id;
+        `,
+        [...ingredientValues]
+      );
 
-      return {
-        type: type.label,
-        recipes: typeRecipes,
-      };
-    });
+      const ingredientsResult =
+        groupRecommendRecipesByOptionName(ingredientsRecipes);
+      result.ingredient = ingredientsResult;
+    }
 
     res.status(200).json(result);
   } catch (error) {
