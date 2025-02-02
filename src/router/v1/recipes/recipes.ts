@@ -10,12 +10,9 @@ import {
   generateRecipeKey,
   getNewProductData,
 } from "./helper.js";
-import {
-  lightSlugify,
-  lightTrim,
-  splitString,
-} from "../../../utils/normalize.js";
-import { getImgUrl } from "../../../utils/img.js";
+import { lightSlugify } from "../../../utils/normalize.js";
+import { searchRecipes } from "../../../controller/recipes/recipesSearchController.js";
+import { homeRecipes } from "../../../controller/recipes/recipesHomeController.js";
 
 const router = express.Router();
 
@@ -41,259 +38,20 @@ export interface ClientRecipeSimple {
   tags: { id: number; name: string }[];
 }
 
-export interface HomeRecipe extends ClientRecipeSimple {
-  hours: number;
-  minutes: number;
-  key: string;
-  user: { username: string };
-}
+/**
+ * @route GET /api/recipes
+ * @desc  Search recipes by name, tag, ingredient, product, or username
+ * @access Public
+ */
 
-interface QueryParams {
-  q?: string;
-  type?: string;
-}
+router.get("/", searchRecipes);
 
-const SEARCH_TYPES = {
-  NAME: "name",
-  TAG: "tag",
-  INGREDIENT: "ingredient",
-  PRODUCT: "product",
-  USERNAME: "username",
-};
-const SEARCH_TYPES_VALUES = Object.values(SEARCH_TYPES);
-
-router.get("/", async (req, res, next) => {
-  try {
-    const { q, type } = req.query as QueryParams;
-
-    let data: RecipesSimple[] = [];
-    const trimmedQ = lightTrim(q ?? "");
-
-    if (type && !SEARCH_TYPES_VALUES.includes(type)) {
-      return res.status(400).json({ error: "Invalid search type" });
-    }
-
-    if (!trimmedQ) {
-      const result = await mysqlDB.query<RecipesSimple[]>(
-        `SELECT * FROM recipes_simple_view ORDER BY created_at DESC`
-      );
-
-      data = result[0];
-    } else if (type === SEARCH_TYPES.NAME) {
-      const result = await mysqlDB.query<RecipesSimple[]>(
-        `SELECT 
-            r.id AS id,
-            r.name AS name,
-            r.created_at AS created_at,
-            r.updated_at AS updated_at,
-            r.hours AS hours,
-            r.minutes AS minutes,
-            ri.recipe_img AS img,
-            u.img AS user_img,
-            u.username AS user_username,
-            u.id AS user_id,
-            GROUP_CONCAT(tag_id SEPARATOR ',') AS tag_ids,
-            GROUP_CONCAT(tag_name SEPARATOR ',') AS tag_names
-        FROM
-            (SELECT * FROM recipes WHERE REPLACE(LOWER(name), ' ','-' ) LIKE LOWER(?)) AS r
-        JOIN 
-            users_simple_view u ON u.id = r.user_id
-        JOIN 
-            recipe_img_view ri ON ri.recipe_id = r.id
-        LEFT JOIN 
-            recipe_tags_view rt ON rt.recipe_id = r.id
-        GROUP BY r.id , ri.recipe_img 
-        ORDER BY r.created_at DESC;
-        `,
-        [`%${trimmedQ}%`]
-      );
-
-      data = result[0];
-    } else if (type === SEARCH_TYPES.TAG) {
-      const result = await mysqlDB.query<RecipesSimple[]>(
-        `SELECT 
-            r.id AS id,
-            r.name AS name,
-            r.created_at AS created_at,
-            r.updated_at AS updated_at,
-            r.hours AS hours,
-            r.minutes AS minutes,
-            ri.recipe_img AS img,
-            u.img AS user_img,
-            u.username AS user_username,
-            u.id AS user_id,
-            GROUP_CONCAT(tag_id SEPARATOR ',') AS tag_ids,
-            GROUP_CONCAT(tag_name SEPARATOR ',') AS tag_names
-          FROM
-            recipes r
-          JOIN 
-            (SELECT DISTINCT recipe_id FROM recipe_tags_view WHERE LOWER(tag_name) = LOWER(?)) filtered_recipes
-            ON filtered_recipes.recipe_id = r.id
-          JOIN 
-            recipe_img_view ri ON ri.recipe_id = r.id
-          LEFT JOIN 
-            recipe_tags_view rt ON rt.recipe_id = r.id
-          JOIN 
-            users_simple_view u ON u.id = r.user_id
-          GROUP BY r.id , ri.recipe_img 
-          ORDER BY r.created_at DESC;
-          `,
-        [`${trimmedQ}`]
-      );
-
-      data = result[0];
-    } else if (type === SEARCH_TYPES.INGREDIENT) {
-      const result = await mysqlDB.query<RecipesSimple[]>(
-        `SELECT 
-            r.id AS id,
-            r.name AS name,
-            r.created_at AS created_at,
-            r.updated_at AS updated_at,
-            r.hours AS hours,
-            r.minutes AS minutes,
-            ri.recipe_img AS img,
-            u.img AS user_img,
-            u.username AS user_username,
-            u.id AS user_id,
-            GROUP_CONCAT(rt.tag_id SEPARATOR ',') AS tag_ids,
-            GROUP_CONCAT(rt.tag_name SEPARATOR ',') AS tag_names
-        FROM
-            recipes r
-        JOIN 
-            (SELECT DISTINCT recipe_id FROM recipe_ingredients WHERE LOWER(name) = LOWER(?)) filtered_recipes
-            ON filtered_recipes.recipe_id = r.id
-        JOIN 
-            recipe_img_view ri ON ri.recipe_id = r.id
-        LEFT JOIN 
-            recipe_tags_view rt ON rt.recipe_id = r.id
-        JOIN 
-            users_simple_view u ON u.id = r.user_id
-        GROUP BY 
-            r.id, ri.recipe_img
-            ORDER BY 
-            r.created_at DESC;
-        `,
-        [lightSlugify(trimmedQ)]
-      );
-
-      data = result[0];
-    } else if (type === SEARCH_TYPES.PRODUCT) {
-      const result = await mysqlDB.query<RecipesSimple[]>(
-        `
-          SELECT 
-              r.id AS id,
-              r.name AS name,
-              r.created_at AS created_at,
-              r.updated_at AS updated_at,
-              r.hours AS hours,
-              r.minutes AS minutes,
-              ri.recipe_img AS img,
-              u.img AS user_img,
-              u.username AS user_username,
-              u.id AS user_id,
-              GROUP_CONCAT(tag_id SEPARATOR ',') AS tag_ids,
-              GROUP_CONCAT(tag_name SEPARATOR ',') AS tag_names
-          FROM
-            recipes r
-          JOIN 
-            (
-              SELECT recipe_id
-                FROM 
-                  (SELECT * FROM products WHERE REPLACE(LOWER(name), ' ', '-') = REPLACE(LOWER(?), ' ', '-')) AS filtered_products
-                JOIN 
-              recipe_ingredients rig ON rig.product_id = filtered_products.id
-            ) 
-            AS filtered_recipes	ON filtered_recipes.recipe_id = r.id
-          JOIN 
-              recipe_img_view ri ON ri.recipe_id = r.id
-          LEFT JOIN 
-              recipe_tags_view rt ON rt.recipe_id = r.id
-          JOIN 
-              users_simple_view u ON u.id = r.user_id
-          GROUP BY r.id, r.name, r.created_at, r.updated_at, r.hours, r.minutes, ri.recipe_img, u.img, u.username, u.id
-          ORDER BY r.created_at DESC;
-          `,
-        [trimmedQ]
-      );
-
-      data = result[0];
-    } else if (type === SEARCH_TYPES.USERNAME) {
-      const result = await mysqlDB.execute<RecipesSimple[]>(
-        `SELECT * FROM recipes_simple_view WHERE user_username = ? ORDER BY created_at DESC`,
-        [trimmedQ]
-      );
-
-      data = result[0];
-    } else {
-      return res.status(400).json({ error: "Invalid search type" });
-    }
-
-    const result: ClientRecipeSimple[] = data.map((recipe) => {
-      const tagIds = splitString(recipe.tag_ids);
-      const tagNames = splitString(recipe.tag_names);
-      const tags = tagIds.map((id, index) => ({
-        id: parseInt(id, 10),
-        name: tagNames[index],
-      }));
-
-      const key = generateRecipeKey(recipe.id, recipe.name);
-
-      return {
-        id: recipe.id,
-        name: recipe.name,
-        img: getImgUrl(recipe.img, true),
-        tags,
-        hours: recipe.hours,
-        minutes: recipe.minutes,
-        key,
-        user: {
-          username: recipe.user_username,
-          img: getImgUrl(recipe.user_img),
-        },
-      };
-    });
-
-    res.status(200).json(result);
-  } catch (error) {
-    next(error);
-  }
-});
-
-router.get("/home", async (req, res, next) => {
-  try {
-    const [data] = await mysqlDB.query<RecipesSimple[]>(
-      `SELECT * FROM recipes_simple_view ORDER BY created_at DESC LIMIT 18`
-    );
-
-    const result: HomeRecipe[] = data.map((recipe) => {
-      const tagIds = splitString(recipe.tag_ids);
-      const tagNames = splitString(recipe.tag_names);
-      const tags = tagIds.map((id, index) => ({
-        id: parseInt(id, 10),
-        name: tagNames[index],
-      }));
-
-      const key = generateRecipeKey(recipe.id, recipe.name);
-
-      return {
-        id: recipe.id,
-        name: recipe.name,
-        img: getImgUrl(recipe.img, true),
-        tags,
-        hours: recipe.hours,
-        minutes: recipe.minutes,
-        key,
-        user: {
-          username: recipe.user_username,
-        },
-      };
-    });
-
-    res.status(200).json(result);
-  } catch (error) {
-    next(error);
-  }
-});
+/**
+ * @route GET /api/recipes/home
+ * @desc  Get home page recipes
+ * @access Public
+ */
+router.get("/home", homeRecipes);
 
 // ---
 export interface IngredientNewProduct {
