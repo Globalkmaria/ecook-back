@@ -1,11 +1,19 @@
 import { NextFunction, Request, Response } from "express";
 
-import { searchRecipesService } from "../../services/recipes/recipesSearchService.js";
+import {
+  recommendRecipes,
+  searchRecipesService,
+} from "../../services/recipes/recipesSearchService.js";
 import { ClientRecipeSimple } from "../../router/v1/recipes/recipes.js";
 
 export interface SearchRecipesQueryParams {
   q?: string;
   type?: string;
+}
+
+interface SearchRecipesResponse {
+  search: ClientRecipeSimple[];
+  recommend: ClientRecipeSimple[];
 }
 
 export const SEARCH_TYPES = {
@@ -20,7 +28,7 @@ const SEARCH_TYPES_VALUES = Object.values(SEARCH_TYPES);
 
 export const searchRecipes = async (
   req: Request<{}, {}, {}, SearchRecipesQueryParams>,
-  res: Response<ClientRecipeSimple[] | { error: string }>,
+  res: Response<SearchRecipesResponse | { error: string }>,
   next: NextFunction
 ) => {
   try {
@@ -30,8 +38,14 @@ export const searchRecipes = async (
       return res.status(400).json({ error: "Invalid search type" });
     }
 
-    const result = await searchRecipesService({ q, type });
-    res.status(200).json(result);
+    const searchResult = await searchRecipesService({ q, type });
+    if (searchResult.length) {
+      res.status(200).json({ search: searchResult, recommend: [] });
+      return;
+    }
+
+    const recommend = await recommendRecipes();
+    res.status(200).json({ search: [], recommend });
   } catch (error) {
     if (error instanceof Error) {
       res.status(400).json({ error: error.message });
