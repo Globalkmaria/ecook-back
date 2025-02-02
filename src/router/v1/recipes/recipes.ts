@@ -53,7 +53,14 @@ interface QueryParams {
   type?: string;
 }
 
-const SEARCH_TYPES = ["name", "tag", "ingredient", "product", "username"];
+const SEARCH_TYPES = {
+  NAME: "name",
+  TAG: "tag",
+  INGREDIENT: "ingredient",
+  PRODUCT: "product",
+  USERNAME: "username",
+};
+const SEARCH_TYPES_VALUES = Object.values(SEARCH_TYPES);
 
 router.get("/", async (req, res, next) => {
   try {
@@ -62,7 +69,7 @@ router.get("/", async (req, res, next) => {
     let data: RecipesSimple[] = [];
     const trimmedQ = lightTrim(q ?? "");
 
-    if (type && !SEARCH_TYPES.includes(type)) {
+    if (type && !SEARCH_TYPES_VALUES.includes(type)) {
       return res.status(400).json({ error: "Invalid search type" });
     }
 
@@ -72,7 +79,7 @@ router.get("/", async (req, res, next) => {
       );
 
       data = result[0];
-    } else if (type === "name") {
+    } else if (type === SEARCH_TYPES.NAME) {
       const result = await mysqlDB.query<RecipesSimple[]>(
         `SELECT 
             r.id AS id,
@@ -102,7 +109,7 @@ router.get("/", async (req, res, next) => {
       );
 
       data = result[0];
-    } else if (type === "tag") {
+    } else if (type === SEARCH_TYPES.TAG) {
       const result = await mysqlDB.query<RecipesSimple[]>(
         `SELECT 
             r.id AS id,
@@ -135,7 +142,7 @@ router.get("/", async (req, res, next) => {
       );
 
       data = result[0];
-    } else if (type === "ingredient") {
+    } else if (type === SEARCH_TYPES.INGREDIENT) {
       const result = await mysqlDB.query<RecipesSimple[]>(
         `SELECT 
             r.id AS id,
@@ -170,7 +177,7 @@ router.get("/", async (req, res, next) => {
       );
 
       data = result[0];
-    } else if (type === "product") {
+    } else if (type === SEARCH_TYPES.PRODUCT) {
       const result = await mysqlDB.query<RecipesSimple[]>(
         `
           SELECT 
@@ -210,7 +217,7 @@ router.get("/", async (req, res, next) => {
       );
 
       data = result[0];
-    } else if (type === "username") {
+    } else if (type === SEARCH_TYPES.USERNAME) {
       const result = await mysqlDB.execute<RecipesSimple[]>(
         `SELECT * FROM recipes_simple_view WHERE user_username = ? ORDER BY created_at DESC`,
         [trimmedQ]
