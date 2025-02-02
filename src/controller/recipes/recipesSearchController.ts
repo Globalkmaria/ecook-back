@@ -33,6 +33,10 @@ export const searchRecipes = async (
     const result = await searchRecipesService({ q, type });
     res.status(200).json(result);
   } catch (error) {
+    if (error instanceof Error) {
+      res.status(400).json({ error: error.message });
+    }
+
     next(error);
   }
 };

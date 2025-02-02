@@ -12,13 +12,16 @@ export interface HomeRecipe extends ClientRecipeSimple {
 
 export const homeRecipes = async (
   req: Request<{}, {}, {}, {}>,
-  res: Response<HomeRecipe[]>,
+  res: Response<HomeRecipe[] | { error: string }>,
   next: NextFunction
 ) => {
   try {
     const result = await homeRecipesService();
     res.status(200).json(result);
   } catch (error) {
+    if (error instanceof Error) {
+      res.status(400).json({ error: error.message });
+    }
     next(error);
   }
 };
