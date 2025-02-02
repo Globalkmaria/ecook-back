@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
-import { searchRecipesService } from "../../services/recipes/recipesSearchService";
-import { ClientRecipeSimple } from "../../router/v1/recipes/recipes";
+
+import { searchRecipesService } from "../../services/recipes/recipesSearchService.js";
+import { ClientRecipeSimple } from "../../router/v1/recipes/recipes.js";
 
 export interface SearchRecipesQueryParams {
   q?: string;
