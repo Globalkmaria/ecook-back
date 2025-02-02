@@ -32,6 +32,11 @@ export const searchRecipesService = async ({
   return formatSearchResult(data);
 };
 
+export const recommendRecipes = async () => {
+  const result = await getRecentRecipes(10);
+  return formatSearchResult(result);
+};
+
 export const getRecentRecipes = async (limit: number) => {
   const result = await mysqlDB.query<RecipesSimple[]>(
     `SELECT * FROM recipes_simple_view ORDER BY created_at DESC LIMIT ?`,
@@ -124,7 +129,7 @@ const searchByIngredient = async (query: string) => {
           FROM
               recipes r
           JOIN 
-              (SELECT DISTINCT recipe_id FROM recipe_ingredients WHERE LOWER(name) = LOWER(?)) filtered_recipes
+              (SELECT DISTINCT recipe_id FROM recipe_ingredients WHERE LOWER(name) LIKE LOWER(?)) filtered_recipes
               ON filtered_recipes.recipe_id = r.id
           JOIN 
               recipe_img_view ri ON ri.recipe_id = r.id
@@ -137,7 +142,7 @@ const searchByIngredient = async (query: string) => {
               ORDER BY 
               r.created_at DESC;
           `,
-    [lightSlugify(query)]
+    [`%${lightSlugify(query)}%`]
   );
   return result[0];
 };
@@ -164,7 +169,7 @@ const searchByProduct = async (query: string) => {
               (
                 SELECT recipe_id
                   FROM 
-                    (SELECT * FROM products WHERE REPLACE(LOWER(name), ' ', '-') = REPLACE(LOWER(?), ' ', '-')) AS filtered_products
+                    (SELECT * FROM products WHERE REPLACE(LOWER(name), ' ', '-') LIKE REPLACE(LOWER(?), ' ', '-')) AS filtered_products
                   JOIN 
                 recipe_ingredients rig ON rig.product_id = filtered_products.id
               ) 
@@ -178,7 +183,7 @@ const searchByProduct = async (query: string) => {
             GROUP BY r.id, r.name, r.created_at, r.updated_at, r.hours, r.minutes, ri.recipe_img, u.img, u.username, u.id
             ORDER BY r.created_at DESC;
             `,
-    [query]
+    [`%${query}%`]
   );
   return result[0];
 };
