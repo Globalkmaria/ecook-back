@@ -95,8 +95,10 @@ Whether you're exploring new recipes or looking for ways to reuse ingredients, E
 
 ## Snapshot
 
+- Deployment Architecture
+![system design](https://github.com/user-attachments/assets/4185f938-a403-4dfb-9e3d-b7d72c95a974)
 - ERD
-  <img width="850" height=500 alt="Screenshot 2024-12-06 at 2 27 25 AM" src="https://github.com/user-attachments/assets/4f80b56d-6005-47a7-87a5-3bb87a858473">
+![cooking (1)](https://github.com/user-attachments/assets/5ba581d0-bdd7-4720-8f90-6050ea290233)
 
 - Home page
   <img width="900" height=500 alt="home" src="https://github.com/user-attachments/assets/8cc826f8-ad49-4806-a5e2-993440cadb4d">
