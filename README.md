@@ -98,7 +98,7 @@ Whether you're exploring new recipes or looking for ways to reuse ingredients, E
 - Deployment Architecture
 ![system design](https://github.com/user-attachments/assets/4185f938-a403-4dfb-9e3d-b7d72c95a974)
 - ERD
-![cooking (1)](https://github.com/user-attachments/assets/5ba581d0-bdd7-4720-8f90-6050ea290233)
+![cooking erd](https://github.com/user-attachments/assets/1eee367b-7964-40cb-a785-13f6a6d84985)
 
 - Home page
   <img width="900" height=500 alt="home" src="https://github.com/user-attachments/assets/8cc826f8-ad49-4806-a5e2-993440cadb4d">
