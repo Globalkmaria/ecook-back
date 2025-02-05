@@ -17,12 +17,14 @@ router.get("/:key", async (req, res, next) => {
   if (!productId || !validateId(productId)) {
     return res.status(400).json({ message: "Invalid key" });
   }
+
   try {
     const [data] = await mysqlDB.query<Product[]>(
-      `SELECT p.*, ri.ingredient_id, ri.name as ingredient_name
-      FROM product_detail_view p
-      JOIN recipe_ingredients ri ON p.id = ri.product_id
-      WHERE p.id = ?;
+      `SELECT p.*, i.id ingredient_id, i.name ingredient_name
+        FROM product_detail_view p
+        JOIN ingredient_products ip ON p.id = ip.product_id
+        JOIN ingredients i ON i.id = ip.ingredient_id
+        WHERE p.id = ?;
     `,
       [productId]
     );
