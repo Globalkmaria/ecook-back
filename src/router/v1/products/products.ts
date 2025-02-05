@@ -5,7 +5,10 @@ import mysqlDB from "../../../db/mysql.js";
 import { lightSlugify, lightTrim } from "../../../utils/normalize.js";
 import { getImgUrl } from "../../../utils/img.js";
 import { User } from "../recipes/recipe/recipe.js";
-import { generateProductKey } from "./helper.js";
+import {
+  decryptRecipeURLAndGetProductId,
+  generateProductKey,
+} from "./helper.js";
 import { arrayToPlaceholders } from "../../../utils/query.js";
 
 const router = express.Router();
@@ -32,6 +35,12 @@ interface Ingredient extends RowDataPacket {
   updated_at?: Date; // 'timestamp' and nullable, so it's optional
 }
 
+interface IngredientProducts extends RowDataPacket {
+  id: number;
+  ingredient_id: number;
+  product_id: number;
+}
+
 export interface ClientProduct {
   id: number;
   ingredient: {
@@ -50,8 +59,9 @@ export interface ClientProduct {
 }
 
 const QUERY_TYPES = {
-  INGREDIENT_NAME: "ingredient",
+  INGREDIENT_NAME: "ingredientName",
   USERNAME: "username",
+  PRODUCT_KEY: "productKey",
 };
 
 const QUERY_TYPES_VALUES = Object.values(QUERY_TYPES);
@@ -127,6 +137,33 @@ router.get("/", async (req, res, next) => {
             ORDER BY p.created_at DESC;
           `,
           [userData[0].id]
+        );
+
+        break;
+
+      case QUERY_TYPES.PRODUCT_KEY:
+        const productId = decryptRecipeURLAndGetProductId(q);
+
+        const [ingredients] = await mysqlDB.query<IngredientProducts[]>(
+          `SELECT ingredient_id FROM ingredient_products WHERE product_id = ?`,
+          [productId]
+        );
+
+        if (!ingredients.length) {
+          return res.json([]);
+        }
+
+        ingredientId = ingredients[0].ingredient_id;
+
+        [data] = await mysqlDB.query<Product[]>(
+          `SELECT DISTINCT p.*, i.id ingredient_id, i.name ingredient_name
+              FROM ingredient_products ip
+              JOIN product_detail_view p ON p.id = ip.product_id
+              JOIN ingredients i ON i.id = ip.ingredient_id
+              WHERE i.id = ? AND p.id != ?
+              ORDER BY p.created_at DESC;
+           `,
+          [ingredientId, productId]
         );
 
         break;
