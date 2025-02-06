@@ -6,6 +6,7 @@ import usersRouter from "./users.js";
 import authRouter from "./auth/index.js";
 import imagesRouter from "./images/index.js";
 import recommendRouter from "./recommend/index.js";
+import bookmarksRouter from "./bookmarks/index.js";
 
 const router = express.Router();
 
@@ -15,5 +16,6 @@ router.use("/products", productsRouter);
 router.use("/users", usersRouter);
 router.use("/auth", authRouter);
 router.use("/recommend", recommendRouter);
+router.use("/bookmarks", bookmarksRouter);
 
 export default router;
