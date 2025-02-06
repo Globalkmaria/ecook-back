@@ -39,13 +39,6 @@ export interface ClientRecipeSimple {
 
 router.get("/", searchRecipes);
 
-/**
- * @route GET /api/recipes/home
- * @desc  Get home page recipes
- * @access Public
- */
-router.get("/home", homeRecipes);
-
 // ---
 export interface IngredientNewProduct {
   name: string;
