@@ -4,7 +4,6 @@ import { RowDataPacket } from "mysql2";
 import { upload } from "../../../db/aws.js";
 import { authGuard } from "../../../middleware/auth.js";
 import { searchRecipes } from "../../../controller/recipes/recipesSearchController.js";
-import { homeRecipes } from "../../../controller/recipes/recipesHomeController.js";
 import { createRecipe } from "../../../controller/recipes/recipesCreateController.js";
 
 const router = express.Router();
