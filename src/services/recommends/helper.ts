@@ -1,6 +1,9 @@
-import { getImgUrl } from "../../../utils/img.js";
-import { generateRecipeKey } from "../../../services/recipes/helper.js";
-import { HomeRecommendRecipe, RecommendRecipe } from "./type.js";
+import { getImgUrl } from "../../utils/img.js";
+import { generateRecipeKey } from "../recipes/helper.js";
+import {
+  HomeRecommendRecipe,
+  RecommendRecipe,
+} from "../../router/v1/recommend/type.js";
 
 const formatRecipeData = (recipe: RecommendRecipe) => {
   const key = generateRecipeKey(recipe.recipe_id, recipe.recipe_name);
