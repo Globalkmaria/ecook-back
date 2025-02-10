@@ -43,6 +43,5 @@ export const updateRecipe = async (
     res.status(200).json({ message: "Recipe updated successfully", key });
   } catch (error) {
     next(error);
-  } finally {
   }
 };
