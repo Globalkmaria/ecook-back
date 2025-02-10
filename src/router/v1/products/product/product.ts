@@ -3,6 +3,6 @@ import { getProduct } from "../../../../controllers/products/product/productCont
 
 const router = express.Router();
 
-router.get("/:key", getProduct);
+router.get("/", getProduct);
 
 export default router;
