@@ -29,7 +29,7 @@ export const getRecipeService = async (recipeId: string) => {
 
   const [imgs, ingredients, tags, user] = await Promise.all([
     getRecipeImgs(recipeId),
-    getIngredients(recipeId),
+    getRecipeIngredientsWithProducts(recipeId),
     getRecipeTags(recipeId),
     getRecipeUser(info.user_id),
   ]);
@@ -38,31 +38,31 @@ export const getRecipeService = async (recipeId: string) => {
 };
 
 const getRecipeDetail = async (recipeId: string) => {
-  const [recipe_info] = await mysqlDB.query<RecipeInfo[]>(
+  const [recipes] = await mysqlDB.query<RecipeInfo[]>(
     `SELECT * FROM recipes where recipes.id = ?`,
     [recipeId]
   );
 
-  if (!recipe_info) throw new ServiceError(404, "Recipe not found");
+  if (!recipes) throw new ServiceError(404, "Recipe not found");
 
-  return recipe_info[0];
+  return recipes[0];
 };
 
 const getRecipeImgs = async (recipeId: string) => {
-  const [imgsData] = await mysqlDB.query<RecipeImg[]>(
+  const [imgs] = await mysqlDB.query<RecipeImg[]>(
     `SELECT recipe_img FROM recipe_img_view WHERE recipe_id = ?`,
     [recipeId]
   );
 
-  return getImgUrl(imgsData[0].recipe_img, true);
+  return getImgUrl(imgs[0].recipe_img, true);
 };
 
 const getRecipeTags = async (recipeId: string) => {
-  const [tagsData] = await mysqlDB.query<RecipeTag[]>(
+  const [tags] = await mysqlDB.query<RecipeTag[]>(
     `SELECT * FROM recipe_tags_view WHERE recipe_id = ?`,
     [recipeId]
   );
-  return tagsData.map((tag) => ({
+  return tags.map((tag) => ({
     id: tag.tag_id,
     name: tag.tag_name,
   }));
@@ -71,12 +71,12 @@ const getRecipeTags = async (recipeId: string) => {
 const getRecipeUser = async (
   userId: number
 ): Promise<ClientRecipeDetail["user"]> => {
-  const [userData] = await mysqlDB.query<UserSimple[]>(
+  const [users] = await mysqlDB.query<UserSimple[]>(
     `SELECT * FROM users_simple_view WHERE id = ?`,
     [userId]
   );
 
-  const user = userData[0];
+  const user = users[0];
   return {
     id: user.id,
     username: user.username,
@@ -92,19 +92,16 @@ const getRecipeIngredients = async (recipeId: string) => {
   return ingredients;
 };
 
-const getIngredients = async (recipeId: string) => {
-  const ingredientsData = await getRecipeIngredients(recipeId);
+const getRecipeIngredientsWithProducts = async (
+  recipeId: string
+): Promise<ClientRecipeDetail["ingredients"]> => {
+  const ingredients = await getRecipeIngredients(recipeId);
 
-  const ingredientIdWithProductsMap = await getIngredientProductsMap(
-    ingredientsData
+  const map = await getIngredientProductsMap(ingredients);
+
+  return ingredients.map((ingredient) =>
+    generateClientRecipeIngredient(ingredient, map)
   );
-
-  const ingredients: ClientRecipeDetail["ingredients"] = ingredientsData.map(
-    (ingredient) =>
-      generateClientRecipeIngredient(ingredient, ingredientIdWithProductsMap)
-  );
-
-  return ingredients;
 };
 
 const getIngredientProductsMap = async (
@@ -128,12 +125,13 @@ const getIngredientProductsMap = async (
 const getProducts = async (ingredientsData: RecipeIngredient[]) => {
   const limit = 5;
 
-  const ingredientIdsPlaceholder = arrayToPlaceholders(
-    getIngredientIds(ingredientsData)
-  );
-  const productIdsPlaceholder = arrayToPlaceholders(
-    getProductIds(ingredientsData)
-  );
+  const ingredientIds = getIngredientIds(ingredientsData);
+  const productIds = getProductIds(ingredientsData);
+
+  if (!ingredientIds.length || !productIds.length) return [];
+
+  const ingredientIdsPlaceholder = arrayToPlaceholders(ingredientIds);
+  const productIdsPlaceholder = arrayToPlaceholders(productIds);
 
   const [products] = await mysqlDB.query<RecipeIngredientRequired[]>(
     `WITH RankedProducts AS (
