@@ -3,8 +3,8 @@ import { RowDataPacket } from "mysql2";
 
 import { upload } from "../../../db/aws.js";
 import { authGuard } from "../../../middleware/auth.js";
-import { searchRecipes } from "../../../controller/recipes/recipesSearchController.js";
-import { createRecipe } from "../../../controller/recipes/recipesCreateController.js";
+import { searchRecipes } from "../../../controllers/recipes/recipesSearchController.js";
+import { createRecipe } from "../../../controllers/recipes/recipesCreateController.js";
 
 const router = express.Router();
 

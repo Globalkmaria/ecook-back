@@ -7,7 +7,7 @@ import {
   addBookmark,
   getBookmarks,
   removeBookmark,
-} from "../../../controller/bookmarks/bookmarksController.js";
+} from "../../../controllers/bookmarks/bookmarksController.js";
 
 const router = express.Router();
 

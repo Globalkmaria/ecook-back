@@ -1,5 +1,12 @@
 import { RowDataPacket } from "mysql2";
 
+export interface Recommend extends RowDataPacket {
+  id: number;
+  page: string;
+  type: string;
+  value: string;
+  label: string;
+}
 export interface RecommendRecipe extends RowDataPacket {
   recipe_id: number;
   recipe_name: string;

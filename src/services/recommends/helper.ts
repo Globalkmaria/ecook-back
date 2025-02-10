@@ -1,4 +1,4 @@
-import { getImgUrl } from "../../../utils/img.js";
+import { getImgUrl } from "../../utils/img.js";
 import { generateRecipeKey } from "../recipes/helper.js";
 import { HomeRecommendRecipe, RecommendRecipe } from "./type.js";
 

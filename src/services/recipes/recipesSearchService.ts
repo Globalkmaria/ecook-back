@@ -1,11 +1,11 @@
 import { lightSlugify, lightTrim, splitString } from "../../utils/normalize.js";
 import mysqlDB from "../../db/mysql.js";
-import { generateRecipeKey } from "../../router/v1/recipes/helper.js";
+import { generateRecipeKey } from "./helper.js";
 import { getImgUrl } from "../../utils/img.js";
 import {
   SEARCH_TYPES,
   SearchRecipesQueryParams,
-} from "../../controller/recipes/recipesSearchController.js";
+} from "../../controllers/recipes/recipesSearchController.js";
 import { RecipesSimple } from "../../router/v1/recipes/recipes.js";
 
 export const searchRecipesService = async ({

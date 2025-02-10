@@ -1,5 +1,5 @@
 import mysqlDB from "../../db/mysql.js";
-import { UserSimple } from "../../router/v1/recipes/recipe/recipe.js";
+import { UserSimple } from "../recipes/recipe/type.js";
 import { RecipesSimple } from "../../router/v1/recipes/recipes.js";
 import { formatClientRecipeSimple } from "./helper.js";
 

@@ -1,11 +1,11 @@
-import { config } from "../../../config/index.js";
-import { encrypt } from "../../../utils/encrypt.js";
+import { config } from "../../config";
 import {
-  lightSlugify,
-  lightTrim,
-  sanitizeURL,
-} from "../../../utils/normalize.js";
-import { INewRecipe, IngredientNewProduct, RecipesSimple } from "./recipes.js";
+  RecipesSimple,
+  INewRecipe,
+  IngredientNewProduct,
+} from "../../router/v1/recipes/recipes";
+import { encrypt } from "../../utils/encrypt";
+import { sanitizeURL, lightTrim, lightSlugify } from "../../utils/normalize";
 
 export const generateRecipeKey = (id: RecipesSimple["id"], name: string) =>
   `${encrypt(
