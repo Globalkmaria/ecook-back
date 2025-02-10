@@ -1,10 +1,7 @@
 import { PoolConnection, ResultSetHeader, RowDataPacket } from "mysql2/promise";
 
 import mysqlDB from "../../../db/mysql.js";
-import {
-  getTagsToInsertAndDelete,
-  getUpdatedRecipeData,
-} from "../../../router/v1/recipes/recipe/helper.js";
+import { getTagsToInsertAndDelete, getUpdatedRecipeData } from "./helper.js";
 import { EditRecipe } from "./type.js";
 import { RecipeInfo } from "./type.js";
 import { ServiceError } from "../../helpers/ServiceError.js";

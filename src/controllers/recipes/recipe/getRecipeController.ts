@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-import { decryptRecipeURLAndGetRecipeId } from "../../../router/v1/recipes/recipe/helper.js";
+import { decryptRecipeURLAndGetRecipeId } from "../../../services/recipes/recipe/helper.js";
 import { validateId } from "../../../utils/numbers.js";
 import { ServiceError } from "../../../services/helpers/ServiceError.js";
 import { getRecipeService } from "../../../services/recipes/recipe/getRecipeService.js";

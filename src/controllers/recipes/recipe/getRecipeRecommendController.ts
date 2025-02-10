@@ -11,7 +11,7 @@ import {
 import {
   formatRecipeData,
   getUniqueRecipes,
-} from "../../../router/v1/recipes/recipe/helper.js";
+} from "../../../services/recipes/recipe/helper.js";
 
 type GetRecipeRecommendParams = {
   key: string;

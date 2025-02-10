@@ -1,7 +1,7 @@
 import { RowDataPacket } from "mysql2";
 
 import mysqlDB from "../../../db/mysql.js";
-import { decryptRecipeURLAndGetRecipeId } from "../../../router/v1/recipes/recipe/helper.js";
+import { decryptRecipeURLAndGetRecipeId } from "./helper.js";
 import { RecommendRecipe } from "../../../router/v1/recommend/type.js";
 import { validateId } from "../../../utils/numbers.js";
 import { arrayToPlaceholders } from "../../../utils/query.js";

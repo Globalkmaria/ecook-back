@@ -6,7 +6,7 @@ import {
   getBookmarksByUserId,
   removeUserBookmark,
 } from "../../services/bookmarks/bookmarksService.js";
-import { decryptRecipeURLAndGetRecipeId } from "../../router/v1/recipes/recipe/helper.js";
+import { decryptRecipeURLAndGetRecipeId } from "../../services/recipes/recipe/helper.js";
 import { generateRecipeKeysForBookmarks } from "./helper.js";
 
 type GetBookmarksResponse = string[] | { error: string };

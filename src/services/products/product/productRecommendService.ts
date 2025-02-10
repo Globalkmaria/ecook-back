@@ -2,7 +2,7 @@ import mysqlDB from "../../../db/mysql.js";
 import {
   formatRecipeData,
   getUniqueRecipes,
-} from "../../../router/v1/recipes/recipe/helper.js";
+} from "../../recipes/recipe/helper.js";
 import { RecommendRecipe } from "../../../router/v1/recommend/type.js";
 import { ServiceError } from "../../helpers/ServiceError.js";
 import { Product } from "../type.js";
