@@ -48,7 +48,7 @@ const searchByProductKey = async (
         AND ip_ref.product_id = ?
     ORDER BY p.created_at DESC;
     `,
-    [productId]
+    [productId, productId]
   );
 
   if (!products.length) return { ingredientId: null, products: [] };
@@ -97,7 +97,7 @@ const searchByIngredientName = async (
         JOIN product_detail_view p ON p.id = ip.product_id
         JOIN ingredients i ON i.id = ip.ingredient_id
         WHERE i.id 
-            IN (SELECT * FROM ingredients WHERE name LIKE ?) 
+            IN (SELECT id FROM ingredients WHERE name LIKE ?) 
         ORDER BY p.created_at DESC;
     `,
     [searchQuery]
