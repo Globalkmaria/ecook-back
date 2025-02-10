@@ -6,7 +6,7 @@ import mysqlDB from "../../../../db/mysql.js";
 import { validateId } from "../../../../utils/numbers.js";
 import { arrayToPlaceholders } from "../../../../utils/query.js";
 import { RecommendRecipe } from "../../recommend/type.js";
-import { RecipeInfo } from "./recipe.js";
+import { RecipeInfo } from "../../../../services/recipes/recipe/type.js";
 import {
   decryptRecipeURLAndGetRecipeId,
   formatRecipeData,

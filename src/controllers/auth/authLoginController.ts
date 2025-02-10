@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import passport from "passport";
 
-import { User } from "../../router/v1/recipes/recipe/recipe.js";
+import { User } from "../../services/recipes/recipe/type.js";
 import { getImgUrl } from "../../utils/img.js";
 
 interface LoginBody {

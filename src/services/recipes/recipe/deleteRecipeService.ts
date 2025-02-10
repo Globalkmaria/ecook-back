@@ -1,4 +1,4 @@
-import { RecipeInfo } from "../../../router/v1/recipes/recipe/recipe.js";
+import { RecipeInfo } from "./type.js";
 import mysqlDB from "../../../db/mysql.js";
 
 export const getRecipe = async (recipeId: string) => {

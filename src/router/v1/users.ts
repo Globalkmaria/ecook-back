@@ -3,7 +3,7 @@ import express from "express";
 import mysqlDB from "../../db/mysql.js";
 import { getImgUrl } from "../../utils/img.js";
 import { RecipesSimple } from "./recipes/recipes.js";
-import { UserSimple } from "./recipes/recipe/recipe.js";
+import { UserSimple } from "../../services/recipes/recipe/type.js";
 import { authGuard } from "../../middleware/auth.js";
 import { getUserBookmarkedRecipes } from "../../controllers/users/usersBookmarksController.js";
 

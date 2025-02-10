@@ -4,7 +4,8 @@ import { getImgUrl } from "../../../../utils/img.js";
 import { shuffleArray } from "../../../../utils/shuffle.js";
 import { generateRecipeKey, sanitizeRecipeData } from "../../recipes/helper.js";
 import { RecommendRecipe } from "../../recommend/type.js";
-import { EditRecipe, RecipeInfo } from "./recipe.js";
+import { EditRecipe } from "../../../../services/recipes/recipe/type.js";
+import { RecipeInfo } from "../../../../services/recipes/recipe/type.js";
 
 export const decryptRecipeURLAndGetRecipeId = (url: string) => {
   const [ciphertext] = url.split("-");

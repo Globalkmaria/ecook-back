@@ -1,4 +1,4 @@
-import { RecipeInfo } from "../../../router/v1/recipes/recipe/recipe.js";
+import { RecipeInfo } from "./type.js";
 import { getImgUrl } from "../../../utils/img.js";
 import {
   ClientRecipeDetail,

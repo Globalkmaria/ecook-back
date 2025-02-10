@@ -1,8 +1,6 @@
 import mysqlDB from "../../../db/mysql.js";
-import {
-  RecipeInfo,
-  UserSimple,
-} from "../../../router/v1/recipes/recipe/recipe.js";
+import { UserSimple } from "./type.js";
+import { RecipeInfo } from "./type.js";
 import { getImgUrl } from "../../../utils/img.js";
 import { ServiceError } from "../../helpers/ServiceError.js";
 

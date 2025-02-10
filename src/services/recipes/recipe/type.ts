@@ -1,5 +1,6 @@
 import { RowDataPacket } from "mysql2";
 import { ClientProduct } from "../../../controllers/products/type";
+import { INewRecipe } from "../../../router/v1/recipes/recipes";
 
 interface IngredientBase {
   id: number; // Primary key, auto_increment
@@ -65,3 +66,40 @@ export interface ClientRecipeDetail {
 export type ClientRecipeProduct = Omit<ClientProduct, "ingredient" | "key"> & {
   ingredientId: number;
 };
+
+export type UpdateRecipeServiceParams = {
+  recipeId: string;
+  userId: number;
+  info: EditRecipe;
+  filesKeys: Map<string, string>;
+};
+export interface RecipeInfo extends RowDataPacket {
+  id: number; // Primary key, auto_increment
+  name: string; // Non-nullable, varchar(50)
+  user_id: number; //  foreign key
+  hours: number; // Non-nullable, int
+  minutes: number; // Non-nullable, int
+  description?: string; // Nullable, varchar(255)
+  steps: string[]; // Json string[], JSON type in TypeScript as Record<string, any> or object
+  created_at: Date; // Timestamp with CURRENT_TIMESTAMP default
+  updated_at: Date; // Timestamp with auto-update on change
+}
+
+export interface User extends RowDataPacket {
+  id: number; // Primary key, auto_increment
+  username: string; // Non-nullable, varchar(100)
+  email: string; // Non-nullable, varchar(255)
+  hashed_password: string; // Non-nullable, VARBINARY(255)
+  salt: string; // Non-nullable, VARBINARY(255)
+  name?: string; //  varchar(100)
+  img?: string; // Nullable, varchar(255)
+  youtube_link?: string; // Nullable, varchar(255)
+  created_at?: Date; // Timestamp, default CURRENT_TIMESTAMP
+  updated_at?: Date; // Timestamp, auto-update on change
+  instagram_link?: string; // Nullable, varchar(255)
+}
+
+export type UserSimple = RowDataPacket &
+  Pick<User, "id" | "username" | "img" | "first_name">;
+
+export type EditRecipe = INewRecipe & { id: number };
