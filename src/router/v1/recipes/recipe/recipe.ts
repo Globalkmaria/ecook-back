@@ -3,7 +3,6 @@ import { ResultSetHeader, RowDataPacket } from "mysql2";
 
 import mysqlDB from "../../../../db/mysql.js";
 import { upload } from "../../../../db/aws.js";
-import { ClientProduct, Product } from "../../products/products.js";
 import { INewRecipe } from "../recipes.js";
 import { authGuard } from "../../../../middleware/auth.js";
 import { validateId } from "../../../../utils/numbers.js";
@@ -16,6 +15,8 @@ import {
 import { generateRecipeKey, getNewProductData } from "../helper.js";
 import { getImgUrl } from "../../../../utils/img.js";
 import { lightSlugify } from "../../../../utils/normalize.js";
+import { ClientProduct } from "../../../../controllers/products/type.js";
+import { Product } from "../../../../services/products/type.js";
 
 const router = express.Router();
 

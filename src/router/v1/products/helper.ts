@@ -1,7 +1,7 @@
 import { config } from "../../../config/index.js";
+import { Product } from "../../../services/products/type.js";
 import { decrypt, encrypt } from "../../../utils/encrypt.js";
-import { lightSlugify, sanitizeURL } from "../../../utils/normalize.js";
-import { Product } from "./products.js";
+import { sanitizeURL } from "../../../utils/normalize.js";
 
 export const decryptRecipeURLAndGetProductId = (url: string) => {
   const [ciphertext] = url.split("-");

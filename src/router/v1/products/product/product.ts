@@ -1,13 +1,14 @@
 import express from "express";
 
 import { validateId } from "../../../../utils/numbers.js";
-import { ClientProduct, Product } from "../products.js";
 import { getImgUrl } from "../../../../utils/img.js";
 import mysqlDB from "../../../../db/mysql.js";
 import {
   decryptRecipeURLAndGetProductId,
   generateProductKey,
 } from "../helper.js";
+import { Product } from "../../../../services/products/type.js";
+import { ClientProduct } from "../../../../controllers/products/type.js";
 
 const router = express.Router();
 
