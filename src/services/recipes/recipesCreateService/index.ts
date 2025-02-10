@@ -6,7 +6,7 @@ import { SerializedUser } from "../../../config/passport.js";
 
 import { INewRecipe } from "../../../router/v1/recipes/recipes.js";
 import { generateRecipeKey } from "../../../router/v1/recipes/helper.js";
-import { CreateRecipeBody } from "../../../controller/recipes/recipesCreateController.js";
+import { CreateRecipeBody } from "../../../controllers/recipes/recipesCreateController.js";
 import {
   insertIngredients,
   insertRecipe,

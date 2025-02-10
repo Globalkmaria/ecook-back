@@ -5,7 +5,7 @@ import { getImgUrl } from "../../utils/img.js";
 import {
   SEARCH_TYPES,
   SearchRecipesQueryParams,
-} from "../../controller/recipes/recipesSearchController.js";
+} from "../../controllers/recipes/recipesSearchController.js";
 import { RecipesSimple } from "../../router/v1/recipes/recipes.js";
 
 export const searchRecipesService = async ({

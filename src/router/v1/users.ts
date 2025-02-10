@@ -5,7 +5,7 @@ import { getImgUrl } from "../../utils/img.js";
 import { RecipesSimple } from "./recipes/recipes.js";
 import { UserSimple } from "./recipes/recipe/recipe.js";
 import { authGuard } from "../../middleware/auth.js";
-import { getUserBookmarkedRecipes } from "../../controller/users/usersBookmarksController.js";
+import { getUserBookmarkedRecipes } from "../../controllers/users/usersBookmarksController.js";
 
 const router = express.Router();
 

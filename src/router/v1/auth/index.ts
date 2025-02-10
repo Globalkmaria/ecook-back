@@ -2,10 +2,10 @@ import express from "express";
 
 import { upload } from "../../../db/aws.js";
 
-import { login } from "../../../controller/auth/authLoginController.js";
-import { logout } from "../../../controller/auth/authLogoutController.js";
-import { signup } from "../../../controller/auth/authSignupController.js";
-import { checkUsernameAvailability } from "../../../controller/auth/authUsernameController.js";
+import { login } from "../../../controllers/auth/authLoginController.js";
+import { logout } from "../../../controllers/auth/authLogoutController.js";
+import { signup } from "../../../controllers/auth/authSignupController.js";
+import { checkUsernameAvailability } from "../../../controllers/auth/authUsernameController.js";
 
 const router = express.Router();
 

@@ -1,4 +1,4 @@
-import { HomeRecipe } from "../../controller/recipes/recipesHomeController.js";
+import { HomeRecipe } from "../../controllers/recipes/recipesHomeController.js";
 import { generateRecipeKey } from "../../router/v1/recipes/helper.js";
 import { RecipesSimple } from "../../router/v1/recipes/recipes.js";
 import { getImgUrl } from "../../utils/img.js";
