@@ -1,9 +1,9 @@
-import { HomeRecipe } from "../../controllers/recipes/recipesHomeController.js";
+import { HomeRecipe } from "../../controllers/home/homeRecipesController.js";
 import { generateRecipeKey } from "../../router/v1/recipes/helper.js";
 import { RecipesSimple } from "../../router/v1/recipes/recipes.js";
 import { getImgUrl } from "../../utils/img.js";
 import { splitString } from "../../utils/normalize.js";
-import { getRecentRecipes } from "./recipesSearchService.js";
+import { getRecentRecipes } from "../recipes/recipesSearchService.js";
 
 export const homeRecipesService = async () => {
   const result = await getRecentRecipes(18);
