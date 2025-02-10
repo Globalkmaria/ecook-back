@@ -1,9 +1,6 @@
 import mysqlDB from "../../db/mysql.js";
 import { groupRecommendRecipesByOptionName } from "./helper.js";
-import {
-  HomeRecommendRecipe,
-  RecommendRecipe,
-} from "../../router/v1/recommend/type.js";
+import { HomeRecommendRecipe, RecommendRecipe } from "./type.js";
 import { arrayToPlaceholders } from "../../utils/query.js";
 import mysqlDB2 from "../../db/mysql2.js";
 import { Recommend } from "./type.js";

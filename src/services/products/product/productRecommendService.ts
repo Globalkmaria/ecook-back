@@ -3,7 +3,7 @@ import {
   formatRecipeData,
   getUniqueRecipes,
 } from "../../recipes/recipe/helper.js";
-import { RecommendRecipe } from "../../../router/v1/recommend/type.js";
+import { RecommendRecipe } from "../../recommends/type.js";
 import { ServiceError } from "../../helpers/ServiceError.js";
 import { Product } from "../type.js";
 

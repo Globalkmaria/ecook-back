@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-import { RecommendRecipe } from "../../../router/v1/recommend/type.js";
+import { RecommendRecipe } from "../../../services/recommends/type.js";
 import {
   getIngredientRecipes,
   getRecentRecipes,
