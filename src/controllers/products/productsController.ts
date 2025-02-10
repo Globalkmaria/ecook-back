@@ -2,7 +2,17 @@ import { NextFunction, Request, Response } from "express";
 
 import { searchProducts } from "../../services/products/productsService.js";
 import { isValidProductQueryType } from "./helper.js";
-import { GetProductsQuery, GetProductsResponse } from "./type.js";
+import { ClientProduct } from "../../services/products/type.js";
+
+export interface GetProductsQuery {
+  type: string;
+  q: string;
+}
+
+export type GetProductsResponse = {
+  ingredientId: number | null;
+  products: ClientProduct[];
+};
 
 export const getProducts = async (
   req: Request<{}, {}, {}, GetProductsQuery>,

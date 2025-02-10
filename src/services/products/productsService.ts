@@ -1,10 +1,10 @@
-import { GetProductsResponse } from "../../controllers/products/type.js";
 import mysqlDB from "../../db/mysql.js";
 import { lightSlugify, lightTrim } from "../../utils/normalize.js";
 import { decryptRecipeURLAndGetProductId } from "./helper.js";
 import { formatClientProducts } from "./helper.js";
 import { Product, SearchProductsData, SearchProductsParams } from "./type.js";
 import { Ingredient } from "../ingredients/type.js";
+import { GetProductsResponse } from "../../controllers/products/productsController.js";
 
 export const searchProducts = async ({
   type,

@@ -1,9 +1,9 @@
 import { config } from "../../config/index.js";
-import { ClientProduct } from "../../controllers/products/type.js";
+
 import { decrypt, encrypt } from "../../utils/encrypt.js";
 import { getImgUrl } from "../../utils/img.js";
 import { sanitizeURL } from "../../utils/normalize.js";
-import { Product } from "./type.js";
+import { ClientProduct, Product } from "./type.js";
 
 export const formatClientProduct = (product: Product): ClientProduct => ({
   id: product.id,

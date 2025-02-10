@@ -1,6 +1,7 @@
 import { RowDataPacket } from "mysql2";
-import { ClientProduct } from "../../../controllers/products/type";
+
 import { INewRecipe } from "../../../router/v1/recipes/recipes";
+import { ClientProduct } from "../../products/type";
 
 interface IngredientBase {
   id: number; // Primary key, auto_increment

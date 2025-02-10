@@ -1,5 +1,5 @@
+import { ProductQueryTypes } from "../../services/products/type.js";
 import { PRODUCT_QUERY_TYPES } from "./const.js";
-import { ProductQueryTypes } from "./type.js";
 
 export const isValidProductQueryType = (
   type: string

@@ -1,7 +1,6 @@
 import { RowDataPacket } from "mysql2";
-
-import { ProductQueryTypes } from "../../controllers/products/type.js";
-import { GetProductsResponse } from "../../controllers/products/type.js";
+import { GetProductsResponse } from "../../controllers/products/productsController";
+import { PRODUCT_QUERY_TYPES } from "../../controllers/products/const";
 
 export interface Product extends RowDataPacket {
   id: number; // Primary key for the ingredient
@@ -26,3 +25,23 @@ export interface SearchProductsData {
   products: Product[];
   ingredientId: GetProductsResponse["ingredientId"];
 }
+
+export interface ClientProduct {
+  id: number;
+  ingredient: {
+    id: number;
+    name: string;
+  };
+  userId: number;
+  name: string;
+  brand: string;
+  purchasedFrom: string;
+  link: string | null;
+  img: string;
+  createdAt: Date;
+  updatedAt: Date;
+  key: string;
+}
+
+export type ProductQueryTypes =
+  (typeof PRODUCT_QUERY_TYPES)[keyof typeof PRODUCT_QUERY_TYPES];
