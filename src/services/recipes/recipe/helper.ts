@@ -1,10 +1,11 @@
+import { RecipeInfo } from "../../../router/v1/recipes/recipe/recipe.js";
 import { getImgUrl } from "../../../utils/img.js";
 import {
   ClientRecipeDetail,
   ClientRecipeProduct,
   RecipeIngredient,
   RecipeIngredientRequired,
-} from "./getRecipeService.js";
+} from "./type.js";
 
 export const generateClientRecipeIngredient = (
   ingredient: RecipeIngredient,
@@ -43,5 +44,36 @@ export const generateClientRecipeProduct = (
     img: getImgUrl(product.img, true),
     createdAt: product.created_at,
     updatedAt: product.updated_at,
+  };
+};
+
+export const getIngredientIds = (ingredients: RecipeIngredient[]) =>
+  ingredients
+    .map((ingredient) => ingredient.ingredient_id)
+    .filter((id): id is number => id !== undefined);
+
+export const getProductIds = (ingredients: RecipeIngredient[]) =>
+  ingredients
+    .map((ingredient) => ingredient.product_id)
+    .filter((id): id is number => id !== undefined);
+
+export const generateRecipeInformation = (
+  info: RecipeInfo,
+  img: ClientRecipeDetail["img"],
+  ingredients: ClientRecipeDetail["ingredients"],
+  tags: ClientRecipeDetail["tags"],
+  user: ClientRecipeDetail["user"]
+): ClientRecipeDetail => {
+  return {
+    id: info.id,
+    name: info.name,
+    description: info.description ?? "",
+    hours: info.hours,
+    minutes: info.minutes,
+    steps: info.steps ? info.steps : [],
+    img,
+    ingredients,
+    tags,
+    user,
   };
 };

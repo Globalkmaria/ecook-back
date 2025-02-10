@@ -1,5 +1,3 @@
-import { RowDataPacket } from "mysql2";
-
 import mysqlDB from "../../../db/mysql.js";
 import {
   RecipeInfo,
@@ -7,77 +5,24 @@ import {
 } from "../../../router/v1/recipes/recipe/recipe.js";
 import { getImgUrl } from "../../../utils/img.js";
 import { ServiceError } from "../../helpers/ServiceError.js";
-import { ClientProduct } from "../../../controllers/products/type.js";
+
 import { arrayToPlaceholders } from "../../../utils/query.js";
+
 import {
   generateClientRecipeIngredient,
   generateClientRecipeProduct,
+  generateRecipeInformation,
+  getIngredientIds,
+  getProductIds,
 } from "./helper.js";
-
-interface IngredientBase {
-  id: number; // Primary key, auto_increment
-  recipe_id: number; // Non-nullable, int
-  ingredient_name: string; // Non-nullable, varchar(255)
-  ingredient_quantity?: string; // Nullable, varchar(20)
-  ingredient_id?: number; // Non-nullable, int
-  product_id?: number; // Nullable, int
-  product_name?: string; // Nullable, varchar(255)
-  product_brand?: string; // Nullable, varchar(255)
-  product_purchased_from?: string; // Nullable, varchar(255)
-  product_link?: string; // Nullable, varchar(255)
-  product_img?: string; // Nullable, varchar(255)
-}
-
-export interface RecipeIngredient extends RowDataPacket, IngredientBase {}
-
-export type RecipeIngredientRequired = Omit<IngredientBase, "ingredient_id"> &
-  RowDataPacket & {
-    ingredient_id: number;
-  };
-
-interface RecipeTag extends RowDataPacket {
-  recipe_id: number; // Non-nullable, int
-  tag_id: number; // Non-nullable, int, with default 0
-  tag_name: string; // Non-nullable, varchar(100)
-}
-
-interface RecipeImgs extends RowDataPacket {
-  recipe_img: string; // Non-nullable, varchar(255)
-}
-
-interface RecipeProduct {
-  id: number;
-  name: string;
-  brand: string | null;
-  purchasedFrom: string | null;
-  link: string | null;
-  img: string | null;
-}
-
-interface Ingredient {
-  id: number;
-  name: string;
-  quantity: string;
-  ingredientId: number | null;
-  userProduct: RecipeProduct | null;
-  products: ClientRecipeProduct[] | null;
-}
-
-export interface ClientRecipeDetail {
-  id: number;
-  name: string;
-  description: string;
-  hours: number;
-  minutes: number;
-  steps: string[];
-  img: string;
-  ingredients: Ingredient[];
-  tags: { id: number; name: string }[];
-  user: { id: number; username: string; img: string | null };
-}
-export type ClientRecipeProduct = Omit<ClientProduct, "ingredient" | "key"> & {
-  ingredientId: number;
-};
+import {
+  ClientRecipeDetail,
+  ClientRecipeProduct,
+  RecipeImg,
+  RecipeIngredient,
+  RecipeIngredientRequired,
+  RecipeTag,
+} from "./type.js";
 
 export const getRecipeService = async (recipeId: string) => {
   const info = await getRecipeDetail(recipeId);
@@ -89,29 +34,7 @@ export const getRecipeService = async (recipeId: string) => {
     getRecipeUser(info.user_id),
   ]);
 
-  const result = generateRecipeInformation(info, imgs, ingredients, tags, user);
-  return result;
-};
-
-const generateRecipeInformation = (
-  info: RecipeInfo,
-  img: ClientRecipeDetail["img"],
-  ingredients: ClientRecipeDetail["ingredients"],
-  tags: ClientRecipeDetail["tags"],
-  user: ClientRecipeDetail["user"]
-): ClientRecipeDetail => {
-  return {
-    id: info.id,
-    name: info.name,
-    description: info.description ?? "",
-    hours: info.hours,
-    minutes: info.minutes,
-    steps: info.steps ? info.steps : [],
-    img,
-    ingredients,
-    tags,
-    user,
-  };
+  return generateRecipeInformation(info, imgs, ingredients, tags, user);
 };
 
 const getRecipeDetail = async (recipeId: string) => {
@@ -126,7 +49,7 @@ const getRecipeDetail = async (recipeId: string) => {
 };
 
 const getRecipeImgs = async (recipeId: string) => {
-  const [imgsData] = await mysqlDB.query<RecipeImgs[]>(
+  const [imgsData] = await mysqlDB.query<RecipeImg[]>(
     `SELECT recipe_img FROM recipe_img_view WHERE recipe_id = ?`,
     [recipeId]
   );
@@ -176,22 +99,13 @@ const getIngredients = async (recipeId: string) => {
     ingredientsData
   );
 
-  const ingredients: Ingredient[] = ingredientsData.map((ingredient) =>
-    generateClientRecipeIngredient(ingredient, ingredientIdWithProductsMap)
+  const ingredients: ClientRecipeDetail["ingredients"] = ingredientsData.map(
+    (ingredient) =>
+      generateClientRecipeIngredient(ingredient, ingredientIdWithProductsMap)
   );
 
   return ingredients;
 };
-
-const getIngredientIds = (ingredients: RecipeIngredient[]) =>
-  ingredients
-    .map((ingredient) => ingredient.ingredient_id)
-    .filter((id): id is number => id !== undefined);
-
-const getProductIds = (ingredients: RecipeIngredient[]) =>
-  ingredients
-    .map((ingredient) => ingredient.product_id)
-    .filter((id): id is number => id !== undefined);
 
 const getIngredientProductsMap = async (
   ingredientsData: RecipeIngredient[]
