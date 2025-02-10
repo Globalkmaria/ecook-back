@@ -5,7 +5,7 @@ import { validateId } from "../../../utils/numbers.js";
 import { ServiceError } from "../../../services/helpers/ServiceError.js";
 import { getRecipeService } from "../../../services/recipes/recipe/getRecipeService.js";
 
-export interface GetRecipeParams {
+interface GetRecipeParams {
   key: string;
 }
 
