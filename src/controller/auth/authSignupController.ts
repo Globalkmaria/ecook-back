@@ -39,7 +39,10 @@ export const signup = async (
     const { error, newUser } = await signupUser(user);
 
     if (error || !newUser) {
-      res.status(400).json({ message: error });
+      next({
+        status: 400,
+        message: error ?? "Something went wrong while signing up.",
+      });
       return;
     }
 
