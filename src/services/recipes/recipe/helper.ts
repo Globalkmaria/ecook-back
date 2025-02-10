@@ -7,10 +7,7 @@ import {
   RecipeIngredientRequired,
 } from "./type.js";
 import { config } from "../../../config/index.js";
-import {
-  sanitizeRecipeData,
-  generateRecipeKey,
-} from "../../../router/v1/recipes/helper.js";
+import { sanitizeRecipeData, generateRecipeKey } from "../helper.js";
 import { RecommendRecipe } from "../../../router/v1/recommend/type.js";
 import { decrypt } from "../../../utils/encrypt.js";
 import { shuffleArray } from "../../../utils/shuffle.js";

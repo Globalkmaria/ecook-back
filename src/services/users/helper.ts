@@ -1,4 +1,4 @@
-import { generateRecipeKey } from "../../router/v1/recipes/helper.js";
+import { generateRecipeKey } from "../recipes/helper.js";
 import {
   ClientRecipeSimple,
   RecipesSimple,

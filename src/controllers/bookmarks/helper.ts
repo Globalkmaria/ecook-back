@@ -1,5 +1,5 @@
 import { BookmarkRecipe } from "../../router/v1/bookmarks/index.js";
-import { generateRecipeKey } from "../../router/v1/recipes/helper.js";
+import { generateRecipeKey } from "../../services/recipes/helper.js";
 
 export const generateRecipeKeysForBookmarks = (bookmarks: BookmarkRecipe[]) =>
   bookmarks.map((bookmark) =>

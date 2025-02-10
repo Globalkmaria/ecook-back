@@ -1,5 +1,5 @@
 import { HomeRecipe } from "../../controllers/home/homeRecipesController.js";
-import { generateRecipeKey } from "../../router/v1/recipes/helper.js";
+import { generateRecipeKey } from "../recipes/helper.js";
 import { RecipesSimple } from "../../router/v1/recipes/recipes.js";
 import { getImgUrl } from "../../utils/img.js";
 import { splitString } from "../../utils/normalize.js";

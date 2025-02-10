@@ -5,7 +5,7 @@ import { validateId } from "../../../utils/numbers.js";
 import { ServiceError } from "../../../services/helpers/ServiceError.js";
 import { EditRecipe } from "../../../services/recipes/recipe/type.js";
 import { User } from "../../../services/recipes/recipe/type.js";
-import { generateRecipeKey } from "../../../router/v1/recipes/helper.js";
+import { generateRecipeKey } from "../../../services/recipes/helper.js";
 import { updateRecipeService } from "../../../services/recipes/recipe/updateRecipeService.js";
 
 type UpdateRecipeParams = {
