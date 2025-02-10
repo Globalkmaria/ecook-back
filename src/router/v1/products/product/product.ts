@@ -6,7 +6,7 @@ import mysqlDB from "../../../../db/mysql.js";
 import {
   decryptRecipeURLAndGetProductId,
   generateProductKey,
-} from "../helper.js";
+} from "../../../../services/products/helper.js";
 import { Product } from "../../../../services/products/type.js";
 import { ClientProduct } from "../../../../controllers/products/type.js";
 

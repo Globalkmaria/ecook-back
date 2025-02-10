@@ -1,7 +1,7 @@
 import express from "express";
 
 import { validateId } from "../../../../utils/numbers.js";
-import { decryptRecipeURLAndGetProductId } from "../helper.js";
+import { decryptRecipeURLAndGetProductId } from "../../../../services/products/helper.js";
 import { RecommendRecipe } from "../../recommend/type.js";
 import mysqlDB from "../../../../db/mysql.js";
 
