@@ -1,16 +1,19 @@
 import { NextFunction, Request, Response } from "express";
+
 import { SerializedUser } from "../../config/passport.js";
 import {
   addUserBookmark,
   getBookmarksByUserId,
   removeUserBookmark,
 } from "../../services/bookmarks/bookmarksService.js";
-import { generateRecipeKey } from "../../router/v1/recipes/helper.js";
 import { decryptRecipeURLAndGetRecipeId } from "../../router/v1/recipes/recipe/helper.js";
+import { generateRecipeKeysForBookmarks } from "./helper.js";
+
+type GetBookmarksResponse = string[] | { error: string };
 
 export const getBookmarks = async (
-  req: Request<{}, {}, {}, {}>,
-  res: Response<string[] | { error: string }>,
+  req: Request,
+  res: Response<GetBookmarksResponse>,
   next: NextFunction
 ) => {
   try {
@@ -19,9 +22,7 @@ export const getBookmarks = async (
 
     const bookmarks = await getBookmarksByUserId(userId);
 
-    const recipeKeys = bookmarks.map((bookmark) =>
-      generateRecipeKey(bookmark.recipe_id, bookmark.recipe_name)
-    );
+    const recipeKeys = generateRecipeKeysForBookmarks(bookmarks);
 
     res.json(recipeKeys);
   } catch (error) {
@@ -40,15 +41,17 @@ interface AddBookmarkParams {
   recipeKey?: string;
 }
 
+type AddBookmarkResponse = void | { error: string };
+
 export const addBookmark = async (
-  req: Request<{}, {}, {}, AddBookmarkParams>,
-  res: Response<void | { error: string }>,
+  req: Request<AddBookmarkParams, {}, {}>,
+  res: Response<AddBookmarkResponse>,
   next: NextFunction
 ) => {
   try {
     const user = req.user as SerializedUser;
     const userId = user.id;
-    const { recipeKey } = req.params as AddBookmarkParams;
+    const { recipeKey } = req.params;
 
     if (!recipeKey) {
       next({
@@ -86,15 +89,17 @@ interface RemoveBookmarkParams {
   recipeKey?: string;
 }
 
+type RemoveBookmarkResponse = void | { error: string };
+
 export const removeBookmark = async (
-  req: Request<{}, {}, {}, RemoveBookmarkParams>,
-  res: Response<void | { error: string }>,
+  req: Request<RemoveBookmarkParams>,
+  res: Response<RemoveBookmarkResponse>,
   next: NextFunction
 ) => {
   try {
     const user = req.user as SerializedUser;
     const userId = user.id;
-    const { recipeKey } = req.params as RemoveBookmarkParams;
+    const { recipeKey } = req.params;
 
     if (!recipeKey) {
       next({
