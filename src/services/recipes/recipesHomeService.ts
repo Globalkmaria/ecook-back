@@ -1,3 +1,4 @@
+import { HomeRecipe } from "../../controller/recipes/recipesHomeController.js";
 import { generateRecipeKey } from "../../router/v1/recipes/helper.js";
 import { RecipesSimple } from "../../router/v1/recipes/recipes.js";
 import { getImgUrl } from "../../utils/img.js";
@@ -9,12 +10,12 @@ export const homeRecipesService = async () => {
   return formatHomeRecipes(result);
 };
 
-const formatHomeRecipes = (data: RecipesSimple[]) =>
+const formatHomeRecipes = (data: RecipesSimple[]): HomeRecipe[] =>
   data.map((recipe) => {
     const tagIds = splitString(recipe.tag_ids);
     const tagNames = splitString(recipe.tag_names);
     const tags = tagIds.map((id, index) => ({
-      id: parseInt(id, 10),
+      id: Number(id),
       name: tagNames[index],
     }));
 

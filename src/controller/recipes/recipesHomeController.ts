@@ -10,9 +10,11 @@ export interface HomeRecipe extends ClientRecipeSimple {
   user: { username: string };
 }
 
+type HomeRecipeResponse = HomeRecipe[] | { error: string };
+
 export const homeRecipes = async (
-  req: Request<{}, {}, {}, {}>,
-  res: Response<HomeRecipe[] | { error: string }>,
+  req: Request,
+  res: Response<HomeRecipeResponse>,
   next: NextFunction
 ) => {
   try {
@@ -20,7 +22,11 @@ export const homeRecipes = async (
     res.status(200).json(result);
   } catch (error) {
     if (error instanceof Error) {
-      res.status(400).json({ error: error.message });
+      next({
+        status: 400,
+        message: error.message,
+        error,
+      });
     }
     next(error);
   }
