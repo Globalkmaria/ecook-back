@@ -5,7 +5,7 @@ import recommendRouter from "./recommend.js";
 
 const router = express.Router();
 
-router.use("/:key", productRouter);
-router.use("/:key/recommend", recommendRouter);
+router.use("/", productRouter);
+router.use("/", recommendRouter);
 
 export default router;

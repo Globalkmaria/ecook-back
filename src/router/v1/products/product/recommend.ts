@@ -4,6 +4,6 @@ import { getProductRecommendation } from "../../../../controllers/products/produ
 
 const router = express.Router();
 
-router.get("/", getProductRecommendation);
+router.get("/:key/recommend", getProductRecommendation);
 
 export default router;
