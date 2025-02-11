@@ -38,11 +38,11 @@ export const recommendRecipes = async () => {
 };
 
 export const getRecentRecipes = async (limit: number) => {
-  const result = await mysqlDB.query<RecipesSimple[]>(
+  const [result] = await mysqlDB.query<RecipesSimple[]>(
     `SELECT * FROM recipes_simple_view ORDER BY created_at DESC LIMIT ?`,
     [limit]
   );
-  return result[0];
+  return result;
 };
 
 const searchByName = async (query: string) => {

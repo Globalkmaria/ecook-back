@@ -52,7 +52,7 @@ const getRecipeImgs = async (recipeId: string) => {
     [recipeId]
   );
 
-  return getImgUrl(imgs[0].recipe_img, true);
+  return getImgUrl(imgs[0]?.recipe_img, true);
 };
 
 const getRecipeTags = async (recipeId: string) => {
@@ -95,16 +95,14 @@ const getRecipeIngredientsWithProducts = async (
 ): Promise<ClientRecipeDetail["ingredients"]> => {
   const ingredients = await getRecipeIngredients(recipeId);
 
-  const map = await getIngredientProductsMap(ingredients);
+  const ingredientAlternativeProductsMap = await getOtherProducts(ingredients);
 
   return ingredients.map((ingredient) =>
-    generateClientRecipeIngredient(ingredient, map)
+    generateClientRecipeIngredient(ingredient, ingredientAlternativeProductsMap)
   );
 };
 
-const getIngredientProductsMap = async (
-  ingredientsData: RecipeIngredient[]
-) => {
+const getOtherProducts = async (ingredientsData: RecipeIngredient[]) => {
   const products = await getProducts(ingredientsData);
   const map: Map<number, ClientRecipeProduct[]> = new Map();
 
@@ -134,11 +132,12 @@ const getProducts = async (ingredientsData: RecipeIngredient[]) => {
   const [products] = await mysqlDB.query<RecipeIngredientRequired[]>(
     `WITH RankedProducts AS (
         SELECT 
-            ip.ingredient_id, 
-            ip.ingredient_name, 
+            i.id as ingredient_id, 
+            i.name as ingredient_name, 
             pdv.*, 
             ROW_NUMBER() OVER (PARTITION BY ip.ingredient_id ORDER BY ip.ingredient_id) AS row_num
         FROM ingredient_products ip
+        JOIN ingredients i ON i.id = ip.ingredient_id
         JOIN product_detail_view pdv ON pdv.id = ip.product_id
         WHERE ip.ingredient_id IN (?) 
             AND pdv.id NOT IN (?)
@@ -150,6 +149,7 @@ const getProducts = async (ingredientsData: RecipeIngredient[]) => {
     `,
     [ingredientIdsPlaceholder, productIdsPlaceholder]
   );
+  console.log(products);
 
   return products;
 };
