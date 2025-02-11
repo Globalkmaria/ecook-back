@@ -75,7 +75,7 @@ const searchByUsername = async (query: string): Promise<SearchProductsData> => {
   );
 
   return {
-    ingredientId: products[0].ingredient_id,
+    ingredientId: products[0]?.ingredient_id,
     products,
   };
 };
