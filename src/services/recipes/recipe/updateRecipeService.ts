@@ -197,17 +197,14 @@ const deleteRecipeTags = async ({
   tagsToDelete: string[];
   connection: PoolConnection;
 }) => {
-  const [tagsIds] = await connection.query<RowDataPacket[]>(
-    `SELECT id FROM tags WHERE name IN (?)`,
-    [tagsToDelete]
-  );
-
-  const tagIdsArray = tagsIds.map((tag) => tag.id);
-  const placeholders = arrayToPlaceholders(tagIdsArray);
-
+  const placeholders = arrayToPlaceholders(tagsToDelete);
   await connection.execute(
-    `DELETE FROM recipe_tags WHERE recipe_id = ? AND tag_id IN (${placeholders})`,
-    [recipeId, ...tagIdsArray]
+    `DELETE rt
+      FROM recipe_tags rt
+      JOIN tags t ON rt.tag_id = t.id
+      WHERE rt.recipe_id = ? 
+        AND t.name IN (${placeholders});`,
+    [recipeId, ...tagsToDelete]
   );
 };
 

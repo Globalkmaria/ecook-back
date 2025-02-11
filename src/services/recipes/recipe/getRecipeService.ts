@@ -149,7 +149,6 @@ const getProducts = async (ingredientsData: RecipeIngredient[]) => {
     `,
     [ingredientIdsPlaceholder, productIdsPlaceholder]
   );
-  console.log(products);
 
   return products;
 };
