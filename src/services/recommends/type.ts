@@ -13,8 +13,11 @@ export interface RecommendRecipe extends RowDataPacket {
   recipe_img: string;
   user_username: string;
   user_img: string;
-  option_name: string;
 }
+
+export type RecommendRecipeWithOption = {
+  option_name: string;
+} & RecommendRecipe;
 
 export type HomeRecommendRecipe = {
   option: string;

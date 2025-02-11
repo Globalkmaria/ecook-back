@@ -1,6 +1,6 @@
 import mysqlDB from "../../db/mysql.js";
 import { groupRecommendRecipesByOptionName } from "./helper.js";
-import { HomeRecommendRecipe, RecommendRecipe } from "./type.js";
+import { HomeRecommendRecipe, RecommendRecipeWithOption } from "./type.js";
 import { arrayToPlaceholders } from "../../utils/query.js";
 import mysqlDB2 from "../../db/mysql2.js";
 import { Recommend } from "./type.js";
@@ -17,7 +17,7 @@ export const getTagRecommend = async (): Promise<{
   const tagValues = tagsData.map((type) => type.value);
   const tagPlaceholder = arrayToPlaceholders(tagValues);
 
-  const [recipes] = await mysqlDB.query<RecommendRecipe[]>(
+  const [recipes] = await mysqlDB.query<RecommendRecipeWithOption[]>(
     `WITH RankedRecipes AS (
         SELECT	
             tag_id, 
@@ -68,7 +68,7 @@ export const getIngredientRecommend = async (): Promise<{
   const ingredientValues = ingredientsData.map((type) => type.value);
   const ingredientPlaceholder = arrayToPlaceholders(ingredientValues);
 
-  const [ingredientsRecipes] = await mysqlDB.query<RecommendRecipe[]>(
+  const [ingredientsRecipes] = await mysqlDB.query<RecommendRecipeWithOption[]>(
     `WITH LatestRecipes AS (
         SELECT 
         r.id recipe_id, 
