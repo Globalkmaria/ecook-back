@@ -219,11 +219,11 @@ const insetRecipeTags = async ({
   tagsToInsert: string[];
   connection: PoolConnection;
 }) => {
+  const placeholders = tagsToInsert.map(() => "(?, ?)").join(", ");
+  const values = tagsToInsert.flatMap((tag) => [userId, tag]);
   await connection.execute(
-    `INSERT IGNORE INTO tags (user_id, name) VALUES ${tagsToInsert
-      .map(() => "(?, ?)")
-      .join(", ")}`,
-    tagsToInsert.flatMap((tag) => [userId, tag])
+    `INSERT IGNORE INTO tags (user_id, name) VALUES ${placeholders}`,
+    values
   );
 
   const [tagsIds] = await connection.query<RowDataPacket[]>(
@@ -231,11 +231,12 @@ const insetRecipeTags = async ({
     [tagsToInsert]
   );
 
+  const placeholders2 = tagsToInsert.map(() => `(${recipeId}, ?)`).join(", ");
+  const values2 = tagsIds.map((tag) => tag.id);
+
   await connection.execute(
-    `INSERT INTO recipe_tags (recipe_id, tag_id) VALUES ${tagsToInsert
-      .map(() => `(${recipeId}, ?)`)
-      .join(", ")}`,
-    tagsIds.map((tag) => tag.id)
+    `INSERT INTO recipe_tags (recipe_id, tag_id) VALUES ${placeholders2}`,
+    values2
   );
 };
 
