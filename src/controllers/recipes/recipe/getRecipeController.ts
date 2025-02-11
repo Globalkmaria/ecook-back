@@ -33,6 +33,7 @@ export const getRecipe = async (
     next({
       status: 400,
       message: "Error getting recipe",
+      error,
     });
   }
 };

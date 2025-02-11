@@ -12,7 +12,9 @@ import {
   insertRecipe,
   insertRecipeImage,
   insertTags,
+  isRequiredFieldsPresent,
 } from "./helper.js";
+import { ServiceError } from "../../helpers/ServiceError.js";
 
 export const createRecipeService = async (
   req: Request<{}, {}, CreateRecipeBody>
@@ -30,19 +32,15 @@ export const createRecipeService = async (
 
     const info = JSON.parse(req.body.info) as INewRecipe;
 
-    // check if required fields are present
-    if (!info.name || !info.steps || !filesKeys.has("img")) {
-      throw new Error("Missing required fields");
-    }
+    if (!isRequiredFieldsPresent(info))
+      throw new ServiceError(400, "Missing required fields");
 
-    // recipe
+    const recipeImg = filesKeys.get("img");
+    if (!recipeImg) throw new ServiceError(400, "Missing recipe image");
+
     const recipeId = await insertRecipe(info, userId, connection);
 
-    // recipe main img required
-    const img = filesKeys.get("img");
-    if (img) {
-      await insertRecipeImage(recipeId, img, userId, connection);
-    }
+    await insertRecipeImage(recipeId, recipeImg, userId, connection);
 
     if (info.tags.length) {
       await insertTags(info.tags, userId, recipeId, connection);

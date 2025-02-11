@@ -20,15 +20,14 @@ export const updateRecipeService = async ({
   const connection = await mysqlDB.getConnection();
   try {
     await connection.beginTransaction();
-    const currentRecipe = await getRecipe(recipeId, userId);
+    const oldRecipe = await getRecipe({ recipeId, userId });
 
-    if (!currentRecipe)
+    if (!oldRecipe)
       throw new ServiceError(404, "Recipe not found or unauthorized");
 
-    if (currentRecipe.user_id !== userId)
-      throw new ServiceError(403, "Forbidden");
+    if (oldRecipe.user_id !== userId) throw new ServiceError(403, "Forbidden");
 
-    await updateRecipeInfo(currentRecipe, info, connection);
+    await updateRecipeInfo({ oldRecipe, newRecipe: info, connection });
 
     await updateImg({
       recipeId,
@@ -65,7 +64,13 @@ export const updateRecipeService = async ({
   }
 };
 
-const getRecipe = async (recipeId: string, userId: number) => {
+const getRecipe = async ({
+  recipeId,
+  userId,
+}: {
+  recipeId: string;
+  userId: number;
+}) => {
   const [recipe] = await mysqlDB.execute<RecipeInfo[]>(
     `SELECT * FROM recipes WHERE id = ? AND user_id = ?`,
     [recipeId, userId]
@@ -74,12 +79,16 @@ const getRecipe = async (recipeId: string, userId: number) => {
   return recipe[0];
 };
 
-const updateRecipeInfo = async (
-  currentRecipe: RecipeInfo,
-  newRecipe: EditRecipe,
-  connection: PoolConnection
-) => {
-  const updates = getUpdatedRecipeData(newRecipe, currentRecipe);
+const updateRecipeInfo = async ({
+  oldRecipe,
+  newRecipe,
+  connection,
+}: {
+  oldRecipe: RecipeInfo;
+  newRecipe: EditRecipe;
+  connection: PoolConnection;
+}) => {
+  const updates = getUpdatedRecipeData({ newRecipe, oldRecipe });
 
   if (!updates.size) return;
 
@@ -91,7 +100,7 @@ const updateRecipeInfo = async (
 
   await connection.execute(
     `UPDATE recipes SET ${updateFieldsPlaceholder} WHERE id = ?`,
-    [...updateValues, currentRecipe.id]
+    [...updateValues, oldRecipe.id]
   );
 };
 
@@ -180,7 +189,9 @@ const getRecipeTagsToInsertAndDelete = async ({
   const [existingTags] = await connection.query<
     (RowDataPacket & { name: string })[]
   >(
-    `SELECT name FROM tags WHERE id IN (SELECT tag_id FROM recipe_tags WHERE recipe_id = ?)`,
+    `SELECT name FROM tags 
+    WHERE id 
+      IN (SELECT tag_id FROM recipe_tags WHERE recipe_id = ?)`,
     [recipeId]
   );
 
@@ -197,17 +208,14 @@ const deleteRecipeTags = async ({
   tagsToDelete: string[];
   connection: PoolConnection;
 }) => {
-  const [tagsIds] = await connection.query<RowDataPacket[]>(
-    `SELECT id FROM tags WHERE name IN (?)`,
-    [tagsToDelete]
-  );
-
-  const tagIdsArray = tagsIds.map((tag) => tag.id);
-  const placeholders = arrayToPlaceholders(tagIdsArray);
-
+  const placeholders = arrayToPlaceholders(tagsToDelete);
   await connection.execute(
-    `DELETE FROM recipe_tags WHERE recipe_id = ? AND tag_id IN (${placeholders})`,
-    [recipeId, ...tagIdsArray]
+    `DELETE rt
+      FROM recipe_tags rt
+      JOIN tags t ON rt.tag_id = t.id
+      WHERE rt.recipe_id = ? 
+        AND t.name IN (${placeholders});`,
+    [recipeId, ...tagsToDelete]
   );
 };
 
@@ -222,11 +230,11 @@ const insetRecipeTags = async ({
   tagsToInsert: string[];
   connection: PoolConnection;
 }) => {
+  const placeholders = tagsToInsert.map(() => "(?, ?)").join(", ");
+  const values = tagsToInsert.flatMap((tag) => [userId, tag]);
   await connection.execute(
-    `INSERT IGNORE INTO tags (user_id, name) VALUES ${tagsToInsert
-      .map(() => "(?, ?)")
-      .join(", ")}`,
-    tagsToInsert.flatMap((tag) => [userId, tag])
+    `INSERT IGNORE INTO tags (user_id, name) VALUES ${placeholders}`,
+    values
   );
 
   const [tagsIds] = await connection.query<RowDataPacket[]>(
@@ -234,11 +242,12 @@ const insetRecipeTags = async ({
     [tagsToInsert]
   );
 
+  const placeholders2 = tagsToInsert.map(() => `(${recipeId}, ?)`).join(", ");
+  const values2 = tagsIds.map((tag) => tag.id);
+
   await connection.execute(
-    `INSERT INTO recipe_tags (recipe_id, tag_id) VALUES ${tagsToInsert
-      .map(() => `(${recipeId}, ?)`)
-      .join(", ")}`,
-    tagsIds.map((tag) => tag.id)
+    `INSERT INTO recipe_tags (recipe_id, tag_id) VALUES ${placeholders2}`,
+    values2
   );
 };
 
@@ -281,11 +290,11 @@ const updateIngredients = async ({
   userId: number;
   filesKeys: Map<string, string>;
 }) => {
+  if (!ingredients.length) return;
+
   const ingredientNames = ingredients.map((ingredient) =>
     lightSlugify(ingredient.name)
   );
-
-  if (!ingredients.length) return;
 
   await insertIngredients({ ingredientNames, userId, connection });
 
@@ -372,10 +381,9 @@ const insertIngredients = async ({
   userId: number;
   connection: PoolConnection;
 }) => {
+  const placeholder = ingredientNames.map(() => `(?, ${userId})`).join(", ");
   await connection.execute(
-    `INSERT IGNORE INTO ingredients (name, user_id) VALUES ${ingredientNames
-      .map(() => `(?, ${userId})`)
-      .join(", ")}`,
+    `INSERT IGNORE INTO ingredients (name, user_id) VALUES ${placeholder}`,
     ingredientNames
   );
 };
@@ -418,9 +426,11 @@ const createNewProduct = async ({
   newProduct: IngredientNewProduct;
   connection: PoolConnection;
 }) => {
+  const values = [userId, ...getNewProductData(newProduct)];
+  const placeholder = arrayToPlaceholders(values);
   const [newProductId] = await connection.execute<ResultSetHeader>(
-    `INSERT INTO products (user_id, name, brand, purchased_from, link) VALUES (?,?,?,?,?)`,
-    [userId, ...getNewProductData(newProduct)]
+    `INSERT INTO products (user_id, name, brand, purchased_from, link) VALUES (${placeholder})`,
+    values
   );
 
   return newProductId.insertId;
@@ -483,14 +493,18 @@ const linkRecipeWithIngredient = async ({
   ingredient: EditRecipe["ingredients"][0];
   connection: PoolConnection;
 }) => {
+  const values = [
+    recipeId,
+    ingredientId ?? null,
+    productId ?? null,
+    ingredient.name,
+    ingredient.quantity,
+  ];
+  const placeholder = arrayToPlaceholders(values);
   await connection.execute<ResultSetHeader>(
-    `INSERT INTO recipe_ingredients (recipe_id, ingredient_id, product_id, name, quantity) VALUES (?,?,?,?, ?)`,
-    [
-      recipeId,
-      ingredientId ?? null,
-      productId ?? null,
-      ingredient.name,
-      ingredient.quantity,
-    ]
+    `INSERT INTO recipe_ingredients 
+      (recipe_id, ingredient_id, product_id, name, quantity) 
+      VALUES (${placeholder})`,
+    values
   );
 };

@@ -31,7 +31,7 @@ export const deleteRecipe = async (
 
     await deleteRecipeById(recipeId);
 
-    return res.status(200);
+    return res.status(204).send("Recipe deleted");
   } catch (error) {
     next({
       statue: 400,

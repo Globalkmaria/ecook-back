@@ -74,6 +74,7 @@ export type UpdateRecipeServiceParams = {
   info: EditRecipe;
   filesKeys: Map<string, string>;
 };
+
 export interface RecipeInfo extends RowDataPacket {
   id: number; // Primary key, auto_increment
   name: string; // Non-nullable, varchar(50)
@@ -84,6 +85,13 @@ export interface RecipeInfo extends RowDataPacket {
   steps: string[]; // Json string[], JSON type in TypeScript as Record<string, any> or object
   created_at: Date; // Timestamp with CURRENT_TIMESTAMP default
   updated_at: Date; // Timestamp with auto-update on change
+}
+
+export interface RecipeInfoWithUser extends RecipeInfo {
+  recipe_img: string;
+  user_id: number;
+  user_username: string;
+  user_img: string | null;
 }
 
 export interface User extends RowDataPacket {

@@ -6,11 +6,11 @@ import { Product } from "../type.js";
 export const getProductDetail = async (productId: string) => {
   const [data] = await mysqlDB.query<Product[]>(
     `SELECT p.*, i.id ingredient_id, i.name ingredient_name
-            FROM product_detail_view p
-            JOIN ingredient_products ip ON p.id = ip.product_id
-            JOIN ingredients i ON i.id = ip.ingredient_id
-            WHERE p.id = ?;
-        `,
+      FROM product_detail_view p
+      JOIN ingredient_products ip ON p.id = ip.product_id
+      JOIN ingredients i ON i.id = ip.ingredient_id
+      WHERE p.id = ?;
+    `,
     [productId]
   );
 

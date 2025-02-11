@@ -1,10 +1,6 @@
 import mysqlDB from "../../../db/mysql.js";
-import { UserSimple } from "./type.js";
-import { RecipeInfo } from "./type.js";
-import { getImgUrl } from "../../../utils/img.js";
+import { RecipeInfoWithUser } from "./type.js";
 import { ServiceError } from "../../helpers/ServiceError.js";
-
-import { arrayToPlaceholders } from "../../../utils/query.js";
 
 import {
   generateClientRecipeIngredient,
@@ -16,43 +12,30 @@ import {
 import {
   ClientRecipeDetail,
   ClientRecipeProduct,
-  RecipeImg,
   RecipeIngredient,
   RecipeIngredientRequired,
   RecipeTag,
 } from "./type.js";
 
 export const getRecipeService = async (recipeId: string) => {
-  const info = await getRecipeDetail(recipeId);
-
-  const [imgs, ingredients, tags, user] = await Promise.all([
-    getRecipeImgs(recipeId),
+  const [info, ingredients, tags] = await Promise.all([
+    getRecipeDetail(recipeId),
     getRecipeIngredientsWithProducts(recipeId),
     getRecipeTags(recipeId),
-    getRecipeUser(info.user_id),
   ]);
 
-  return generateRecipeInformation(info, imgs, ingredients, tags, user);
+  return generateRecipeInformation({ info, ingredients, tags });
 };
 
 const getRecipeDetail = async (recipeId: string) => {
-  const [recipes] = await mysqlDB.query<RecipeInfo[]>(
-    `SELECT * FROM recipes where recipes.id = ?`,
+  const [recipes] = await mysqlDB.query<RecipeInfoWithUser[]>(
+    `SELECT * FROM recipe_with_user_info_view r where r.id = ?`,
     [recipeId]
   );
 
   if (!recipes) throw new ServiceError(404, "Recipe not found");
 
   return recipes[0];
-};
-
-const getRecipeImgs = async (recipeId: string) => {
-  const [imgs] = await mysqlDB.query<RecipeImg[]>(
-    `SELECT recipe_img FROM recipe_img_view WHERE recipe_id = ?`,
-    [recipeId]
-  );
-
-  return getImgUrl(imgs[0].recipe_img, true);
 };
 
 const getRecipeTags = async (recipeId: string) => {
@@ -64,22 +47,6 @@ const getRecipeTags = async (recipeId: string) => {
     id: tag.tag_id,
     name: tag.tag_name,
   }));
-};
-
-const getRecipeUser = async (
-  userId: number
-): Promise<ClientRecipeDetail["user"]> => {
-  const [users] = await mysqlDB.query<UserSimple[]>(
-    `SELECT * FROM users_simple_view WHERE id = ?`,
-    [userId]
-  );
-
-  const user = users[0];
-  return {
-    id: user.id,
-    username: user.username,
-    img: getImgUrl(user.img, true),
-  };
 };
 
 const getRecipeIngredients = async (recipeId: string) => {
@@ -95,16 +62,14 @@ const getRecipeIngredientsWithProducts = async (
 ): Promise<ClientRecipeDetail["ingredients"]> => {
   const ingredients = await getRecipeIngredients(recipeId);
 
-  const map = await getIngredientProductsMap(ingredients);
+  const ingredientAlternativeProductsMap = await getOtherProducts(ingredients);
 
   return ingredients.map((ingredient) =>
-    generateClientRecipeIngredient(ingredient, map)
+    generateClientRecipeIngredient(ingredient, ingredientAlternativeProductsMap)
   );
 };
 
-const getIngredientProductsMap = async (
-  ingredientsData: RecipeIngredient[]
-) => {
+const getOtherProducts = async (ingredientsData: RecipeIngredient[]) => {
   const products = await getProducts(ingredientsData);
   const map: Map<number, ClientRecipeProduct[]> = new Map();
 
@@ -128,17 +93,15 @@ const getProducts = async (ingredientsData: RecipeIngredient[]) => {
 
   if (!ingredientIds.length || !productIds.length) return [];
 
-  const ingredientIdsPlaceholder = arrayToPlaceholders(ingredientIds);
-  const productIdsPlaceholder = arrayToPlaceholders(productIds);
-
   const [products] = await mysqlDB.query<RecipeIngredientRequired[]>(
     `WITH RankedProducts AS (
         SELECT 
-            ip.ingredient_id, 
-            ip.ingredient_name, 
+            i.id as ingredient_id, 
+            i.name as ingredient_name, 
             pdv.*, 
             ROW_NUMBER() OVER (PARTITION BY ip.ingredient_id ORDER BY ip.ingredient_id) AS row_num
         FROM ingredient_products ip
+        JOIN ingredients i ON i.id = ip.ingredient_id
         JOIN product_detail_view pdv ON pdv.id = ip.product_id
         WHERE ip.ingredient_id IN (?) 
             AND pdv.id NOT IN (?)
@@ -148,7 +111,7 @@ const getProducts = async (ingredientsData: RecipeIngredient[]) => {
     WHERE row_num <= ${limit}
     ORDER BY ingredient_id, row_num;
     `,
-    [ingredientIdsPlaceholder, productIdsPlaceholder]
+    [ingredientIds, productIds]
   );
 
   return products;
