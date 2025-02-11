@@ -1,7 +1,5 @@
 import mysqlDB from "../../../db/mysql.js";
-import { UserSimple } from "./type.js";
-import { RecipeInfo } from "./type.js";
-import { getImgUrl } from "../../../utils/img.js";
+import { RecipeInfoWithUser } from "./type.js";
 import { ServiceError } from "../../helpers/ServiceError.js";
 
 import { arrayToPlaceholders } from "../../../utils/query.js";
@@ -16,43 +14,30 @@ import {
 import {
   ClientRecipeDetail,
   ClientRecipeProduct,
-  RecipeImg,
   RecipeIngredient,
   RecipeIngredientRequired,
   RecipeTag,
 } from "./type.js";
 
 export const getRecipeService = async (recipeId: string) => {
-  const info = await getRecipeDetail(recipeId);
-
-  const [imgs, ingredients, tags, user] = await Promise.all([
-    getRecipeImgs(recipeId),
+  const [info, ingredients, tags] = await Promise.all([
+    getRecipeDetail(recipeId),
     getRecipeIngredientsWithProducts(recipeId),
     getRecipeTags(recipeId),
-    getRecipeUser(info.user_id),
   ]);
 
-  return generateRecipeInformation(info, imgs, ingredients, tags, user);
+  return generateRecipeInformation({ info, ingredients, tags });
 };
 
 const getRecipeDetail = async (recipeId: string) => {
-  const [recipes] = await mysqlDB.query<RecipeInfo[]>(
-    `SELECT * FROM recipes where recipes.id = ?`,
+  const [recipes] = await mysqlDB.query<RecipeInfoWithUser[]>(
+    `SELECT * FROM recipe_with_user_info_view r where r.id = ?`,
     [recipeId]
   );
 
   if (!recipes) throw new ServiceError(404, "Recipe not found");
 
   return recipes[0];
-};
-
-const getRecipeImgs = async (recipeId: string) => {
-  const [imgs] = await mysqlDB.query<RecipeImg[]>(
-    `SELECT recipe_img FROM recipe_img_view WHERE recipe_id = ?`,
-    [recipeId]
-  );
-
-  return getImgUrl(imgs[0]?.recipe_img, true);
 };
 
 const getRecipeTags = async (recipeId: string) => {
@@ -64,22 +49,6 @@ const getRecipeTags = async (recipeId: string) => {
     id: tag.tag_id,
     name: tag.tag_name,
   }));
-};
-
-const getRecipeUser = async (
-  userId: number
-): Promise<ClientRecipeDetail["user"]> => {
-  const [users] = await mysqlDB.query<UserSimple[]>(
-    `SELECT * FROM users_simple_view WHERE id = ?`,
-    [userId]
-  );
-
-  const user = users[0];
-  return {
-    id: user.id,
-    username: user.username,
-    img: getImgUrl(user.img, true),
-  };
 };
 
 const getRecipeIngredients = async (recipeId: string) => {

@@ -1,4 +1,4 @@
-import { EditRecipe, RecipeInfo } from "./type.js";
+import { EditRecipe, RecipeInfo, RecipeInfoWithUser } from "./type.js";
 import { getImgUrl } from "../../../utils/img.js";
 import {
   ClientRecipeDetail,
@@ -62,20 +62,30 @@ export const getProductIds = (ingredients: RecipeIngredient[]) =>
     .map((ingredient) => ingredient.product_id)
     .filter((id): id is number => id !== undefined);
 
-export const generateRecipeInformation = (
-  info: RecipeInfo,
-  img: ClientRecipeDetail["img"],
-  ingredients: ClientRecipeDetail["ingredients"],
-  tags: ClientRecipeDetail["tags"],
-  user: ClientRecipeDetail["user"]
-): ClientRecipeDetail => {
+export const generateRecipeInformation = ({
+  info,
+  ingredients,
+  tags,
+}: {
+  info: RecipeInfoWithUser;
+  ingredients: ClientRecipeDetail["ingredients"];
+  tags: ClientRecipeDetail["tags"];
+}): ClientRecipeDetail => {
+  const user = {
+    id: info.user_id,
+    username: info.user_username,
+    img: getImgUrl(info.user_img, true),
+  };
+
+  const img = getImgUrl(info.recipe_img, true);
+
   return {
     id: info.id,
     name: info.name,
     description: info.description ?? "",
     hours: info.hours,
     minutes: info.minutes,
-    steps: info.steps ? info.steps : [],
+    steps: info.steps ?? [],
     img,
     ingredients,
     tags,
