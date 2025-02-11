@@ -39,10 +39,10 @@ const getRecipes = async (product: Product) => {
 const getProductData = async (productId: string) => {
   const [productData] = await mysqlDB.query<Product[]>(
     `SELECT p.*, i.id ingredient_id, i.name ingredient_name
-        FROM product_detail_view p
-        JOIN ingredient_products ip ON p.id = ip.product_id
-        JOIN ingredients i ON i.id = ip.ingredient_id
-        WHERE p.id = ?;
+      FROM product_detail_view p
+      JOIN ingredient_products ip ON p.id = ip.product_id
+      JOIN ingredients i ON i.id = ip.ingredient_id
+      WHERE p.id = ?;
     `,
     [productId]
   );
@@ -53,16 +53,11 @@ const getProductRecipes = async (productId: number) => {
   const [product_recipes] = await mysqlDB.query<RecommendRecipe[]>(
     `SELECT r.id recipe_id
             , r.name recipe_name
-            , recipe_img_view.recipe_img recipe_img
-            , u.username user_username
-            , u.img user_img
+            , r.recipe_img
+            , r.user_username
+            , r.user_img
         FROM recipe_ingredients  ri
-        JOIN recipes r 
-            ON ri.recipe_id = r.id
-        JOIN recipe_img_view
-            ON r.id = recipe_img_view.recipe_id
-        JOIN users_simple_view u
-            ON u.id = r.user_id
+        JOIN recipe_with_user_info_view r 
         WHERE 
             ri.product_id = ?
         LIMIT 8
@@ -77,16 +72,11 @@ const getIngredientRecipes = async (ingredientId: number) => {
   const [ingredientRecipes] = await mysqlDB.query<RecommendRecipe[]>(
     `SELECT r.id recipe_id
             , r.name recipe_name
-            , recipe_img_view.recipe_img recipe_img
-            , u.username user_username
-            , u.img user_img
+            , r.recipe_img
+            , r.user_username
+            , r.user_img
         FROM recipe_ingredients  ri
-        JOIN recipes r 
-            ON ri.recipe_id = r.id
-        JOIN recipe_img_view
-            ON r.id = recipe_img_view.recipe_id
-        JOIN users_simple_view u
-            ON u.id = r.user_id
+        JOIN recipe_with_user_info_view r 
         WHERE 
             ri.ingredient_id = ?
         LIMIT 8
