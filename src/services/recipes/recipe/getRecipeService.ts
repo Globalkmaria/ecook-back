@@ -2,8 +2,6 @@ import mysqlDB from "../../../db/mysql.js";
 import { RecipeInfoWithUser } from "./type.js";
 import { ServiceError } from "../../helpers/ServiceError.js";
 
-import { arrayToPlaceholders } from "../../../utils/query.js";
-
 import {
   generateClientRecipeIngredient,
   generateClientRecipeProduct,
@@ -95,9 +93,6 @@ const getProducts = async (ingredientsData: RecipeIngredient[]) => {
 
   if (!ingredientIds.length || !productIds.length) return [];
 
-  const ingredientIdsPlaceholder = arrayToPlaceholders(ingredientIds);
-  const productIdsPlaceholder = arrayToPlaceholders(productIds);
-
   const [products] = await mysqlDB.query<RecipeIngredientRequired[]>(
     `WITH RankedProducts AS (
         SELECT 
@@ -116,7 +111,7 @@ const getProducts = async (ingredientsData: RecipeIngredient[]) => {
     WHERE row_num <= ${limit}
     ORDER BY ingredient_id, row_num;
     `,
-    [ingredientIdsPlaceholder, productIdsPlaceholder]
+    [ingredientIds, productIds]
   );
 
   return products;
