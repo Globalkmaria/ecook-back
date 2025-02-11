@@ -108,21 +108,25 @@ export const decryptRecipeURLAndGetRecipeId = (url: string) => {
   return recipeId;
 };
 
-export const getUpdatedRecipeData = (
-  info: EditRecipe,
-  currentRecipe: RecipeInfo
-) => {
+export const getUpdatedRecipeData = ({
+  newRecipe,
+  oldRecipe,
+}: {
+  newRecipe: EditRecipe;
+  oldRecipe: RecipeInfo;
+}) => {
   const updates = new Map<string, any>();
 
-  const { name, hours, minutes, description, steps } = sanitizeRecipeData(info);
+  const { name, hours, minutes, description, steps } =
+    sanitizeRecipeData(newRecipe);
 
-  if (name !== currentRecipe.name) updates.set("name", name);
-  if (hours !== currentRecipe.hours) updates.set("hours", hours);
-  if (minutes !== currentRecipe.minutes) updates.set("minutes", minutes);
-  if (description !== currentRecipe.description)
+  if (name !== oldRecipe.name) updates.set("name", name);
+  if (hours !== oldRecipe.hours) updates.set("hours", hours);
+  if (minutes !== oldRecipe.minutes) updates.set("minutes", minutes);
+  if (description !== oldRecipe.description)
     updates.set("description", description);
-  if (steps.join("") !== currentRecipe.steps.join(""))
-    updates.set("steps", info.steps);
+  if (steps.join("") !== oldRecipe.steps.join(""))
+    updates.set("steps", newRecipe.steps);
 
   return updates;
 };

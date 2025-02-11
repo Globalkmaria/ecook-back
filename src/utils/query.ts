@@ -1,2 +1,5 @@
-export const arrayToPlaceholders = <T extends number | string>(array: T[]) =>
-  array.map(() => "?").join(", ");
+export const arrayToPlaceholders = <T extends any>(array: T[]) =>
+  Array(array.length)
+    .fill(1)
+    .map(() => "?")
+    .join(", ");

@@ -6,15 +6,19 @@ import {
 } from "../../../router/v1/recipes/recipes.js";
 import { getNewProductData, getNewRecipeData } from "../helper.js";
 import { lightSlugify } from "../../../utils/normalize.js";
+import { arrayToPlaceholders } from "../../../utils/query.js";
 
 export const insertRecipe = async (
   info: INewRecipe,
   userId: number,
   connection: PoolConnection
 ): Promise<number> => {
+  const values = getNewRecipeData(info, userId);
+  const placeholder = arrayToPlaceholders(values);
+
   const [recipeResult] = await connection.execute<ResultSetHeader>(
-    `INSERT INTO recipes (name, user_id, hours, minutes, description, steps) VALUES (?,?,?,?,?,?)`,
-    getNewRecipeData(info, userId)
+    `INSERT INTO recipes (name, user_id, hours, minutes, description, steps) VALUES (${placeholder})`,
+    values
   );
 
   return recipeResult.insertId;
@@ -26,16 +30,21 @@ export const insertRecipeImage = async (
   userId: number,
   connection: PoolConnection
 ) => {
+  const values = [img, userId];
+  const placeholder = arrayToPlaceholders(values);
+
   const [imgResult] = await connection.query<ResultSetHeader>(
-    `INSERT INTO imgs (url, user_id) VALUES (?,?)`,
-    [img, userId]
+    `INSERT INTO imgs (url, user_id) VALUES (${placeholder})`,
+    values
   );
 
   const imgId = imgResult.insertId;
 
+  const values2 = [recipeId, imgId];
+  const placeholder2 = arrayToPlaceholders(values2);
   await connection.query<ResultSetHeader>(
-    `INSERT INTO recipe_imgs (recipe_id, img_id) VALUES (?,?)`,
-    [recipeId, imgId]
+    `INSERT INTO recipe_imgs (recipe_id, img_id) VALUES (${placeholder2})`,
+    values2
   );
 };
 
@@ -45,11 +54,11 @@ export const insertTags = async (
   recipeId: number,
   connection: PoolConnection
 ) => {
+  const placeholder = tags.map(() => "(?, ?)").join(", ");
+  const values = tags.flatMap((tag) => [userId, tag]);
   await connection.execute<ResultSetHeader>(
-    `INSERT IGNORE INTO tags (user_id, name) VALUES ${tags
-      .map(() => "(?, ?)")
-      .join(", ")}`,
-    tags.flatMap((tag) => [userId, tag])
+    `INSERT IGNORE INTO tags (user_id, name) VALUES ${placeholder}`,
+    values
   );
 
   const [tagsIds] = await connection.query<RowDataPacket[]>(
@@ -57,11 +66,11 @@ export const insertTags = async (
     [tags]
   );
 
+  const placeholder2 = tagsIds.map(() => `(${recipeId}, ?)`).join(", ");
+  const values2 = tagsIds.map((tag) => tag.id);
   await connection.query<ResultSetHeader>(
-    `INSERT INTO recipe_tags (recipe_id, tag_id) VALUES ${tagsIds
-      .map(() => `(${recipeId}, ?)`)
-      .join(", ")}`,
-    tagsIds.map((tag) => tag.id)
+    `INSERT INTO recipe_tags (recipe_id, tag_id) VALUES ${placeholder2}`,
+    values2
   );
 };
 
@@ -72,6 +81,8 @@ export const insertIngredients = async (
   recipeId: number,
   connection: PoolConnection
 ) => {
+  if (!ingredients.length) return;
+
   const normalizedIngredients = ingredients.map((ingredient) => ({
     ...ingredient,
     name: lightSlugify(ingredient.name),
@@ -81,32 +92,30 @@ export const insertIngredients = async (
     (ingredient) => ingredient.name
   );
 
-  if (normalizedIngredients.length) {
-    await insertNewIngredients(ingredientNames, userId, connection);
+  await insertNewIngredients(ingredientNames, userId, connection);
 
-    const ingredientMap = await fetchIngredientIds(ingredientNames, connection);
+  const ingredientMap = await fetchIngredientIds(ingredientNames, connection);
 
-    normalizedIngredients.forEach(async (ingredient) => {
-      const ingredientId = ingredientMap.get(ingredient.name) ?? null;
-      const productId = ingredientId
-        ? await getProductId(
-            ingredient,
-            userId,
-            connection,
-            filesKeys,
-            ingredientId
-          )
-        : null;
+  normalizedIngredients.forEach(async (ingredient) => {
+    const ingredientId = ingredientMap.get(ingredient.name) ?? null;
+    const productId = ingredientId
+      ? await getProductId(
+          ingredient,
+          userId,
+          connection,
+          filesKeys,
+          ingredientId
+        )
+      : null;
 
-      await linkRecipeToIngredient(
-        recipeId,
-        ingredientId,
-        productId,
-        ingredient,
-        connection
-      );
-    });
-  }
+    await linkRecipeToIngredient(
+      recipeId,
+      ingredientId,
+      productId,
+      ingredient,
+      connection
+    );
+  });
 };
 
 const getProductId = async (
@@ -116,19 +125,19 @@ const getProductId = async (
   filesKeys: Map<string, string>,
   ingredientId: number
 ) => {
-  let productId = ingredient.productId;
-
-  if (hasNewProduct(ingredient.newProduct)) {
-    const newProduct = ingredient.newProduct;
-
-    productId = await insertNewProduct(newProduct, userId, connection);
-
-    const img = filesKeys.get(`img_${newProduct.id}`);
-    img && (await linkProductImage(productId, img, userId, connection));
-
-    ingredientId &&
-      (await linkProductToIngredient(ingredientId, productId, connection));
+  if (!hasNewProduct(ingredient.newProduct)) {
+    return ingredient.productId;
   }
+
+  const newProduct = ingredient.newProduct;
+
+  const productId = await insertNewProduct(newProduct, userId, connection);
+
+  const img = filesKeys.get(`img_${newProduct.id}`);
+  img && (await linkProductImage(productId, img, userId, connection));
+
+  ingredientId &&
+    (await linkProductToIngredient(ingredientId, productId, connection));
 
   return productId;
 };
@@ -143,11 +152,12 @@ const insertNewIngredients = async (
   userId: number,
   connection: PoolConnection
 ) => {
+  const placeholder = ingredientNames.map(() => "(?, ?)").join(", ");
+  const values = ingredientNames.flatMap((name) => [name, userId]);
+
   await connection.execute<ResultSetHeader>(
-    `INSERT IGNORE INTO ingredients (name, user_id) VALUES ${ingredientNames
-      .map(() => "(?, ?)")
-      .join(", ")}`,
-    ingredientNames.flatMap((name) => [name, userId])
+    `INSERT IGNORE INTO ingredients (name, user_id) VALUES ${placeholder}`,
+    values
   );
 };
 
@@ -172,9 +182,12 @@ const insertNewProduct = async (
   userId: number,
   connection: PoolConnection
 ): Promise<number> => {
+  const values = [userId, ...getNewProductData(newProduct)];
+  const placeholder = arrayToPlaceholders(values);
+
   const [result] = await connection.execute<ResultSetHeader>(
-    `INSERT INTO products (user_id, name, brand, purchased_from, link) VALUES (?,?,?,?,?)`,
-    [userId, ...getNewProductData(newProduct)]
+    `INSERT INTO products (user_id, name, brand, purchased_from, link) VALUES (${placeholder})`,
+    values
   );
   return result.insertId;
 };
@@ -185,14 +198,19 @@ const linkProductImage = async (
   userId: number,
   connection: PoolConnection
 ) => {
+  const values = [imgUrl, userId];
+  const placeholder = arrayToPlaceholders(values);
+
   const [imgResult] = await connection.query<ResultSetHeader>(
-    `INSERT INTO imgs (url, user_id) VALUES (?,?)`,
-    [imgUrl, userId]
+    `INSERT INTO imgs (url, user_id) VALUES (${placeholder})`,
+    values
   );
 
+  const values2 = [productId, imgResult.insertId];
+  const placeholder2 = arrayToPlaceholders(values2);
   await connection.query<ResultSetHeader>(
-    `INSERT INTO product_imgs (product_id, img_id) VALUES (?,?)`,
-    [productId, imgResult.insertId]
+    `INSERT INTO product_imgs (product_id, img_id) VALUES (${placeholder2})`,
+    values2
   );
 };
 
@@ -201,12 +219,15 @@ const linkProductToIngredient = async (
   productId: number,
   connection: PoolConnection
 ) => {
-  if (ingredientId) {
-    await connection.query<ResultSetHeader>(
-      `INSERT INTO ingredient_products (ingredient_id, product_id) VALUES (?,?)`,
-      [ingredientId, productId]
-    );
-  }
+  if (!ingredientId) return;
+
+  const values = [ingredientId, productId];
+  const placeholder = arrayToPlaceholders(values);
+
+  await connection.query<ResultSetHeader>(
+    `INSERT INTO ingredient_products (ingredient_id, product_id) VALUES (${placeholder})`,
+    values
+  );
 };
 
 const linkRecipeToIngredient = async (
@@ -216,14 +237,20 @@ const linkRecipeToIngredient = async (
   ingredient: INewRecipe["ingredients"][0],
   connection: PoolConnection
 ) => {
+  const values = [
+    recipeId,
+    ingredientId ?? null,
+    productId ?? null,
+    ingredient.name,
+    ingredient.quantity,
+  ];
+  const placeholder = arrayToPlaceholders(values);
+
   await connection.execute<ResultSetHeader>(
-    `INSERT INTO recipe_ingredients (recipe_id, ingredient_id, product_id, name, quantity) VALUES (?,?,?,?,?)`,
-    [
-      recipeId,
-      ingredientId ?? null,
-      productId ?? null,
-      ingredient.name,
-      ingredient.quantity,
-    ]
+    `INSERT INTO recipe_ingredients (recipe_id, ingredient_id, product_id, name, quantity) VALUES (${placeholder})`,
+    values
   );
 };
+
+export const isRequiredFieldsPresent = (info: INewRecipe) =>
+  info.name && info.steps;

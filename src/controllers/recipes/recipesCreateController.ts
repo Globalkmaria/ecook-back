@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
 import { createRecipeService } from "../../services/recipes/recipesCreateService/index.js";
+import { ServiceError } from "../../services/helpers/ServiceError.js";
 
 export interface CreateRecipeBody {
   info: string; // JSON string
@@ -15,9 +16,18 @@ export const createRecipe = async (
     const result = await createRecipeService(req);
     res.status(201).json(result);
   } catch (error) {
-    if (error instanceof Error) {
-      res.status(400).json({ error: error.message });
+    if (error instanceof ServiceError) {
+      next({
+        status: error.status,
+        message: error.message,
+        error: error,
+      });
     }
-    next(error);
+
+    next({
+      status: 400,
+      message: "Error creating recipe",
+      error: error,
+    });
   }
 };
