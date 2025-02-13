@@ -1,10 +1,11 @@
+import multer from "multer";
+import sharp from "sharp";
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3"; // Import AWS SDK v3 S3 client
+
 import { getRandomId } from "../utils/numbers.js";
 import { config } from "../config/index.js";
-import { S3Client } from "@aws-sdk/client-s3"; // Import AWS SDK v3 S3 client
-import multer from "multer"; // Import Multer for file uploads
-import multerS3 from "multer-s3"; // Import Multer S3 storage engine
+import { sanitizeURL } from "../utils/normalize.js";
 
-// Create an S3 client instance
 export const s3Client = new S3Client({
   region: config.s3.region,
   credentials: {
@@ -13,17 +14,47 @@ export const s3Client = new S3Client({
   },
 });
 
-// Configure Multer for file uploads to S3
 export const upload = multer({
-  storage: multerS3({
-    s3: s3Client,
-    bucket: config.s3.bucket,
-    metadata: (req, file, cb) => {
-      cb(null, { fieldName: file.fieldname });
-    },
-    key: (req, file, cb) => {
-      cb(null, `images/${getRandomId()}-${file.originalname}`);
-    },
-  }),
-  limits: { fileSize: 500 * 1024 },
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 1 * 1024 * 1024 },
 });
+
+interface FileType {
+  buffer: Buffer;
+  mimetype: string;
+  originalname: string;
+}
+
+const maxImageSize = 600;
+
+export async function processAndUploadImage(file: FileType) {
+  const isHeic = file.mimetype === "image/heic";
+  let image = sharp(file.buffer);
+
+  // Convert HEIC → PNG if necessary
+  if (isHeic) {
+    image = image.toFormat("png");
+  }
+
+  const metadata = await image.metadata();
+  if (metadata.width && metadata.width > maxImageSize) {
+    image = image.resize({ width: maxImageSize });
+  }
+
+  const processedBuffer = await image.toBuffer();
+
+  const fileName = sanitizeURL(file.originalname);
+
+  const key = `images/${getRandomId()}-${fileName}`;
+
+  await s3Client.send(
+    new PutObjectCommand({
+      Bucket: config.s3.bucket,
+      Key: key,
+      Body: processedBuffer,
+      ContentType: isHeic ? "image/png" : file.mimetype,
+    })
+  );
+
+  return key;
+}

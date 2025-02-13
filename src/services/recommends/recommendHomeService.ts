@@ -1,23 +1,26 @@
 import mysqlDB from "../../db/mysql.js";
 import { groupRecommendRecipesByOptionName } from "./helper.js";
-import { HomeRecommendRecipe, RecommendRecipeWithOption } from "./type.js";
+import { RecommendRecipeWithOption } from "./type.js";
 import { arrayToPlaceholders } from "../../utils/query.js";
 import mysqlDB2 from "../../db/mysql2.js";
 import { Recommend } from "./type.js";
+import { HomeRecommendationSection } from "../../controllers/recommends/recommendHomeController.js";
 
-export const getTagRecommend = async (): Promise<{
-  [typeOption: string]: HomeRecommendRecipe[];
-}> => {
+export const getTagRecommend = async (): Promise<HomeRecommendationSection> => {
   const [tagsData] = await mysqlDB2.query<Recommend[]>(
     `SELECT * FROM recommend WHERE page='home' AND type='tag';`
   );
 
-  if (!tagsData.length) return {};
+  if (!tagsData.length)
+    return {
+      recipes: {},
+      order: [],
+    };
 
   const tagValues = tagsData.map((type) => type.value);
   const tagPlaceholder = arrayToPlaceholders(tagValues);
 
-  const [recipes] = await mysqlDB.query<RecommendRecipeWithOption[]>(
+  const [tagRecipes] = await mysqlDB.query<RecommendRecipeWithOption[]>(
     `WITH RankedRecipes AS (
         SELECT	
             tag_id, 
@@ -53,23 +56,37 @@ export const getTagRecommend = async (): Promise<{
     [...tagValues]
   );
 
-  return groupRecommendRecipesByOptionName(recipes);
+  const recipes = groupRecommendRecipesByOptionName(tagRecipes);
+  const order = tagsData
+    .map((type) => type.label)
+    .filter((label) => recipes[label]);
+  return {
+    recipes,
+    order,
+  };
 };
 
-export const getIngredientRecommend = async (): Promise<{
-  [typeOption: string]: HomeRecommendRecipe[];
-}> => {
-  const [ingredientsData] = await mysqlDB2.query<Recommend[]>(
-    `SELECT * FROM recommend WHERE page='home' AND type='ingredient';`
-  );
+export const getIngredientRecommend =
+  async (): Promise<HomeRecommendationSection> => {
+    const [ingredientsData] = await mysqlDB2.query<Recommend[]>(
+      `SELECT * FROM recommend r
+      WHERE page='home' AND type='ingredient' 
+      ORDER BY r.id;`
+    );
 
-  if (!ingredientsData.length) return {};
+    if (!ingredientsData.length)
+      return {
+        recipes: {},
+        order: [],
+      };
 
-  const ingredientValues = ingredientsData.map((type) => type.value);
-  const ingredientPlaceholder = arrayToPlaceholders(ingredientValues);
+    const ingredientValues = ingredientsData.map((type) => type.value);
+    const ingredientPlaceholder = arrayToPlaceholders(ingredientValues);
 
-  const [ingredientsRecipes] = await mysqlDB.query<RecommendRecipeWithOption[]>(
-    `WITH LatestRecipes AS (
+    const [ingredientsRecipes] = await mysqlDB.query<
+      RecommendRecipeWithOption[]
+    >(
+      `WITH LatestRecipes AS (
         SELECT 
         r.id recipe_id, 
         r.user_id, 
@@ -100,10 +117,19 @@ export const getIngredientRecommend = async (): Promise<{
     JOIN recipe_img_view r_img
         ON lr.recipe_id = r_img.recipe_id
     JOIN users_simple_view u
-        ON lr.user_id = u.id;
+        ON lr.user_id = u.id
+        ;
     `,
-    [...ingredientValues]
-  );
+      [...ingredientValues]
+    );
 
-  return groupRecommendRecipesByOptionName(ingredientsRecipes);
-};
+    const recipes = groupRecommendRecipesByOptionName(ingredientsRecipes);
+    const order = ingredientsData
+      .map((type) => type.label)
+      .filter((label) => recipes[label]);
+
+    return {
+      recipes,
+      order,
+    };
+  };

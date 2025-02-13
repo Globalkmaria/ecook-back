@@ -1,12 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 
-import { decryptRecipeURLAndGetRecipeId } from "../../../services/recipes/recipe/helper.js";
+import { decryptRecipeURLAndGetRecipeId } from "../../../services/recipes/utils.js";
 import { validateId } from "../../../utils/numbers.js";
 import { ServiceError } from "../../../services/helpers/ServiceError.js";
 import { EditRecipe } from "../../../services/recipes/recipe/type.js";
 import { User } from "../../../services/recipes/recipe/type.js";
-import { generateRecipeKey } from "../../../services/recipes/helper.js";
+import { generateRecipeKey } from "../../../services/recipes/utils.js";
 import { updateRecipeService } from "../../../services/recipes/recipe/updateRecipeService.js";
+import { processAndUploadImage } from "../../../db/aws.js";
 
 type UpdateRecipeParams = {
   key: string;
@@ -27,8 +28,11 @@ export const updateRecipe = async (
       throw new ServiceError(400, "Invalid recipe ID");
 
     const files = req.files as Express.MulterS3.File[];
+    const keys = await Promise.all(
+      files.map((file) => processAndUploadImage(file))
+    );
     const filesKeys = new Map<string, string>(
-      files.map((file) => [file.fieldname, file.key])
+      files.map((file, i) => [file.fieldname, keys[i]])
     );
 
     const user = req.user as User;

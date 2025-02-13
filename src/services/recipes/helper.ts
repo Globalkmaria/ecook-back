@@ -1,18 +1,5 @@
-import { config } from "../../config/index.js";
-import {
-  RecipesSimple,
-  INewRecipe,
-  IngredientNewProduct,
-} from "../../router/v1/recipes/recipes.js";
-import { encrypt } from "../../utils/encrypt.js";
-import { sanitizeURL, lightTrim, lightSlugify } from "../../utils/normalize.js";
-
-export const generateRecipeKey = (id: RecipesSimple["id"], name: string) =>
-  `${encrypt(
-    id.toString(),
-    config.key.recipe.key,
-    config.key.recipe.iv
-  )}-${sanitizeURL(name)}`;
+import { INewRecipe, IngredientNewProduct } from "./type.js";
+import { lightTrim, lightSlugify } from "../../utils/normalize.js";
 
 export const getNewRecipeData = (recipe: INewRecipe, userId: number) => {
   const { name, hours, minutes, description, steps } =

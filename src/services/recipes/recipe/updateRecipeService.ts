@@ -7,7 +7,7 @@ import { RecipeInfo } from "./type.js";
 import { ServiceError } from "../../helpers/ServiceError.js";
 import { lightSlugify } from "../../../utils/normalize.js";
 import { getNewProductData } from "../helper.js";
-import { IngredientNewProduct } from "../../../router/v1/recipes/recipes.js";
+import { IngredientNewProduct } from "../type.js";
 import { arrayToPlaceholders } from "../../../utils/query.js";
 import { UpdateRecipeServiceParams } from "./type.js";
 

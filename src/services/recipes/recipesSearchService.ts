@@ -1,12 +1,12 @@
 import { lightSlugify, lightTrim, splitString } from "../../utils/normalize.js";
 import mysqlDB from "../../db/mysql.js";
-import { generateRecipeKey } from "./helper.js";
+import { generateRecipeKey } from "./utils.js";
 import { getImgUrl } from "../../utils/img.js";
 import {
-  SEARCH_TYPES,
+  RECIPES_SEARCH_TYPES,
   SearchRecipesQueryParams,
 } from "../../controllers/recipes/recipesSearchController.js";
-import { RecipesSimple } from "../../router/v1/recipes/recipes.js";
+import { RecipesSimple } from "./type.js";
 
 export const searchRecipesService = async ({
   q,
@@ -17,15 +17,15 @@ export const searchRecipesService = async ({
 
   if (!trimmedQ) {
     data = await getRecentRecipes(10);
-  } else if (type === SEARCH_TYPES.NAME) {
+  } else if (type === RECIPES_SEARCH_TYPES.NAME) {
     data = await searchByName(trimmedQ);
-  } else if (type === SEARCH_TYPES.TAG) {
+  } else if (type === RECIPES_SEARCH_TYPES.TAG) {
     data = await searchByTag(trimmedQ);
-  } else if (type === SEARCH_TYPES.INGREDIENT) {
+  } else if (type === RECIPES_SEARCH_TYPES.INGREDIENT) {
     data = await searchByIngredient(trimmedQ);
-  } else if (type === SEARCH_TYPES.PRODUCT) {
+  } else if (type === RECIPES_SEARCH_TYPES.PRODUCT) {
     data = await searchByProduct(trimmedQ);
-  } else if (type === SEARCH_TYPES.USERNAME) {
+  } else if (type === RECIPES_SEARCH_TYPES.USERNAME) {
     data = await searchByUsername(trimmedQ);
   }
 
@@ -46,7 +46,7 @@ export const getRecentRecipes = async (limit: number) => {
 };
 
 const searchByName = async (query: string) => {
-  const result = await mysqlDB.query<RecipesSimple[]>(
+  const [result] = await mysqlDB.query<RecipesSimple[]>(
     `SELECT 
               r.id AS id,
               r.name AS name,
@@ -73,11 +73,11 @@ const searchByName = async (query: string) => {
           `,
     [`%${query}%`]
   );
-  return result[0];
+  return result;
 };
 
 const searchByTag = async (query: string) => {
-  const result = await mysqlDB.query<RecipesSimple[]>(
+  const [result] = await mysqlDB.query<RecipesSimple[]>(
     `SELECT 
               r.id AS id,
               r.name AS name,
@@ -108,11 +108,11 @@ const searchByTag = async (query: string) => {
     [`${query}`]
   );
 
-  return result[0];
+  return result;
 };
 
 const searchByIngredient = async (query: string) => {
-  const result = await mysqlDB.query<RecipesSimple[]>(
+  const [result] = await mysqlDB.query<RecipesSimple[]>(
     `SELECT 
               r.id AS id,
               r.name AS name,
@@ -144,11 +144,11 @@ const searchByIngredient = async (query: string) => {
           `,
     [`%${lightSlugify(query)}%`]
   );
-  return result[0];
+  return result;
 };
 
 const searchByProduct = async (query: string) => {
-  const result = await mysqlDB.query<RecipesSimple[]>(
+  const [result] = await mysqlDB.query<RecipesSimple[]>(
     `
             SELECT 
                 r.id AS id,
@@ -185,18 +185,18 @@ const searchByProduct = async (query: string) => {
             `,
     [`%${query}%`]
   );
-  return result[0];
+  return result;
 };
 
 const searchByUsername = async (query: string) => {
-  const result = await mysqlDB.execute<RecipesSimple[]>(
+  const [result] = await mysqlDB.execute<RecipesSimple[]>(
     `SELECT * FROM recipes_simple_view WHERE user_username = ? ORDER BY created_at DESC`,
     [query]
   );
-  return result[0];
+  return result;
 };
 
-const formatSearchResult = (data: RecipesSimple[]) =>
+export const formatSearchResult = (data: RecipesSimple[]) =>
   data.map((recipe) => {
     const tagIds = splitString(recipe.tag_ids);
     const tagNames = splitString(recipe.tag_names);

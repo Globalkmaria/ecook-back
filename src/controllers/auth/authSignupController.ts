@@ -5,6 +5,7 @@ import {
   SignupUser,
 } from "../../services/auth/authSignupService.js";
 import { getImgUrl } from "../../utils/img.js";
+import { processAndUploadImage } from "../../db/aws.js";
 
 interface SignupBody {
   username: string;
@@ -28,12 +29,13 @@ export const signup = async (
 ) => {
   try {
     const file = req.file as Express.MulterS3.File;
+    const key = await processAndUploadImage(file);
 
     const user: SignupUser = {
       username: req.body.username,
       password: req.body.password,
       email: req.body.email,
-      img: file?.key ?? null,
+      img: key ?? null,
     };
 
     const { error, newUser } = await signupUser(user);

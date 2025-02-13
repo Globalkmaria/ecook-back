@@ -4,7 +4,7 @@ import {
   recommendRecipes,
   searchRecipesService,
 } from "../../services/recipes/recipesSearchService.js";
-import { ClientRecipeSimple } from "../../router/v1/recipes/recipes.js";
+import { ClientRecipeSimple } from "../../services/recipes/type.js";
 
 export interface SearchRecipesQueryParams {
   q?: string;
@@ -16,7 +16,7 @@ interface SearchRecipesResponse {
   recommend: ClientRecipeSimple[];
 }
 
-export const SEARCH_TYPES = {
+export const RECIPES_SEARCH_TYPES = {
   NAME: "name",
   TAG: "tag",
   INGREDIENT: "ingredient",
@@ -24,7 +24,7 @@ export const SEARCH_TYPES = {
   USERNAME: "username",
 };
 
-const SEARCH_TYPES_VALUES = Object.values(SEARCH_TYPES);
+const SEARCH_TYPES_VALUES = Object.values(RECIPES_SEARCH_TYPES);
 
 export const searchRecipes = async (
   req: Request<{}, {}, {}, SearchRecipesQueryParams>,
