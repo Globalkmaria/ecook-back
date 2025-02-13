@@ -1,6 +1,6 @@
 import { RowDataPacket } from "mysql2";
 
-import { INewRecipe } from "../../../router/v1/recipes/recipes";
+import { INewRecipe } from "../type";
 import { ClientProduct } from "../../products/type";
 
 interface IngredientBase {

@@ -1,11 +1,8 @@
 import { config } from "../../config/index.js";
-import {
-  RecipesSimple,
-  INewRecipe,
-  IngredientNewProduct,
-} from "../../router/v1/recipes/recipes.js";
+import { INewRecipe, IngredientNewProduct } from "./type.js";
 import { encrypt } from "../../utils/encrypt.js";
 import { sanitizeURL, lightTrim, lightSlugify } from "../../utils/normalize.js";
+import { RecipesSimple } from "./type.js";
 
 export const generateRecipeKey = (id: RecipesSimple["id"], name: string) =>
   `${encrypt(

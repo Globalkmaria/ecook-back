@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
-import { ClientRecipeSimple } from "../../router/v1/recipes/recipes.js";
 import { homeRecipesService } from "../../services/home/homeRecipesService.js";
+import { ClientRecipeSimple } from "../../services/recipes/type.js";
 
 export interface HomeRecipe extends ClientRecipeSimple {
   hours: number;

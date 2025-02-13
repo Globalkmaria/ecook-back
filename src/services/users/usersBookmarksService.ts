@@ -1,6 +1,6 @@
 import mysqlDB from "../../db/mysql.js";
 import { UserSimple } from "../recipes/recipe/type.js";
-import { RecipesSimple } from "../../router/v1/recipes/recipes.js";
+import { RecipesSimple } from "../recipes/type.js";
 import { formatClientRecipeSimple } from "./helper.js";
 
 export const getUserByUsername = async (username: string) => {

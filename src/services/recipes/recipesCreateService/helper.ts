@@ -1,9 +1,6 @@
 import { PoolConnection, ResultSetHeader, RowDataPacket } from "mysql2/promise";
 
-import {
-  INewRecipe,
-  IngredientNewProduct,
-} from "../../../router/v1/recipes/recipes.js";
+import { INewRecipe, IngredientNewProduct } from "../type.js";
 import { getNewProductData, getNewRecipeData } from "../helper.js";
 import { lightSlugify } from "../../../utils/normalize.js";
 import { arrayToPlaceholders } from "../../../utils/query.js";

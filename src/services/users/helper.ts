@@ -1,10 +1,8 @@
 import { generateRecipeKey } from "../recipes/helper.js";
-import {
-  ClientRecipeSimple,
-  RecipesSimple,
-} from "../../router/v1/recipes/recipes.js";
+
 import { getImgUrl } from "../../utils/img.js";
 import { splitString } from "../../utils/normalize.js";
+import { ClientRecipeSimple, RecipesSimple } from "../recipes/type.js";
 
 export const formatClientRecipeSimple = (
   data: RecipesSimple[]

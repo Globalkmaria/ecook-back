@@ -6,7 +6,7 @@ import {
   SEARCH_TYPES,
   SearchRecipesQueryParams,
 } from "../../controllers/recipes/recipesSearchController.js";
-import { RecipesSimple } from "../../router/v1/recipes/recipes.js";
+import { RecipesSimple } from "./type.js";
 
 export const searchRecipesService = async ({
   q,

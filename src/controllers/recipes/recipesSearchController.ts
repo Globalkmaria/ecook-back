@@ -4,7 +4,7 @@ import {
   recommendRecipes,
   searchRecipesService,
 } from "../../services/recipes/recipesSearchService.js";
-import { ClientRecipeSimple } from "../../router/v1/recipes/recipes.js";
+import { ClientRecipeSimple } from "../../services/recipes/type.js";
 
 export interface SearchRecipesQueryParams {
   q?: string;
