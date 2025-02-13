@@ -6,13 +6,16 @@ import {
   getTagRecommend,
 } from "../../services/recommends/recommendHomeService.js";
 
+export interface HomeRecommendationSection {
+  recipes: { [typeOption: string]: HomeRecommendRecipe[] };
+  order: string[];
+}
+
 type RecommendHomeResponse = {
-  [K in (typeof recommendType)[number]]: {
-    [typeOption: string]: HomeRecommendRecipe[];
-  };
+  [K in (typeof recommendType)[number]]: HomeRecommendationSection;
 };
 
-const recommendType = ["tag", "ingredient"];
+const recommendType = ["tag", "ingredient"] as const;
 
 export const recommendHome = async (
   req: Request,
@@ -25,7 +28,10 @@ export const recommendHome = async (
 
     res.status(200).json({
       tag: tagRecipes,
-      ingredient: ingredientRecipes,
+      ingredient: {
+        recipes: ingredientRecipes.recipes,
+        order: ingredientRecipes.order,
+      },
     });
   } catch (error) {
     next(error);
