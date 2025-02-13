@@ -15,6 +15,7 @@ import {
   isRequiredFieldsPresent,
 } from "./helper.js";
 import { ServiceError } from "../../helpers/ServiceError.js";
+import { processAndUploadImage } from "../../../db/aws.js";
 
 export const createRecipeService = async (
   req: Request<{}, {}, CreateRecipeBody>
@@ -23,8 +24,13 @@ export const createRecipeService = async (
 
   try {
     const files = req.files as Express.MulterS3.File[];
+
+    const keys = await Promise.all(
+      files.map((file) => processAndUploadImage(file))
+    );
+
     const filesKeys = new Map<string, string>(
-      files.map((file) => [file.fieldname, file.key])
+      files.map((file, i) => [file.fieldname, keys[i]])
     );
 
     const user = req.user as SerializedUser;
