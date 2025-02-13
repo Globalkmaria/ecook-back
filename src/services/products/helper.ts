@@ -1,9 +1,6 @@
-import { config } from "../../config/index.js";
-
-import { decrypt, encrypt } from "../../utils/encrypt.js";
 import { getImgUrl } from "../../utils/img.js";
-import { sanitizeURL } from "../../utils/normalize.js";
 import { ClientProduct, Product } from "./type.js";
+import { generateProductKey } from "./utils.js";
 
 export const formatClientProduct = (product: Product): ClientProduct => ({
   id: product.id,
@@ -24,26 +21,3 @@ export const formatClientProduct = (product: Product): ClientProduct => ({
 
 export const formatClientProducts = (data: Product[]): ClientProduct[] =>
   data.map((product) => formatClientProduct(product));
-
-export const decryptRecipeURLAndGetProductId = (url: string) => {
-  const [ciphertext] = url.split("-");
-
-  if (ciphertext.length !== 32) {
-    return null;
-  }
-
-  const productId = decrypt(
-    ciphertext,
-    config.key.recipe.key,
-    config.key.recipe.iv
-  );
-
-  return productId;
-};
-
-export const generateProductKey = (id: Product["id"], name: string) =>
-  `${encrypt(
-    id.toString(),
-    config.key.recipe.key,
-    config.key.recipe.iv
-  )}-${sanitizeURL(name)}`;
