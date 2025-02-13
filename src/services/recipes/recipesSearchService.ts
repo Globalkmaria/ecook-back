@@ -1,6 +1,6 @@
 import { lightSlugify, lightTrim, splitString } from "../../utils/normalize.js";
 import mysqlDB from "../../db/mysql.js";
-import { generateRecipeKey } from "./helper.js";
+import { generateRecipeKey } from "./utils.js";
 import { getImgUrl } from "../../utils/img.js";
 import {
   RECIPES_SEARCH_TYPES,

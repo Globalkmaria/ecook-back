@@ -3,7 +3,7 @@ import {
   RecipesBatchSearchTypes,
 } from "../../controllers/recipes/recipesBatchController.js";
 import mysqlDB from "../../db/mysql.js";
-import { decryptRecipeURLAndGetRecipeId } from "./recipe/helper.js";
+import { decryptRecipeURLAndGetRecipeId } from "./utils.js";
 import { formatSearchResult } from "./recipesSearchService.js";
 import { RecipesSimple } from "./type.js";
 

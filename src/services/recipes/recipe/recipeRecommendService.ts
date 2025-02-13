@@ -1,5 +1,5 @@
 import mysqlDB from "../../../db/mysql.js";
-import { decryptRecipeURLAndGetRecipeId } from "./helper.js";
+import { decryptRecipeURLAndGetRecipeId } from "../utils.js";
 import { RecommendRecipe } from "../../recommends/type.js";
 import { validateId } from "../../../utils/numbers.js";
 import { ServiceError } from "../../helpers/ServiceError.js";

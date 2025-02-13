@@ -6,10 +6,9 @@ import {
   RecipeIngredient,
   RecipeIngredientRequired,
 } from "./type.js";
-import { config } from "../../../config/index.js";
-import { sanitizeRecipeData, generateRecipeKey } from "../helper.js";
+import { sanitizeRecipeData } from "../helper.js";
+import { generateRecipeKey } from "../utils.js";
 import { RecommendRecipe } from "../../recommends/type.js";
-import { decrypt } from "../../../utils/encrypt.js";
 import { shuffleArray } from "../../../utils/shuffle.js";
 
 export const generateClientRecipeIngredient = (
@@ -92,22 +91,6 @@ export const generateRecipeInformation = ({
     key,
   };
 };
-export const decryptRecipeURLAndGetRecipeId = (url: string) => {
-  const [ciphertext] = url.split("-");
-
-  if (ciphertext.length !== 32) {
-    return null;
-  }
-
-  const recipeId = decrypt(
-    ciphertext,
-    config.key.recipe.key,
-    config.key.recipe.iv
-  );
-
-  return recipeId;
-};
-
 export const getUpdatedRecipeData = ({
   newRecipe,
   oldRecipe,

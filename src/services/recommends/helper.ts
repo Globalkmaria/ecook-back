@@ -1,5 +1,5 @@
 import { getImgUrl } from "../../utils/img.js";
-import { generateRecipeKey } from "../recipes/helper.js";
+import { generateRecipeKey } from "../recipes/utils.js";
 import { HomeRecommendRecipe, RecommendRecipeWithOption } from "./type.js";
 
 const formatRecipeData = (recipe: RecommendRecipeWithOption) => {

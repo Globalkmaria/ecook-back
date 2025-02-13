@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 
-import { decryptRecipeURLAndGetRecipeId } from "../../../services/recipes/recipe/helper.js";
+import { decryptRecipeURLAndGetRecipeId } from "../../../services/recipes/utils.js";
 import { validateId } from "../../../utils/numbers.js";
 import { ServiceError } from "../../../services/helpers/ServiceError.js";
 import { EditRecipe } from "../../../services/recipes/recipe/type.js";
 import { User } from "../../../services/recipes/recipe/type.js";
-import { generateRecipeKey } from "../../../services/recipes/helper.js";
+import { generateRecipeKey } from "../../../services/recipes/utils.js";
 import { updateRecipeService } from "../../../services/recipes/recipe/updateRecipeService.js";
 
 type UpdateRecipeParams = {
