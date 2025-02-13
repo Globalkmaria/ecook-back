@@ -4,14 +4,17 @@ import { decryptRecipeURLAndGetRecipeId } from "../../../services/recipes/recipe
 import { validateId } from "../../../utils/numbers.js";
 import { ServiceError } from "../../../services/helpers/ServiceError.js";
 import { getRecipeService } from "../../../services/recipes/recipe/getRecipeService.js";
+import { ClientRecipeDetail } from "../../../services/recipes/recipe/type.js";
 
 interface GetRecipeParams {
   key: string;
 }
 
+type GetRecipeResponse = ClientRecipeDetail;
+
 export const getRecipe = async (
   req: Request<GetRecipeParams>,
-  res: Response,
+  res: Response<GetRecipeResponse>,
   next: NextFunction
 ) => {
   try {

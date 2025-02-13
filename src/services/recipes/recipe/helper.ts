@@ -78,9 +78,8 @@ export const generateRecipeInformation = ({
   };
 
   const img = getImgUrl(info.recipe_img, true);
-
+  const key = generateRecipeKey(info.id, info.name);
   return {
-    id: info.id,
     name: info.name,
     description: info.description ?? "",
     hours: info.hours,
@@ -90,6 +89,7 @@ export const generateRecipeInformation = ({
     ingredients,
     tags,
     user,
+    key,
   };
 };
 export const decryptRecipeURLAndGetRecipeId = (url: string) => {

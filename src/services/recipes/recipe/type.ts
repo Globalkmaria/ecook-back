@@ -53,7 +53,7 @@ interface Ingredient {
 }
 
 export interface ClientRecipeDetail {
-  id: number;
+  key: string;
   name: string;
   description: string;
   hours: number;
