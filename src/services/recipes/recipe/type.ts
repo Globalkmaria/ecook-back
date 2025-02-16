@@ -36,6 +36,7 @@ export interface RecipeImg extends RowDataPacket {
 
 interface RecipeProduct {
   id: number;
+  key: string;
   name: string;
   brand: string | null;
   purchasedFrom: string | null;
@@ -45,6 +46,7 @@ interface RecipeProduct {
 
 interface Ingredient {
   id: number;
+  key: string;
   name: string;
   quantity: string;
   ingredientId: number | null;

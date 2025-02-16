@@ -1,4 +1,5 @@
 import { getImgUrl } from "../../utils/img.js";
+import { generateIngredientKey } from "../ingredients/utils.js";
 import { ClientProduct, Product } from "./type.js";
 import { generateProductKey } from "./utils.js";
 
@@ -7,6 +8,7 @@ export const formatClientProduct = (product: Product): ClientProduct => ({
   ingredient: {
     id: product.ingredient_id,
     name: product.ingredient_name,
+    key: generateIngredientKey(product.ingredient_id, product.ingredient_name),
   },
   userId: product.user_id,
   name: product.name,

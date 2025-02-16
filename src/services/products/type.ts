@@ -31,6 +31,7 @@ export interface ClientProduct {
   ingredient: {
     id: number;
     name: string;
+    key: string;
   };
   userId: number;
   name: string;
