@@ -42,6 +42,14 @@ export const config = {
       key: required("RECIPE_ENCRYPTION_KEY"),
       iv: required("RECIPE_ENCRYPTION_IV"),
     },
+    ingredient: {
+      key: required("INGREDIENT_ENCRYPTION_KEY"),
+      iv: required("INGREDIENT_ENCRYPTION_IV"),
+    },
+    product: {
+      key: required("PRODUCT_ENCRYPTION_KEY"),
+      iv: required("PRODUCT_ENCRYPTION_IV"),
+    },
   },
 };
 

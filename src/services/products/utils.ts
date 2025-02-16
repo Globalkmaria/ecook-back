@@ -12,8 +12,8 @@ export const decryptKeyAndGetProductId = (url: string) => {
 
   const productId = decrypt(
     ciphertext,
-    config.key.recipe.key,
-    config.key.recipe.iv
+    config.key.product.key,
+    config.key.product.iv
   );
 
   return productId;
@@ -22,6 +22,6 @@ export const decryptKeyAndGetProductId = (url: string) => {
 export const generateProductKey = (id: Product["id"], name: string) =>
   `${encrypt(
     id.toString(),
-    config.key.recipe.key,
-    config.key.recipe.iv
+    config.key.product.key,
+    config.key.product.iv
   )}-${sanitizeURL(name)}`;
