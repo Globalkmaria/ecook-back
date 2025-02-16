@@ -8,7 +8,7 @@ interface IngredientBase {
   recipe_id: number; // Non-nullable, int
   ingredient_name: string; // Non-nullable, varchar(255)
   ingredient_quantity?: string; // Nullable, varchar(20)
-  ingredient_id?: number; // Non-nullable, int
+  ingredient_id: number; // Non-nullable, int
   product_id?: number; // Nullable, int
   product_name?: string; // Nullable, varchar(255)
   product_brand?: string; // Nullable, varchar(255)
