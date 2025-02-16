@@ -9,6 +9,7 @@ import recommendRouter from "./recommend/index.js";
 import bookmarksRouter from "./bookmarks/index.js";
 import homeRouter from "./home/index.js";
 import cartsRouter from "./carts/index.js";
+import ingredientsRouter from "./ingredients/index.js";
 
 const router = express.Router();
 
@@ -20,6 +21,7 @@ router.use("/users", usersRouter);
 router.use("/auth", authRouter);
 router.use("/recommend", recommendRouter);
 router.use("/bookmarks", bookmarksRouter);
+router.use("/ingredients", ingredientsRouter);
 router.use("/carts", cartsRouter);
 
 export default router;
