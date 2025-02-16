@@ -3,7 +3,7 @@ import { decrypt, encrypt } from "../../utils/encrypt.js";
 import { sanitizeURL } from "../../utils/normalize.js";
 import { Product } from "./type.js";
 
-export const decryptRecipeURLAndGetProductId = (url: string) => {
+export const decryptKeyAndGetProductId = (url: string) => {
   const [ciphertext] = url.split("-");
 
   if (ciphertext.length !== 32) {
