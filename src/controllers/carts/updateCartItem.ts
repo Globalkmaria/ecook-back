@@ -33,15 +33,16 @@ export const updateCartItem = async (
     const user = req.user as SerializedUser;
     if (username !== user.username) throw new ServiceError(403, "Forbidden");
 
-    let result;
+    let count = 0;
     if (quantity <= 0) {
-      result = await removeCartItem({
+      await removeCartItem({
         userId: user.id,
         ingredientKey,
         productKey,
       });
+      count = 0;
     } else {
-      result = await updateCartItemQuantity({
+      count = await updateCartItemQuantity({
         userId: user.id,
         ingredientKey,
         productKey,
@@ -49,7 +50,7 @@ export const updateCartItem = async (
       });
     }
 
-    res.status(200).send();
+    res.json({ count });
   } catch (error) {
     if (error instanceof ServiceError) {
       next({ status: error.status, message: error.message });

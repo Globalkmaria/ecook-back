@@ -35,7 +35,7 @@ export const addItemToCart = async (
       productKey,
     });
 
-    res.status(202).json({ count });
+    res.json({ count });
   } catch (error) {
     if (error instanceof ServiceError) {
       next({ status: error.status, message: error.message, error });

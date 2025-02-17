@@ -71,16 +71,30 @@ export const updateCartItemQuantity = async ({
     ? [quantity, userId, ingredientId, productId]
     : [quantity, userId, ingredientId];
 
-  const result = await mysqlDB.execute<ResultSetHeader>(
+  await mysqlDB.execute<ResultSetHeader>(
     `UPDATE carts
         SET quantity = ?
         WHERE user_id = ? 
             AND ingredient_id = ? 
-            ${productQuery}`,
+            ${productQuery}
+    `,
     productQueryValues
   );
 
-  return result;
+  const getQueryValues = productId
+    ? [userId, ingredientId, productId]
+    : [userId, ingredientId];
+  const [result] = await mysqlDB.execute<
+    ({ quantity: number } & RowDataPacket)[]
+  >(
+    `SELECT quantity FROM carts
+    WHERE user_id = ?
+      AND ingredient_id = ?
+      ${productQuery}`,
+    getQueryValues
+  );
+
+  return result[0].quantity;
 };
 
 export const createCartItem = async ({
