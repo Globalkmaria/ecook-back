@@ -15,7 +15,7 @@ export const getCartItemsByUserIdService = async (userId: number) => {
         p.purchased_from product_purchased_from,
         p,img product_img,
         c.quantity product_quantity
-    FROM cooking.carts c
+    FROM carts c
     LEFT JOIN ingredients i 
         ON c.ingredient_id = i.id 
     LEFT JOIN product_detail_view p

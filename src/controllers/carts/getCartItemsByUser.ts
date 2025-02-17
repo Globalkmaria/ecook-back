@@ -28,6 +28,11 @@ export const getCartItemsByUser = async (
     const response = generateClientCartItems(cartItems);
     res.json({ items: response });
   } catch (error) {
+    if (error instanceof ServiceError) {
+      next({ status: error.status, message: error.message });
+      return;
+    }
+
     next({
       status: 400,
       message: "Error getting cart items",
