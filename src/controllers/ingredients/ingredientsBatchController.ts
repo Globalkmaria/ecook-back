@@ -55,7 +55,9 @@ export const ingredientsBatch = async (
     }
     const { ingredientIds, productIds } = extractIngredientAndProductIds(items);
 
-    const ingredients = await getIngredients(ingredientIds);
+    const ingredients = ingredientIds.length
+      ? await getIngredients(ingredientIds)
+      : [];
     const products = productIds.length ? await getProducts(productIds) : [];
 
     const result = mapQueryResultToBatchResponse({ ingredients, products });
