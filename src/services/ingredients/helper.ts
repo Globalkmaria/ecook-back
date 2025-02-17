@@ -1,12 +1,16 @@
 import { IngredientsBatchResponse } from "../../controllers/ingredients/ingredientsBatchController.js";
 import { getImgUrl } from "../../utils/img.js";
 import { generateProductKey } from "../products/utils.js";
-import { IngredientProductQueryResult } from "./type.js";
+import { IngredientProduct, SimpleIngredient } from "./type.js";
 import { generateIngredientKey } from "./utils.js";
 
-export const mapQueryResultToBatchResponse = (
-  ingredients: IngredientProductQueryResult[]
-): IngredientsBatchResponse => {
+export const mapQueryResultToBatchResponse = ({
+  ingredients,
+  products,
+}: {
+  ingredients: SimpleIngredient[];
+  products: IngredientProduct[];
+}): IngredientsBatchResponse => {
   const response: IngredientsBatchResponse = {};
 
   ingredients.forEach((ingredient) => {
@@ -15,29 +19,42 @@ export const mapQueryResultToBatchResponse = (
       ingredient.ingredient_name
     );
 
-    const productKey = ingredient.product_id
-      ? generateProductKey(ingredient.product_id, ingredient.product_name)
-      : null;
+    response[ingredientKey] = {
+      ingredient: {
+        name: ingredient.ingredient_name,
+        key: ingredientKey,
+      },
+      products: {},
+    };
+  });
+
+  products.forEach((product) => {
+    const ingredientKey = generateIngredientKey(
+      product.ingredient_id,
+      product.ingredient_name
+    );
+    const productKey = generateProductKey(
+      product.product_id,
+      product.product_name
+    );
 
     if (!response[ingredientKey]) {
       response[ingredientKey] = {
         ingredient: {
-          name: ingredient.ingredient_name,
+          name: product.ingredient_name,
           key: ingredientKey,
         },
         products: {},
       };
     }
 
-    if (productKey) {
-      response[ingredientKey].products[productKey] = {
-        name: ingredient.product_name,
-        brand: ingredient.product_brand,
-        purchasedFrom: ingredient.product_purchased_from,
-        img: getImgUrl(ingredient.product_img, true),
-        key: productKey,
-      };
-    }
+    response[ingredientKey].products[productKey] = {
+      name: product.product_name,
+      brand: product.product_brand,
+      purchasedFrom: product.product_purchased_from,
+      img: getImgUrl(product.product_img, true),
+      key: productKey,
+    };
   });
 
   return response;

@@ -58,6 +58,7 @@ export const getTagRecommend = async (): Promise<HomeRecommendationSection> => {
 
   const recipes = groupRecommendRecipesByOptionName(tagRecipes);
   const order = tagsData
+    .sort((a, b) => a.order - b.order)
     .map((type) => type.label)
     .filter((label) => recipes[label]);
   return {
@@ -125,6 +126,7 @@ export const getIngredientRecommend =
 
     const recipes = groupRecommendRecipesByOptionName(ingredientsRecipes);
     const order = ingredientsData
+      .sort((a, b) => a.order - b.order)
       .map((type) => type.label)
       .filter((label) => recipes[label]);
 
