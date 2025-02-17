@@ -35,13 +35,13 @@ export const updateCartItem = async (
 
     let result;
     if (quantity <= 0) {
-      result = removeCartItem({
+      result = await removeCartItem({
         userId: user.id,
         ingredientKey,
         productKey,
       });
     } else {
-      result = updateCartItemQuantity({
+      result = await updateCartItemQuantity({
         userId: user.id,
         ingredientKey,
         productKey,

@@ -17,14 +17,24 @@ export const removeCartItem = async (params: RemoveCartItemParams) => {
     ingredientKey && decryptKeyAndGetIngredientId(ingredientKey);
   const productId = productKey && decryptKeyAndGetProductId(productKey);
 
-  const [result] = await mysqlDB.execute<ResultSetHeader>(
-    `DELETE * FROM carts
+  if (productId) {
+    const [result] = await mysqlDB.execute<ResultSetHeader>(
+      `DELETE FROM carts
         WHERE user_id = ? 
             AND ingredient_id = ? 
             AND product_id = ?`,
-    [userId, ingredientId, productId ?? null]
+      [userId, ingredientId, productId]
+    );
+    return result;
+  }
+  const [result] = await mysqlDB.execute<ResultSetHeader>(
+    `DELETE FROM carts
+      WHERE user_id =? 
+        AND ingredient_id =?
+        AND product_id IS NULL
+    `,
+    [userId, ingredientId]
   );
-
   return result;
 };
 
@@ -122,12 +132,21 @@ export const createCartItem = async ({
     });
 
     return newQuantity;
-  } else {
+  }
+
+  if (productId) {
     await mysqlDB.execute<ResultSetHeader>(
       `INSERT INTO carts (user_id, ingredient_id, product_id, quantity)
-          VALUES (?, ?, ?, ?)`,
-      [userId, ingredientId, productId ?? null, 1]
+            VALUES (?, ?, ?, ?)`,
+      [userId, ingredientId, productId, 1]
     );
-    return 1;
+  } else {
+    await mysqlDB.execute<ResultSetHeader>(
+      `INSERT INTO carts (user_id, ingredient_id, quantity)
+            VALUES (?, ?, ?)`,
+      [userId, ingredientId, 1]
+    );
   }
+
+  return 1;
 };

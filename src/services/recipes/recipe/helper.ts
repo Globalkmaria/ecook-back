@@ -17,7 +17,7 @@ export const generateClientRecipeIngredient = (
   ingredient: RecipeIngredient,
   map: Map<number, ClientRecipeProduct[]>
 ): ClientRecipeDetail["ingredients"][0] => ({
-  id: ingredient.id,
+  id: ingredient.ingredient_id,
   key: generateIngredientKey(
     ingredient.ingredient_id,
     ingredient.ingredient_name

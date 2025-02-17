@@ -21,7 +21,7 @@ export const generateClientCartItems = (
       clientCartItems[ingredientKey] = {
         ingredient: {
           name: cartItem.ingredient_name,
-          key: cartItem.ingredient_id,
+          key: ingredientKey,
           quantity: null,
         },
         products: [],
@@ -42,12 +42,12 @@ export const generateClientCartItems = (
           img: getImgUrl(cartItem.product_img, true),
           quantity: cartItem.product_quantity,
         });
-      } else {
-        clientCartItems[ingredientKey].ingredient.quantity =
-          cartItem.ingredient_quantity;
       }
+    } else {
+      clientCartItems[ingredientKey].ingredient.quantity =
+        cartItem.ingredient_quantity;
     }
   }
 
-  return Object(clientCartItems).values();
+  return Object.values(clientCartItems);
 };
