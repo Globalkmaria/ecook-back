@@ -1,5 +1,5 @@
 import express from "express";
-import { ingredientsBatch } from "../../../controllers/ingredients/ingredientsBatchController";
+import { ingredientsBatch } from "../../../controllers/ingredients/ingredientsBatchController.js";
 
 const router = express.Router();
 
