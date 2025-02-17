@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
 type AddItemToCartParams = {
-  userId: string;
+  username: string;
 };
 
 type AddItemToCartBody = {
@@ -18,7 +18,7 @@ export const addItemToCart = async (
   next: NextFunction
 ) => {
   try {
-    const { userId } = req.params;
+    const { username } = req.params;
     const { ingredientId, productId, quantity } = req.body;
   } catch (error) {
     next(error);

@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
 type RemoveCartItemParams = {
+  username: string;
   id: string;
 };
 
@@ -12,7 +13,7 @@ export const removeCartItem = async (
   next: NextFunction
 ) => {
   try {
-    const { id } = req.params;
+    const { username, id } = req.params;
   } catch (error) {
     next(error);
   }

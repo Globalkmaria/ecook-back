@@ -1,7 +1,6 @@
 import { config } from "../../config/index.js";
 import { decrypt, encrypt } from "../../utils/encrypt.js";
 import { sanitizeURL } from "../../utils/normalize.js";
-import { Product } from "./type.js";
 
 export const decryptKeyAndGetProductId = (url: string) => {
   const [ciphertext] = url.split("-");
@@ -19,7 +18,7 @@ export const decryptKeyAndGetProductId = (url: string) => {
   return productId;
 };
 
-export const generateProductKey = (id: Product["id"], name: string) =>
+export const generateProductKey = (id: string | number, name: string) =>
   `${encrypt(
     id.toString(),
     config.key.product.key,

@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
 type UpdateCartItemParams = {
-  userId: string;
+  username: string;
 };
 
 type UpdateCartItemBody = {
@@ -16,7 +16,7 @@ export const updateCartItem = async (
   next: NextFunction
 ) => {
   try {
-    const { userId } = req.params;
+    const { username } = req.params;
     const { quantity } = req.body;
   } catch (error) {
     next(error);

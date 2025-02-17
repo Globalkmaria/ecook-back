@@ -20,7 +20,7 @@ export const decryptKeyAndGetIngredientId = (key: string) => {
   return ingredientId;
 };
 
-export const generateIngredientKey = (id: number, name: string) =>
+export const generateIngredientKey = (id: number | string, name: string) =>
   `${encrypt(
     id.toString(),
     config.key.ingredient.key,
