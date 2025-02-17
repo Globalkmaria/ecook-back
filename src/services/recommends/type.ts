@@ -6,6 +6,7 @@ export interface Recommend extends RowDataPacket {
   type: string;
   value: string;
   label: string;
+  order: number;
 }
 export interface RecommendRecipe extends RowDataPacket {
   recipe_id: number;
