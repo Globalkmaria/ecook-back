@@ -53,6 +53,9 @@ Whether you're exploring new recipes or looking for ways to reuse ingredients, E
 
 - 재료, 제품, 태그 또는 레시피 이름으로 원하는 레시피를 찾아보세요.
 
+9. 장보기 저장
+- 사야할 재료와 제품들을 저장해서 확인해보세요.
+
 ---
 
 1. Explore Recipes
@@ -82,9 +85,13 @@ Whether you're exploring new recipes or looking for ways to reuse ingredients, E
 7. Bookmark Recipes
 - Save recipes and check out when you need them.
 
-9. Advanced Search
+8. Advanced Search
 
 - Find recipes by ingredient, product, tag, or recipe name.
+
+9. Cart Page
+
+- Easily add ingredients and products to your cart while browsing recipes, helping you organize your shopping list. 
 
 ## Skills and Technologies Used
 
@@ -108,7 +115,8 @@ Whether you're exploring new recipes or looking for ways to reuse ingredients, E
 
 
 - ERD
-![cooking erd](https://github.com/user-attachments/assets/1eee367b-7964-40cb-a785-13f6a6d84985)
+<img width="900" alt="image" src="https://github.com/user-attachments/assets/684214ba-2b9e-4be3-85b4-c53160a6a7dd" />
+
 
 
 - Home page
@@ -118,10 +126,12 @@ Whether you're exploring new recipes or looking for ways to reuse ingredients, E
 <img width="900" alt="Screenshot 2025-02-14 at 2 06 25 AM" src="https://github.com/user-attachments/assets/f111d29d-02c3-4ce5-80d8-f819591cd27f" />
 
 - Recipe page
-<img width="900" alt="Screenshot 2025-02-14 at 2 04 28 AM" src="https://github.com/user-attachments/assets/d67eb1e8-6595-47ef-a682-f6f467864f03" />
+<img width="900" alt="image" src="https://github.com/user-attachments/assets/6efc6614-99b6-4c50-8711-c3c972c07ea8" />
 
 - Product page
-<img width="900" alt="Screenshot 2025-02-14 at 2 05 48 AM" src="https://github.com/user-attachments/assets/f5ad8b1a-b4cc-4984-9bdc-d4e4bf5a3918" />
+<img width="900" alt="image" src="https://github.com/user-attachments/assets/d1dce010-7590-49e6-87ee-83e5e52873f7" />
+- Cart page
+<img width="900" alt="image" src="https://github.com/user-attachments/assets/2919fa33-d2bc-497d-9104-f5551442c6b0" />
 
 
 - Add new recipe
@@ -139,7 +149,7 @@ Whether you're exploring new recipes or looking for ways to reuse ingredients, E
 
 <img width="900" alt="Screenshot 2025-02-14 at 2 04 57 AM" src="https://github.com/user-attachments/assets/b928f3b0-0be5-4b59-80c4-6c941c541dc0" />
 
-<img width="900" alt="Screenshot 2025-02-14 at 2 08 20 AM" src="https://github.com/user-attachments/assets/6dc3c47d-307d-420a-8e06-86c3ef01e6eb" />
+<img width="900" alt="image" src="https://github.com/user-attachments/assets/283cac11-b67a-4ff3-a226-4c5cd8f6445c" />
 
 - Login
 <img width="900" alt="login" src="https://github.com/user-attachments/assets/a3ef3b92-3d89-421e-af3e-b7c8f981c108"/>
