@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-import { decryptRecipeURLAndGetProductId } from "../../../services/products/utils.js";
+import { decryptKeyAndGetProductId } from "../../../services/products/utils.js";
 import { validateId } from "../../../utils/numbers.js";
 import { ServiceError } from "../../../services/helpers/ServiceError.js";
 import { getProductDetail } from "../../../services/products/product/productService.js";
@@ -15,7 +15,7 @@ export const getProduct = async (
   next: NextFunction
 ) => {
   try {
-    const productId = decryptRecipeURLAndGetProductId(req.params.key);
+    const productId = decryptKeyAndGetProductId(req.params.key);
 
     if (!productId || !validateId(productId))
       throw new ServiceError(400, "Invalid key");

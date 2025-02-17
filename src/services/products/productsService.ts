@@ -1,6 +1,6 @@
 import mysqlDB from "../../db/mysql.js";
 import { lightSlugify, lightTrim } from "../../utils/normalize.js";
-import { decryptRecipeURLAndGetProductId } from "./utils.js";
+import { decryptKeyAndGetProductId } from "./utils.js";
 import { formatClientProducts } from "./helper.js";
 import { Product, SearchProductsData, SearchProductsParams } from "./type.js";
 import { Ingredient } from "../ingredients/type.js";
@@ -29,7 +29,7 @@ export const searchProducts = async ({
 const searchByProductKey = async (
   query: string
 ): Promise<SearchProductsData> => {
-  const productId = decryptRecipeURLAndGetProductId(query);
+  const productId = decryptKeyAndGetProductId(query);
   if (!productId) throw new Error("Invalid product key");
 
   const [products] = await mysqlDB.query<Product[]>(

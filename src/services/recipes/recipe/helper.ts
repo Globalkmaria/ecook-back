@@ -10,18 +10,28 @@ import { sanitizeRecipeData } from "../helper.js";
 import { generateRecipeKey } from "../utils.js";
 import { RecommendRecipe } from "../../recommends/type.js";
 import { shuffleArray } from "../../../utils/shuffle.js";
+import { generateIngredientKey } from "../../ingredients/utils.js";
+import { generateProductKey } from "../../products/utils.js";
 
 export const generateClientRecipeIngredient = (
   ingredient: RecipeIngredient,
   map: Map<number, ClientRecipeProduct[]>
 ): ClientRecipeDetail["ingredients"][0] => ({
-  id: ingredient.id,
+  id: ingredient.ingredient_id,
+  key: generateIngredientKey(
+    ingredient.ingredient_id,
+    ingredient.ingredient_name
+  ),
   name: ingredient.ingredient_name,
   quantity: ingredient.ingredient_quantity ?? "",
   ingredientId: ingredient.ingredient_id ?? null,
   userProduct: ingredient.product_id
     ? {
         id: ingredient.product_id,
+        key: generateProductKey(
+          ingredient.product_id,
+          ingredient.product_name ?? ""
+        ),
         name: ingredient.product_name ?? "",
         brand: ingredient.product_brand ?? null,
         purchasedFrom: ingredient.product_purchased_from ?? null,

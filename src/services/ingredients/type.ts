@@ -7,3 +7,13 @@ export interface Ingredient extends RowDataPacket {
   created_at?: Date; // 'timestamp' and nullable, so it's optional
   updated_at?: Date; // 'timestamp' and nullable, so it's optional
 }
+
+export type IngredientProductQueryResult = {
+  ingredient_id: number;
+  ingredient_name: string;
+  product_id: number;
+  product_name: string;
+  product_brand: string;
+  product_purchased_from: string;
+  product_img: string;
+};
