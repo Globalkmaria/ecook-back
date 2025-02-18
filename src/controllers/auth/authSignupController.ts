@@ -29,7 +29,7 @@ export const signup = async (
 ) => {
   try {
     const file = req.file as Express.MulterS3.File;
-    const key = await processAndUploadImage(file);
+    const key = file && (await processAndUploadImage(file));
 
     const user: SignupUser = {
       username: req.body.username,
