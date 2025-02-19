@@ -64,12 +64,12 @@ export const generateClientRecipeProduct = (
 export const getIngredientIds = (ingredients: RecipeIngredient[]) =>
   ingredients
     .map((ingredient) => ingredient.ingredient_id)
-    .filter((id): id is number => id !== undefined);
+    .filter((id): id is number => !!id);
 
 export const getProductIds = (ingredients: RecipeIngredient[]) =>
   ingredients
     .map((ingredient) => ingredient.product_id)
-    .filter((id): id is number => id !== undefined);
+    .filter((id): id is number => !!id);
 
 export const generateRecipeInformation = ({
   info,
