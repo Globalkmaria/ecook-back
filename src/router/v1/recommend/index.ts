@@ -6,4 +6,6 @@ const router = express.Router();
 
 router.get("/home", recommendHome);
 
+router.get("/pantry/pantry-boxes/:pantryBoxKey");
+
 export default router;
