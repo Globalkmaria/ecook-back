@@ -1,22 +1,25 @@
 import mysqlDB from "../../../db/mysql.js";
-import { ServiceError } from "../../helpers/ServiceError.js";
 import { getPantryItemsByUserId } from "../pantryItems/getPantryItem.js";
 import { PantryBoxInfoServerData } from "./type.js";
 import { mapPantryBoxesToResponse } from "./helper.js";
 
 export const getPantryBoxes = async (userId: number) => {
   const pantryBoxes = await getPantryBoxesInfoByUserId(userId);
+  if (pantryBoxes.length === 0) {
+    return [];
+  }
 
   const pantryItems = await getPantryItemsByUserId(userId);
 
-  const pantryBoxInfo = mapPantryBoxesToResponse(pantryBoxes, pantryItems);
+  const pantryBoxesInfo = mapPantryBoxesToResponse(pantryBoxes, pantryItems);
 
-  return pantryBoxInfo;
+  return pantryBoxesInfo;
 };
 
 const getPantryBoxesInfoByUserId = async (userId: number) => {
   const [pantryBoxes] = await mysqlDB.execute<PantryBoxInfoServerData[]>(
     `SELECT  
+        box.id as id,
         p.img as img, 
         i.name as ingredient_name,
         p.name as product_name
@@ -28,10 +31,6 @@ const getPantryBoxesInfoByUserId = async (userId: number) => {
       WHERE box.user_id = ?`,
     [userId]
   );
-
-  if (!pantryBoxes.length) {
-    throw new ServiceError(400, "Pantry box not found");
-  }
 
   return pantryBoxes;
 };

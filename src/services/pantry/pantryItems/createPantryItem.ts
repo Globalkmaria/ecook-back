@@ -3,18 +3,19 @@ import { ResultSetHeader } from "mysql2";
 import mysqlDB from "../../../db/mysql.js";
 import { arrayToPlaceholders } from "../../../utils/query.js";
 import { linkPantryItemToBox } from "../pantryBoxItemsJC/index.js";
+import { PoolConnection } from "mysql2/promise.js";
 
 type CreatePantryItemProps = {
   pantryBoxId: number;
 } & PantryItemData;
 
-export const createPantryItem = async ({
-  pantryBoxId,
-  ...restProps
-}: CreatePantryItemProps) => {
-  const pantryItemId = await insertPantryItem(restProps);
+export const createPantryItem = async (
+  { pantryBoxId, ...restProps }: CreatePantryItemProps,
+  connection?: PoolConnection
+) => {
+  const pantryItemId = await insertPantryItem(restProps, connection);
 
-  await linkPantryItemToBox(pantryItemId, pantryBoxId);
+  await linkPantryItemToBox(pantryItemId, pantryBoxId, connection);
 
   return pantryItemId;
 };
@@ -22,21 +23,25 @@ export const createPantryItem = async ({
 interface PantryItemData {
   userId: number;
   buyDate: string;
-  expirationDate: string;
+  expireDate: string;
   quantity: number;
 }
 
-const insertPantryItem = async (props: PantryItemData) => {
+const insertPantryItem = async (
+  props: PantryItemData,
+  connection?: PoolConnection
+) => {
+  const connect = connection || mysqlDB;
   const values = [
     props.buyDate,
-    props.expirationDate,
+    props.expireDate,
     props.quantity,
     props.userId,
   ];
   const placeholder = arrayToPlaceholders(values);
 
-  const [result] = await mysqlDB.execute<ResultSetHeader>(
-    `INSERT INTO pantry_items (buy_date, expiration_date, quantity, user_id)
+  const [result] = await connect.execute<ResultSetHeader>(
+    `INSERT INTO pantry_items (buy_date, expire_date, quantity, user_id)
       VALUES (${placeholder});`,
     values
   );

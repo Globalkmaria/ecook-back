@@ -1,49 +1,38 @@
 import { ResultSetHeader, RowDataPacket } from "mysql2";
-import mysqlDB from "../../../db/mysql.js";
+import { PoolConnection } from "mysql2/promise.js";
 
 interface CreatePantryBoxProps {
   userId: number;
   ingredientId: number;
-  productId?: number;
+  productId: number | null;
 }
 
-export const createPantryBox = async (props: CreatePantryBoxProps) => {
-  const { fields, values } = filterInputsAndValues(props);
+export const createPantryBox = async (
+  props: CreatePantryBoxProps,
+  connection: PoolConnection
+) => {
+  const values = [props.userId, props.ingredientId, props.productId ?? null];
 
-  const whereClause = fields.map((field) => `${field} = ?`).join(" AND ");
-  const [existing] = await mysqlDB.execute<RowDataPacket[]>(
-    `SELECT COUNT(*) as count FROM pantry_boxes WHERE ${whereClause}`,
+  const [existing] = await connection.execute<RowDataPacket[]>(
+    `SELECT COUNT(*) as count FROM pantry_boxes WHERE user_id = ? AND ingredient_id = ? AND product_id = ?;`,
     values
   );
 
-  if (existing.length > 0) {
+  if (existing[0].count > 0) {
     return existing[0].id;
   }
 
-  const query = fields.join(", ");
-  const placeholders = fields.map(() => "?").join(", ");
-  const [result] = await mysqlDB.execute<ResultSetHeader>(
+  const createValues = values.filter(Boolean);
+  const query =
+    createValues.length > 2
+      ? "user_id, ingredient_id, product_id"
+      : "user_id, ingredient_id";
+  const placeholders = createValues.map(() => "?").join(",");
+
+  const [result] = await connection.execute<ResultSetHeader>(
     `INSERT INTO pantry_boxes (${query}) VALUES (${placeholders});`,
     values
   );
 
   return result.insertId;
-};
-
-const filterInputsAndValues = ({
-  userId,
-  ingredientId,
-  productId,
-}: {
-  userId: number;
-  ingredientId: number;
-  productId?: number;
-}) => {
-  const fields = [
-    "user_id",
-    "ingredient_id",
-    productId ? "product_id" : null,
-  ].filter(Boolean);
-  const values = [userId, ingredientId, productId].filter(Boolean);
-  return { fields, values };
 };

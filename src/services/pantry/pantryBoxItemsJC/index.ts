@@ -1,20 +1,19 @@
 import { ResultSetHeader } from "mysql2";
 
 import mysqlDB from "../../../db/mysql.js";
-import { arrayToPlaceholders } from "../../../utils/query.js";
 import { PantryBoxItemLink } from "./type.js";
+import { PoolConnection } from "mysql2/promise.js";
 
 export const linkPantryItemToBox = async (
   pantryItemId: number,
-  pantryBoxId: number
+  pantryBoxId: number,
+  connection?: PoolConnection
 ) => {
-  const values = [pantryItemId, pantryBoxId];
-  const placeholder = arrayToPlaceholders(values);
-
-  await mysqlDB.execute<ResultSetHeader>(
+  const connect = connection || mysqlDB;
+  await connect.execute<ResultSetHeader>(
     `INSERT INTO pantry_box_items (pantry_item_id, pantry_box_id)
-            VALUES (${placeholder});`,
-    values
+            VALUES (?,?);`,
+    [pantryItemId, pantryBoxId]
   );
 };
 

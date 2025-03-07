@@ -62,8 +62,6 @@ export const mapPantryBoxesToResponse = (
   pantryBoxes: PantryBoxInfoServerData[],
   pantryItems: GetPantryItemsByUserIdRes[]
 ): PantryBoxesResponse => {
-  const key = generatePantryBoxKey(pantryBoxes[0].id);
-
   const items = pantryItems.reduce<PantryItems>((acc, item) => {
     if (!acc[item.pantry_box_id]) {
       acc[item.pantry_box_id] = {

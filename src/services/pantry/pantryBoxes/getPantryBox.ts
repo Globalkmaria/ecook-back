@@ -17,6 +17,7 @@ export const getPantryBox = async (pantryBoxId: number) => {
 const getPantryBoxInfo = async (pantryBoxId: number) => {
   const [pantryBoxes] = await mysqlDB.execute<PantryBoxInfoServerData[]>(
     `SELECT  
+        box.id as id, 
         p.img as img, 
         i.name as ingredient_name,
         p.name as product_name

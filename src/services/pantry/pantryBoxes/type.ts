@@ -1,6 +1,7 @@
 import { RowDataPacket } from "mysql2";
 
 export interface PantryBoxInfoServerData extends RowDataPacket {
+  id: number;
   img: string;
   ingredient_name: string;
   product_name: string | null;

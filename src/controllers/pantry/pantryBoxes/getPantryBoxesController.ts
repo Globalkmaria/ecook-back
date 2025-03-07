@@ -24,6 +24,7 @@ export const getPantryBoxesController = async (
 
     res.json(pantryBoxes);
   } catch (error) {
+    console.error(error);
     next({
       status: 400,
       message:

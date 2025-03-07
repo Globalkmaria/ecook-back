@@ -10,7 +10,7 @@ import {
 export type CreatePantryItemRequestBody = {
   pantryBoxKey: string;
   buyDate: string;
-  expirationDate: string;
+  expireDate: string;
   quantity: number;
 };
 
