@@ -123,7 +123,7 @@ export const getTagRecipes = async (recipe: RecipeInfo) => {
   return recipes;
 };
 
-export const getRecentRecipes = async () => {
+export const getRecentRecipes = async (limit = 8) => {
   const [recipes] = await mysqlDB.query<RecommendRecipe[]>(
     `
     SELECT 
@@ -134,7 +134,7 @@ export const getRecentRecipes = async () => {
       r.user_img
     FROM recipe_with_user_info_view r
     ORDER BY r.created_at DESC
-    LIMIT 8
+    LIMIT ${limit}
     ;
     `
   );

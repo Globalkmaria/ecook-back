@@ -1,7 +1,7 @@
 import mysqlDB from "../../../db/mysql.js";
 import { ServiceError } from "../../helpers/ServiceError.js";
 import { getPantryItems } from "../pantryItems/getPantryItem.js";
-import { PantryBoxInfoServerData } from "./type.js";
+import { PantryBoxInfoServerData, PantryBoxOriginalData } from "./type.js";
 import { mapPantryBoxToResponse } from "./helper.js";
 
 export const getPantryBox = async (pantryBoxId: number) => {
@@ -33,4 +33,17 @@ const getPantryBoxInfo = async (pantryBoxId: number) => {
     throw new ServiceError(400, "Pantry box not found");
   }
   return pantryBoxes[0];
+};
+
+export const getOriginalPantryBox = async (pantryBoxId: number) => {
+  const [pantryBox] = await mysqlDB.execute<PantryBoxOriginalData[]>(
+    `SELECT * FROM pantry_boxes WHERE id = ?;`,
+    [pantryBoxId]
+  );
+
+  if (!pantryBox.length) {
+    throw new ServiceError(400, "Pantry box not found");
+  }
+
+  return pantryBox[0];
 };
