@@ -6,6 +6,7 @@ import { mapPantryBoxToResponse } from "./helper.js";
 
 export const getPantryBox = async (pantryBoxId: number) => {
   const pantryBox = await getPantryBoxInfo(pantryBoxId);
+  if (!pantryBox) return null;
 
   const pantryItems = await getPantryItems(pantryBoxId);
 
@@ -31,7 +32,7 @@ const getPantryBoxInfo = async (pantryBoxId: number) => {
   );
 
   if (!pantryBoxes.length) {
-    throw new ServiceError(400, "Pantry box not found");
+    return null;
   }
   return pantryBoxes[0];
 };

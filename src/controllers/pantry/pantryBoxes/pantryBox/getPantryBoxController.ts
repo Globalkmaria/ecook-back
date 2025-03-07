@@ -19,7 +19,7 @@ type getPantryBoxResponse = {
     expireDate: Date;
     quantity: number;
   }[];
-};
+} | null;
 
 export const getPantryBoxController = async (
   req: Request<getPantryBoxParams>,
@@ -31,6 +31,9 @@ export const getPantryBoxController = async (
     const pantryBoxId = decryptPantryBoxKeyWithThrowError(pantryBoxKey);
 
     const pantryBoxInfo = await getPantryBox(pantryBoxId);
+    if (!pantryBoxInfo) {
+      return res.json(null);
+    }
 
     return res.json(pantryBoxInfo);
   } catch (error) {
