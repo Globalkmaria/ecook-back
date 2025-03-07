@@ -5,7 +5,7 @@ import pantryItemsRouter from "./pantryItems/index.js";
 
 const router = express.Router();
 
-router.use("/pantry-boxes", pantryBoxesRouter);
-router.use("/pantry-items", pantryItemsRouter);
+router.use("/boxes", pantryBoxesRouter);
+router.use("/items", pantryItemsRouter);
 
 export default router;
