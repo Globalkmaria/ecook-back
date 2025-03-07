@@ -2,14 +2,14 @@ import { ResultSetHeader } from "mysql2";
 
 import mysqlDB from "../../../db/mysql.js";
 import { deletePantryBox } from "../pantryBoxes/deletePantryBox.js";
-import { getPantryItemsByItemId } from "../pantryBoxItemsJC/index.js";
+import { getPantryBoxItems } from "../pantryBoxItemsJC/index.js";
 import { ServiceError } from "../../helpers/ServiceError.js";
 
 export const deletePantryItem = async (
   pantryItemId: number,
   userId: number
 ) => {
-  const pantryItems = await getPantryItemsByItemId(pantryItemId);
+  const pantryItems = await getPantryBoxItems(pantryItemId);
   if (pantryItems.length < 2) {
     await deletePantryBox(pantryItems[0].pantry_box_id);
   }

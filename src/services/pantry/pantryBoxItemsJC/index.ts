@@ -31,10 +31,13 @@ export const unlinkPantryBoxFromItems = async (pantryBoxId: number) => {
   );
 };
 
-export const getPantryItemsByItemId = async (pantryItemId: string | number) => {
+export const getPantryBoxItems = async (pantryItemId: string | number) => {
   const [result] = await mysqlDB.execute<PantryBoxItemLink[]>(
-    `SELECT * FROM pantry_box_items 
-        WHERE pantry_item_id = ${pantryItemId} ;`
+    `WITH j1 AS (SELECT pantry_box_id FROM pantry_box_items WHERE pantry_item_id = ?) 
+SELECT * FROM j1
+JOIN pantry_box_items j2
+ON j1.pantry_box_id = j2.pantry_box_id; ;`,
+    [pantryItemId]
   );
 
   return result;
