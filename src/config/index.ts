@@ -50,6 +50,14 @@ export const config = {
       key: required("PRODUCT_ENCRYPTION_KEY"),
       iv: required("PRODUCT_ENCRYPTION_IV"),
     },
+    pantryBox: {
+      key: required("PANTRY_BOX_ENCRYPTION_KEY"),
+      iv: required("PANTRY_BOX_ENCRYPTION_IV"),
+    },
+    pantryItem: {
+      key: required("PANTRY_ITEM_ENCRYPTION_KEY"),
+      iv: required("PANTRY_ITEM_ENCRYPTION_IV"),
+    },
   },
 };
 
