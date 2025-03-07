@@ -1,3 +1,4 @@
+import { getImgUrl } from "../../../utils/img.js";
 import {
   GetPantryItemsByUserIdRes,
   PantryItemServerData,
@@ -34,7 +35,7 @@ export const mapPantryBoxToResponse = (
 
   return {
     key,
-    img: pantryBox.img ?? null,
+    img: getImgUrl(pantryBox.img ?? null),
     ingredientName: pantryBox.ingredient_name,
     productName: pantryBox.product_name ?? null,
 
@@ -84,7 +85,7 @@ export const mapPantryBoxesToResponse = (
     key: generatePantryBoxKey(pantryBox.id),
     ingredientName: pantryBox.ingredient_name,
     productName: pantryBox.product_name ?? null,
-    img: pantryBox.img ?? null,
+    img: getImgUrl(pantryBox.img ?? null),
 
     buyDate: items[pantryBox.id].buyDate,
     expireDate: items[pantryBox.id].expireDate,

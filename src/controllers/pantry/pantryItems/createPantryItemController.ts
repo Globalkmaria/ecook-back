@@ -7,8 +7,11 @@ import {
   generatePantryItemKey,
 } from "../../../services/pantry/utils.js";
 
-export type CreatePantryItemRequestBody = {
+export type CreatePantryItemParams = {
   pantryBoxKey: string;
+};
+
+export type CreatePantryItemRequestBody = {
   buyDate: string;
   expireDate: string;
   quantity: number;
@@ -19,15 +22,14 @@ export type CreatePantryItemResponse = {
 };
 
 export const createPantryItemController = async (
-  req: Request<{}, {}, CreatePantryItemRequestBody, {}>,
+  req: Request<CreatePantryItemParams, {}, CreatePantryItemRequestBody>,
   res: Response<CreatePantryItemResponse>,
   next: NextFunction
 ) => {
   try {
     const user = req.user as SerializedUser;
-    const pantryBoxId = decryptPantryBoxKeyWithThrowError(
-      req.body.pantryBoxKey
-    );
+    const { pantryBoxKey } = req.params;
+    const pantryBoxId = decryptPantryBoxKeyWithThrowError(pantryBoxKey);
 
     const pantryId = await createPantryItem({
       userId: user.id,
