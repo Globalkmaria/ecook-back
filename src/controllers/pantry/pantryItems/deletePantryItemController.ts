@@ -8,9 +8,13 @@ type DeletePantryItemParams = {
   pantryItemKey: string;
 };
 
+type DeletePantryItemResponse = {
+  pantryBoxDeleted: boolean;
+};
+
 export const deletePantryItemController = async (
   req: Request<DeletePantryItemParams>,
-  res: Response,
+  res: Response<DeletePantryItemResponse>,
   next: NextFunction
 ) => {
   try {
@@ -18,9 +22,9 @@ export const deletePantryItemController = async (
     const user = req.user as SerializedUser;
     const pantryItemId = decryptPantryItemKeyWithThrowError(pantryItemKey);
 
-    await deletePantryItem(pantryItemId, user.id);
+    const result = await deletePantryItem(pantryItemId, user.id);
 
-    res.status(204).send();
+    res.json(result);
   } catch (error) {
     next({
       status: 400,

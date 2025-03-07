@@ -8,13 +8,21 @@ import { ServiceError } from "../../helpers/ServiceError.js";
 export const deletePantryItem = async (
   pantryItemId: number,
   userId: number
-) => {
+): Promise<{
+  pantryBoxDeleted: boolean;
+}> => {
   const pantryItems = await getPantryBoxItems(pantryItemId);
   if (pantryItems.length < 2) {
     await deletePantryBox(pantryItems[0].pantry_box_id);
+    return {
+      pantryBoxDeleted: true,
+    };
   }
 
   await deleteItemFromPantryDB(pantryItemId, userId);
+  return {
+    pantryBoxDeleted: false,
+  };
 };
 
 const deleteItemFromPantryDB = async (pantryItemId: number, userId: number) => {
