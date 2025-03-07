@@ -15,6 +15,14 @@ export const decryptKeyAndGetProductId = (url: string) => {
     config.key.product.iv
   );
 
+  return Number(productId);
+};
+
+export const decryptProductKeyWithThrowError = (url: string) => {
+  const productId = decryptKeyAndGetProductId(url);
+  if (!productId) {
+    throw new Error("Invalid product key");
+  }
   return productId;
 };
 

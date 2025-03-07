@@ -3,7 +3,7 @@ import { RowDataPacket } from "mysql2";
 import mysqlDB from "../../db/mysql.js";
 import { IngredientProduct, SimpleIngredient } from "./type.js";
 
-export const getIngredients = async (ingredientIds: string[]) => {
+export const getIngredients = async (ingredientIds: number[]) => {
   const [ingredients] = await mysqlDB.query<
     (Pick<SimpleIngredient, "ingredient_id" | "ingredient_name"> &
       RowDataPacket)[]
@@ -20,7 +20,7 @@ export const getIngredients = async (ingredientIds: string[]) => {
   return ingredients;
 };
 
-export const getProducts = async (productIds: string[]) => {
+export const getProducts = async (productIds: number[]) => {
   const [products] = await mysqlDB.query<(IngredientProduct & RowDataPacket)[]>(
     `
   SELECT 

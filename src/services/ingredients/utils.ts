@@ -2,6 +2,7 @@ import { config } from "../../config/index.js";
 import { IngredientsBatchBody } from "../../controllers/ingredients/ingredientsBatchController.js";
 import { decrypt, encrypt } from "../../utils/encrypt.js";
 import { sanitizeURL } from "../../utils/normalize.js";
+import { ServiceError } from "../helpers/ServiceError.js";
 import { decryptKeyAndGetProductId } from "../products/utils.js";
 
 export const decryptKeyAndGetIngredientId = (key: string) => {
@@ -17,7 +18,15 @@ export const decryptKeyAndGetIngredientId = (key: string) => {
     config.key.ingredient.iv
   );
 
-  return ingredientId;
+  return Number(ingredientId);
+};
+
+export const decryptIngredientKeyWithThrowError = (key: string) => {
+  const id = decryptKeyAndGetIngredientId(key);
+  if (!id) {
+    throw new ServiceError(400, "Invalid ingredient key");
+  }
+  return id;
 };
 
 export const generateIngredientKey = (id: number | string, name: string) =>
@@ -30,7 +39,7 @@ export const generateIngredientKey = (id: number | string, name: string) =>
 export const extractIngredientAndProductIds = (
   items: IngredientsBatchBody["items"]
 ) => {
-  const init: [string[], string[]] = [[], []];
+  const init: [number[], number[]] = [[], []];
 
   const ingredientKeys = Object.keys(items);
 
