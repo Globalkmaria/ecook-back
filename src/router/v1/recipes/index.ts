@@ -1,7 +1,7 @@
 import express from "express";
 
-import recipesRouter from "./recipes.js";
-import recipeRouter from "./recipe/index.js";
+import recipesRouter from "./recipes";
+import recipeRouter from "./recipe/index";
 
 const router = express.Router();
 

@@ -1,7 +1,7 @@
 import { RowDataPacket } from "mysql2";
 
-import mysqlDB from "../../db/mysql.js";
-import { CartItemData } from "./type.js";
+import mysqlDB from "../../db/mysql";
+import { CartItemData } from "./type";
 
 export const getCartItemsByUserIdService = async (userId: number) => {
   const [cartItems] = await mysqlDB.execute<(CartItemData & RowDataPacket)[]>(

@@ -1,6 +1,6 @@
-import mysqlDB from "../../../db/mysql.js";
-import { RecipeInfoWithUser } from "./type.js";
-import { ServiceError } from "../../helpers/ServiceError.js";
+import mysqlDB from "../../../db/mysql";
+import { RecipeInfoWithUser } from "./type";
+import { ServiceError } from "../../helpers/ServiceError";
 
 import {
   generateClientRecipeIngredient,
@@ -8,14 +8,14 @@ import {
   generateRecipeInformation,
   getIngredientIds,
   getProductIds,
-} from "./helper.js";
+} from "./helper";
 import {
   ClientRecipeDetail,
   ClientRecipeProduct,
   RecipeIngredient,
   RecipeIngredientRequired,
   RecipeTag,
-} from "./type.js";
+} from "./type";
 
 export const getRecipeService = async (recipeId: string) => {
   const [info, ingredients, tags] = await Promise.all([

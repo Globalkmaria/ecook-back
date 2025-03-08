@@ -1,13 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 
-import { ServiceError } from "../../services/helpers/ServiceError.js";
+import { ServiceError } from "../../services/helpers/ServiceError";
 
-import { mapQueryResultToBatchResponse } from "../../services/ingredients/helper.js";
-import { extractIngredientAndProductIds } from "../../services/ingredients/utils.js";
+import { mapQueryResultToBatchResponse } from "../../services/ingredients/helper";
+import { extractIngredientAndProductIds } from "../../services/ingredients/utils";
 import {
   getIngredients,
   getProducts,
-} from "../../services/ingredients/ingredientsBatchService.js";
+} from "../../services/ingredients/ingredientsBatchService";
 
 export type IngredientsBatchBody = {
   items: {

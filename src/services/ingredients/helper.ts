@@ -1,8 +1,8 @@
-import { IngredientsBatchResponse } from "../../controllers/ingredients/ingredientsBatchController.js";
-import { getImgUrl } from "../../utils/img.js";
-import { generateProductKey } from "../products/utils.js";
-import { IngredientProduct, SimpleIngredient } from "./type.js";
-import { generateIngredientKey } from "./utils.js";
+import { IngredientsBatchResponse } from "../../controllers/ingredients/ingredientsBatchController";
+import { getImgUrl } from "../../utils/img";
+import { generateProductKey } from "../products/utils";
+import { IngredientProduct, SimpleIngredient } from "./type";
+import { generateIngredientKey } from "./utils";
 
 export const mapQueryResultToBatchResponse = ({
   ingredients,

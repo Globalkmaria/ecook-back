@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 
-import { decryptProductKeyWithThrowError } from "../../../services/products/utils.js";
-import { ServiceError } from "../../../services/helpers/ServiceError.js";
-import { getProductDetail } from "../../../services/products/product/productService.js";
+import { decryptProductKeyWithThrowError } from "../../../services/products/utils";
+import { ServiceError } from "../../../services/helpers/ServiceError";
+import { getProductDetail } from "../../../services/products/product/productService";
 
 export interface GetProductParams {
   key: string;

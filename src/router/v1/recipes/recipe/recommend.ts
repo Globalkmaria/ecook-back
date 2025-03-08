@@ -1,6 +1,6 @@
 import express from "express";
 
-import { getRecipeRecommend } from "../../../../controllers/recipes/recipe/getRecipeRecommendController.js";
+import { getRecipeRecommend } from "../../../../controllers/recipes/recipe/getRecipeRecommendController";
 
 const router = express.Router();
 

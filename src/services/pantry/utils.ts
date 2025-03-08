@@ -1,6 +1,6 @@
-import { config } from "../../config/index.js";
-import { decrypt, encrypt } from "../../utils/encrypt.js";
-import { ServiceError } from "../helpers/ServiceError.js";
+import { config } from "../../config/index";
+import { decrypt, encrypt } from "../../utils/encrypt";
+import { ServiceError } from "../helpers/ServiceError";
 
 export const generatePantryItemKey = (pantryItemId: number) => {
   return `${encrypt(

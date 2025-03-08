@@ -1,8 +1,8 @@
 import express from "express";
 
-import { authGuard } from "../../middleware/auth.js";
-import { getUserBookmarkedRecipes } from "../../controllers/users/usersBookmarksController.js";
-import { getUser } from "../../controllers/users/userController.js";
+import { authGuard } from "../../middleware/auth";
+import { getUserBookmarkedRecipes } from "../../controllers/users/usersBookmarksController";
+import { getUser } from "../../controllers/users/userController";
 
 const router = express.Router();
 

@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
-import { createRecipeService } from "../../services/recipes/recipesCreateService/index.js";
-import { ServiceError } from "../../services/helpers/ServiceError.js";
+import { createRecipeService } from "../../services/recipes/recipesCreateService/index";
+import { ServiceError } from "../../services/helpers/ServiceError";
 
 export interface CreateRecipeBody {
   info: string; // JSON string

@@ -1,6 +1,6 @@
 import { RowDataPacket } from "mysql2";
 
-import mysqlDB from "../../db/mysql.js";
+import mysqlDB from "../../db/mysql";
 
 export const checkUsernameExists = async (
   username: string

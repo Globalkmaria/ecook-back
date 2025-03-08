@@ -1,11 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 
-import {
-  signupUser,
-  SignupUser,
-} from "../../services/auth/authSignupService.js";
-import { getImgUrl } from "../../utils/img.js";
-import { processAndUploadImage } from "../../db/aws.js";
+import { signupUser, SignupUser } from "../../services/auth/authSignupService";
+import { getImgUrl } from "../../utils/img";
+import { processAndUploadImage } from "../../db/aws";
 
 interface SignupBody {
   username: string;

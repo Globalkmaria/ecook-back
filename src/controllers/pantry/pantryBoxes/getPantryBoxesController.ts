@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
-import { SerializedUser } from "../../../config/passport.js";
-import { getPantryBoxes } from "../../../services/pantry/pantryBoxes/getPantryBoxes.js";
+import { SerializedUser } from "../../../config/passport";
+import { getPantryBoxes } from "../../../services/pantry/pantryBoxes/getPantryBoxes";
 
 type GetPantryBoxesResponse = {
   key: string;

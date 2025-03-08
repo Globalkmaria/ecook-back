@@ -1,12 +1,12 @@
-import { lightSlugify, lightTrim, splitString } from "../../utils/normalize.js";
-import mysqlDB from "../../db/mysql.js";
-import { generateRecipeKey } from "./utils.js";
-import { getImgUrl } from "../../utils/img.js";
+import { lightSlugify, lightTrim, splitString } from "../../utils/normalize";
+import mysqlDB from "../../db/mysql";
+import { generateRecipeKey } from "./utils";
+import { getImgUrl } from "../../utils/img";
 import {
   RECIPES_SEARCH_TYPES,
   SearchRecipesQueryParams,
-} from "../../controllers/recipes/recipesSearchController.js";
-import { RecipesSimple } from "./type.js";
+} from "../../controllers/recipes/recipesSearchController";
+import { RecipesSimple } from "./type";
 
 export const searchRecipesService = async ({
   q,

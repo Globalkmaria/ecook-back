@@ -1,8 +1,8 @@
 import express from "express";
-import { getCartItemsByUser } from "../../../controllers/carts/getCartItemsByUser.js";
-import { addItemToCart } from "../../../controllers/carts/addItemToCart.js";
-import { updateCartItem } from "../../../controllers/carts/updateCartItem.js";
-import { authGuard } from "../../../middleware/auth.js";
+import { getCartItemsByUser } from "../../../controllers/carts/getCartItemsByUser";
+import { addItemToCart } from "../../../controllers/carts/addItemToCart";
+import { updateCartItem } from "../../../controllers/carts/updateCartItem";
+import { authGuard } from "../../../middleware/auth";
 
 const router = express.Router();
 

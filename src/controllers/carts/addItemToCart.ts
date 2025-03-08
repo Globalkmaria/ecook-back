@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 
-import { SerializedUser } from "../../config/passport.js";
-import { ServiceError } from "../../services/helpers/ServiceError.js";
-import { createCartItem } from "../../services/carts/cartsService.js";
+import { SerializedUser } from "../../config/passport";
+import { ServiceError } from "../../services/helpers/ServiceError";
+import { createCartItem } from "../../services/carts/cartsService";
 
 type AddItemToCartParams = {
   username: string;

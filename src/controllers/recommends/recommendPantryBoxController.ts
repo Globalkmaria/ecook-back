@@ -1,18 +1,18 @@
 import { NextFunction, Request, Response } from "express";
-import { decryptPantryBoxKeyWithThrowError } from "../../services/pantry/utils.js";
-import { getOriginalPantryBox } from "../../services/pantry/pantryBoxes/getPantryBox.js";
+import { decryptPantryBoxKeyWithThrowError } from "../../services/pantry/utils";
+import { getOriginalPantryBox } from "../../services/pantry/pantryBoxes/getPantryBox";
 import {
   getIngredientAndProductRecommendRecipes,
   getIngredientRecommendRecipes,
-} from "../../services/recommends/recommendPantryBoxService.js";
+} from "../../services/recommends/recommendPantryBoxService";
 import {
   formatRecipeData,
   getUniqueRecipes,
-} from "../../services/recipes/recipe/helper.js";
-import { getRecentRecipes } from "../../services/recipes/recipe/recipeRecommendService.js";
-import { RecipeRecommendationClientData } from "../../services/recipes/recipe/type.js";
-import { decryptIngredientKeyWithThrowError } from "../../services/ingredients/utils.js";
-import { decryptProductKeyWithThrowError } from "../../services/products/utils.js";
+} from "../../services/recipes/recipe/helper";
+import { getRecentRecipes } from "../../services/recipes/recipe/recipeRecommendService";
+import { RecipeRecommendationClientData } from "../../services/recipes/recipe/type";
+import { decryptIngredientKeyWithThrowError } from "../../services/ingredients/utils";
+import { decryptProductKeyWithThrowError } from "../../services/products/utils";
 
 type RecommendPantryBoxParams = {
   pantryBoxKey: string;

@@ -2,8 +2,8 @@ import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
 import crypto from "crypto";
 
-import mysqlDB from "../db/mysql.js";
-import { User } from "../services/recipes/recipe/type.js";
+import mysqlDB from "../db/mysql";
+import { User } from "../services/recipes/recipe/type";
 
 interface UserRow {
   id: number;

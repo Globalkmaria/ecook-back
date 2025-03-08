@@ -1,7 +1,7 @@
 import express from "express";
 
-import { recommendHome } from "../../../controllers/recommends/recommendHomeController.js";
-import { recommendPantryBoxController } from "../../../controllers/recommends/recommendPantryBoxController.js";
+import { recommendHome } from "../../../controllers/recommends/recommendHomeController";
+import { recommendPantryBoxController } from "../../../controllers/recommends/recommendPantryBoxController";
 
 const router = express.Router();
 

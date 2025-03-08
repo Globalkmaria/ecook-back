@@ -3,20 +3,20 @@ import {
   RecipeInfo,
   RecipeInfoWithUser,
   RecipeRecommendationClientData,
-} from "./type.js";
-import { getImgUrl } from "../../../utils/img.js";
+} from "./type";
+import { getImgUrl } from "../../../utils/img";
 import {
   ClientRecipeDetail,
   ClientRecipeProduct,
   RecipeIngredient,
   RecipeIngredientRequired,
-} from "./type.js";
-import { sanitizeRecipeData } from "../helper.js";
-import { generateRecipeKey } from "../utils.js";
-import { RecommendRecipe } from "../../recommends/type.js";
-import { shuffleArray } from "../../../utils/shuffle.js";
-import { generateIngredientKey } from "../../ingredients/utils.js";
-import { generateProductKey } from "../../products/utils.js";
+} from "./type";
+import { sanitizeRecipeData } from "../helper";
+import { generateRecipeKey } from "../utils";
+import { RecommendRecipe } from "../../recommends/type";
+import { shuffleArray } from "../../../utils/shuffle";
+import { generateIngredientKey } from "../../ingredients/utils";
+import { generateProductKey } from "../../products/utils";
 
 export const generateClientRecipeIngredient = (
   ingredient: RecipeIngredient,

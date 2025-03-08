@@ -1,8 +1,8 @@
 import { ResultSetHeader } from "mysql2";
 
-import mysqlDB from "../../../db/mysql.js";
-import { PantryBoxItemLink } from "./type.js";
-import { PoolConnection } from "mysql2/promise.js";
+import mysqlDB from "../../../db/mysql";
+import { PantryBoxItemLink } from "./type";
+import { PoolConnection } from "mysql2/promise";
 
 export const linkPantryItemToBox = async (
   pantryItemId: number,

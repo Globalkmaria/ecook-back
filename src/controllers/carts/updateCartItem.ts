@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 
-import { SerializedUser } from "../../config/passport.js";
-import { ServiceError } from "../../services/helpers/ServiceError.js";
+import { SerializedUser } from "../../config/passport";
+import { ServiceError } from "../../services/helpers/ServiceError";
 import {
   removeCartItem,
   updateCartItemQuantity,
-} from "../../services/carts/cartsService.js";
+} from "../../services/carts/cartsService";
 
 type UpdateCartItemParams = {
   username: string;

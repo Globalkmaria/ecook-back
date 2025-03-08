@@ -1,6 +1,6 @@
-import mysqlDB from "../../../db/mysql.js";
-import { ServiceError } from "../../helpers/ServiceError.js";
-import { GetPantryItemsByUserIdRes, PantryItemServerData } from "./type.js";
+import mysqlDB from "../../../db/mysql";
+import { ServiceError } from "../../helpers/ServiceError";
+import { GetPantryItemsByUserIdRes, PantryItemServerData } from "./type";
 
 export const getPantryItemById = async (pantryItemId: number) => {
   const [result] = await mysqlDB.execute<PantryItemServerData[]>(

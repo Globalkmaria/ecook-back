@@ -1,7 +1,7 @@
 import express from "express";
 
-import pantryBoxesRouter from "./pantryBoxes.js";
-import pantryBoxRouter from "./pantryBox.js";
+import pantryBoxesRouter from "./pantryBoxes";
+import pantryBoxRouter from "./pantryBox";
 
 const router = express.Router();
 

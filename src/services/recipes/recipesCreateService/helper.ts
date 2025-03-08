@@ -1,9 +1,9 @@
 import { PoolConnection, ResultSetHeader, RowDataPacket } from "mysql2/promise";
 
-import { INewRecipe, IngredientNewProduct } from "../type.js";
-import { getNewProductData, getNewRecipeData } from "../helper.js";
-import { lightSlugify } from "../../../utils/normalize.js";
-import { arrayToPlaceholders } from "../../../utils/query.js";
+import { INewRecipe, IngredientNewProduct } from "../type";
+import { getNewProductData, getNewRecipeData } from "../helper";
+import { lightSlugify } from "../../../utils/normalize";
+import { arrayToPlaceholders } from "../../../utils/query";
 
 export const insertRecipe = async (
   info: INewRecipe,

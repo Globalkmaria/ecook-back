@@ -1,9 +1,9 @@
-import { config } from "../../config/index.js";
-import { IngredientsBatchBody } from "../../controllers/ingredients/ingredientsBatchController.js";
-import { decrypt, encrypt } from "../../utils/encrypt.js";
-import { sanitizeURL } from "../../utils/normalize.js";
-import { ServiceError } from "../helpers/ServiceError.js";
-import { decryptKeyAndGetProductId } from "../products/utils.js";
+import { config } from "../../config/index";
+import { IngredientsBatchBody } from "../../controllers/ingredients/ingredientsBatchController";
+import { decrypt, encrypt } from "../../utils/encrypt";
+import { sanitizeURL } from "../../utils/normalize";
+import { ServiceError } from "../helpers/ServiceError";
+import { decryptKeyAndGetProductId } from "../products/utils";
 
 export const decryptKeyAndGetIngredientId = (key: string) => {
   const [ciphertext] = key.split("-");

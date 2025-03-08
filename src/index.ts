@@ -4,12 +4,12 @@ import cors from "cors";
 import passport from "passport";
 import logger from "morgan";
 
-import v1 from "./router/v1/index.js";
-import { errorHandler, notFound } from "./middleware/errorHandlers.js";
+import v1 from "./router/v1/index";
+import { errorHandler, notFound } from "./middleware/errorHandlers";
 
-import "./config/passport.js";
-import { config, corsOption, getSessions } from "./config/index.js";
-import { errorLogger, logRequest } from "./middleware/log.js";
+import "./config/passport";
+import { config, corsOption, getSessions } from "./config/index";
+import { errorLogger, logRequest } from "./middleware/log";
 
 const app = express();
 

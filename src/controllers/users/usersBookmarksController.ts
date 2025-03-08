@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 
-import { SerializedUser } from "../../config/passport.js";
+import { SerializedUser } from "../../config/passport";
 import {
   getBookmarkedRecipesByUserId,
   getUserByUsername,
-} from "../../services/users/usersBookmarksService.js";
-import { ClientRecipeSimple } from "../../services/recipes/type.js";
+} from "../../services/users/usersBookmarksService";
+import { ClientRecipeSimple } from "../../services/recipes/type";
 
 interface UserBookmarksQueryParams {
   username?: string;

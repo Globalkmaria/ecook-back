@@ -3,8 +3,8 @@ import { NextFunction, Request, Response } from "express";
 import {
   recommendRecipes,
   searchRecipesService,
-} from "../../services/recipes/recipesSearchService.js";
-import { ClientRecipeSimple } from "../../services/recipes/type.js";
+} from "../../services/recipes/recipesSearchService";
+import { ClientRecipeSimple } from "../../services/recipes/type";
 
 export interface SearchRecipesQueryParams {
   q?: string;

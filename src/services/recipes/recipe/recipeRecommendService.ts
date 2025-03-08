@@ -1,9 +1,9 @@
-import mysqlDB from "../../../db/mysql.js";
-import { decryptRecipeURLAndGetRecipeId } from "../utils.js";
-import { RecommendRecipe } from "../../recommends/type.js";
-import { validateId } from "../../../utils/numbers.js";
-import { ServiceError } from "../../helpers/ServiceError.js";
-import { RecipeInfo } from "./type.js";
+import mysqlDB from "../../../db/mysql";
+import { decryptRecipeURLAndGetRecipeId } from "../utils";
+import { RecommendRecipe } from "../../recommends/type";
+import { validateId } from "../../../utils/numbers";
+import { ServiceError } from "../../helpers/ServiceError";
+import { RecipeInfo } from "./type";
 
 export const getRecipeInfo = async (key: string) => {
   const recipeId = decryptRecipeURLAndGetRecipeId(key);

@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 
-import { ClientRecipeSimple } from "../../services/recipes/type.js";
-import { ServiceError } from "../../services/helpers/ServiceError.js";
-import { getBatchRecipes } from "../../services/recipes/recipesBatchService.js";
+import { ClientRecipeSimple } from "../../services/recipes/type";
+import { ServiceError } from "../../services/helpers/ServiceError";
+import { getBatchRecipes } from "../../services/recipes/recipesBatchService";
 
 export type RecipesBatchBody = {
   type: string;

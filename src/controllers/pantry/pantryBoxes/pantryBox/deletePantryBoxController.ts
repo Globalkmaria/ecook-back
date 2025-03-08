@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
-import { decryptPantryBoxKeyWithThrowError } from "../../../../services/pantry/utils.js";
-import { deletePantryBox } from "../../../../services/pantry/pantryBoxes/deletePantryBox.js";
+import { decryptPantryBoxKeyWithThrowError } from "../../../../services/pantry/utils";
+import { deletePantryBox } from "../../../../services/pantry/pantryBoxes/deletePantryBox";
 
 type DeletePantryBoxParams = {
   pantryBoxKey: string;

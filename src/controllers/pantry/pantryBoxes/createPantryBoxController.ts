@@ -1,13 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 
-import { createPantryBox } from "../../../services/pantry/pantryBoxes/createPantryBox.js";
-import { SerializedUser } from "../../../config/passport.js";
-import { decryptIngredientKeyWithThrowError } from "../../../services/ingredients/utils.js";
-import { decryptProductKeyWithThrowError } from "../../../services/products/utils.js";
-import { createPantryItem } from "../../../services/pantry/pantryItems/createPantryItem.js";
-import { generatePantryBoxKey } from "../../../services/pantry/utils.js";
-import { ServiceError } from "../../../services/helpers/ServiceError.js";
-import mysqlDB from "../../../db/mysql.js";
+import { createPantryBox } from "../../../services/pantry/pantryBoxes/createPantryBox";
+import { SerializedUser } from "../../../config/passport";
+import { decryptIngredientKeyWithThrowError } from "../../../services/ingredients/utils";
+import { decryptProductKeyWithThrowError } from "../../../services/products/utils";
+import { createPantryItem } from "../../../services/pantry/pantryItems/createPantryItem";
+import { generatePantryBoxKey } from "../../../services/pantry/utils";
+import { ServiceError } from "../../../services/helpers/ServiceError";
+import mysqlDB from "../../../db/mysql";
 
 type CreatePantryBoxRequestBody = {
   pantryBox: {

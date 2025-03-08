@@ -1,7 +1,7 @@
-import { getImgUrl } from "../../utils/img.js";
-import { generateIngredientKey } from "../ingredients/utils.js";
-import { ClientProduct, Product } from "./type.js";
-import { generateProductKey } from "./utils.js";
+import { getImgUrl } from "../../utils/img";
+import { generateIngredientKey } from "../ingredients/utils";
+import { ClientProduct, Product } from "./type";
+import { generateProductKey } from "./utils";
 
 export const formatClientProduct = (product: Product): ClientProduct => ({
   id: product.id,

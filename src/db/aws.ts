@@ -2,9 +2,9 @@ import multer from "multer";
 import sharp from "sharp";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3"; // Import AWS SDK v3 S3 client
 
-import { getRandomId } from "../utils/numbers.js";
-import { config } from "../config/index.js";
-import { sanitizeURL } from "../utils/normalize.js";
+import { getRandomId } from "../utils/numbers";
+import { config } from "../config/index";
+import { sanitizeURL } from "../utils/normalize";
 
 export const s3Client = new S3Client({
   region: config.s3.region,

@@ -1,7 +1,7 @@
-import mysqlDB from "../../../db/mysql.js";
-import { ServiceError } from "../../helpers/ServiceError.js";
-import { formatClientProduct } from "../helper.js";
-import { Product } from "../type.js";
+import mysqlDB from "../../../db/mysql";
+import { ServiceError } from "../../helpers/ServiceError";
+import { formatClientProduct } from "../helper";
+import { Product } from "../type";
 
 export const getProductDetail = async (productId: number) => {
   const [data] = await mysqlDB.query<Product[]>(

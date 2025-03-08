@@ -1,8 +1,8 @@
-import mysqlDB from "../../../db/mysql.js";
-import { ServiceError } from "../../helpers/ServiceError.js";
-import { getPantryItems } from "../pantryItems/getPantryItem.js";
-import { PantryBoxInfoServerData, PantryBoxOriginalData } from "./type.js";
-import { mapPantryBoxToResponse } from "./helper.js";
+import mysqlDB from "../../../db/mysql";
+import { ServiceError } from "../../helpers/ServiceError";
+import { getPantryItems } from "../pantryItems/getPantryItem";
+import { PantryBoxInfoServerData, PantryBoxOriginalData } from "./type";
+import { mapPantryBoxToResponse } from "./helper";
 
 export const getPantryBox = async (pantryBoxId: number) => {
   const pantryBox = await getPantryBoxInfo(pantryBoxId);

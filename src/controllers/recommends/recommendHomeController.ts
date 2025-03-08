@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 
-import { HomeRecommendRecipe } from "../../services/recommends/type.js";
+import { HomeRecommendRecipe } from "../../services/recommends/type";
 import {
   getIngredientRecommend,
   getTagRecommend,
-} from "../../services/recommends/recommendHomeService.js";
+} from "../../services/recommends/recommendHomeService";
 
 export interface HomeRecommendationSection {
   recipes: { [typeOption: string]: HomeRecommendRecipe[] };
