@@ -73,12 +73,10 @@ export const mapPantryBoxesToResponse = (
       };
       return acc;
     }
+
     const pantryBox = acc[item.pantry_box_id];
     pantryBox.quantity += item.quantity;
-    if (pantryBox.expireDate < item.expire_date) {
-      pantryBox.expireDate = item.expire_date;
-      pantryBox.buyDate = item.buy_date;
-    }
+
     return acc;
   }, {});
 
