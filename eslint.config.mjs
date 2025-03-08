@@ -9,6 +9,16 @@ export default [
   { languageOptions: { globals: globals.browser } },
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
+  {
+    settings: {
+      typescript: {
+        project: "./tsconfig.json",
+      },
+      node: {
+        extensions: [".js", ".ts", ".tsx"],
+      },
+    },
+  },
   { plugins: { import: importPlugin } },
   {
     rules: {

@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from "express";
+import { ParamsDictionary } from "express-serve-static-core";
 
 import { SerializedUser } from "../../../config/passport";
 import mysqlDB from "../../../db/mysql";
@@ -26,7 +27,11 @@ type CreatePantryBoxResponse = {
 };
 
 export const createPantryBoxController = async (
-  req: Request<"", "", CreatePantryBoxRequestBody>,
+  req: Request<
+    ParamsDictionary,
+    CreatePantryBoxResponse,
+    CreatePantryBoxRequestBody
+  >,
   res: Response<CreatePantryBoxResponse>,
   next: NextFunction
 ) => {
