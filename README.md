@@ -94,7 +94,7 @@ Whether you're exploring new recipes or looking for ways to reuse ingredients, E
 - Easily add ingredients and products to your cart while browsing recipes, helping you organize your shopping list. 
 
 10. Pantry Page
-- Allows users to save and manage their ingredients, track their expiration and purchase dates, and view detailed ingredient information. It also provides personalized recipe recommendations based on the saved ingredients.
+- Save and manage your ingredients, track expiration and purchase dates, and access detailed ingredient information. Get personalized recipe recommendations based on the ingredients in your pantry.
 
 ## Skills and Technologies Used
 
