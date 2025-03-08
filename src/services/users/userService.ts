@@ -1,8 +1,8 @@
-import mysqlDB from "../../db/mysql.js";
-import { getImgUrl } from "../../utils/img.js";
-import { ServiceError } from "../helpers/ServiceError.js";
-import { UserSimple } from "../recipes/recipe/type.js";
-import { RecipesSimple } from "../recipes/type.js";
+import mysqlDB from "../../db/mysql";
+import { getImgUrl } from "../../utils/img";
+import { ServiceError } from "../helpers/ServiceError";
+import { UserSimple } from "../recipes/recipe/type";
+import { RecipesSimple } from "../recipes/type";
 
 export const getUserDetail = async (username: string) => {
   const [userData] = await mysqlDB.execute<UserSimple[]>(

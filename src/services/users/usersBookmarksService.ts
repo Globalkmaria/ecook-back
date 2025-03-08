@@ -1,7 +1,7 @@
-import mysqlDB from "../../db/mysql.js";
-import { UserSimple } from "../recipes/recipe/type.js";
-import { formatSearchResult } from "../recipes/recipesSearchService.js";
-import { RecipesSimple } from "../recipes/type.js";
+import mysqlDB from "../../db/mysql";
+import { UserSimple } from "../recipes/recipe/type";
+import { formatSearchResult } from "../recipes/recipesSearchService";
+import { RecipesSimple } from "../recipes/type";
 
 export const getUserByUsername = async (username: string) => {
   const [userData] = await mysqlDB.execute<UserSimple[]>(

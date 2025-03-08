@@ -1,13 +1,12 @@
 import { NextFunction, Request, Response } from "express";
 
-import { ServiceError } from "../../services/helpers/ServiceError.js";
-
-import { mapQueryResultToBatchResponse } from "../../services/ingredients/helper.js";
-import { extractIngredientAndProductIds } from "../../services/ingredients/utils.js";
+import { ServiceError } from "../../services/helpers/ServiceError";
+import { mapQueryResultToBatchResponse } from "../../services/ingredients/helper";
 import {
   getIngredients,
   getProducts,
-} from "../../services/ingredients/ingredientsBatchService.js";
+} from "../../services/ingredients/ingredientsBatchService";
+import { extractIngredientAndProductIds } from "../../services/ingredients/utils";
 
 export type IngredientsBatchBody = {
   items: {
@@ -38,7 +37,7 @@ export type IngredientsBatchResponse = {
 };
 
 export const ingredientsBatch = async (
-  req: Request<{}, {}, IngredientsBatchBody>,
+  req: Request<"", "", IngredientsBatchBody>,
   res: Response<IngredientsBatchResponse>,
   next: NextFunction
 ) => {

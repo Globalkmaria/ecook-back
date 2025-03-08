@@ -1,5 +1,6 @@
-import mysqlDB from "../../db/mysql.js";
-import { RecommendRecipe } from "./type.js";
+import mysqlDB from "../../db/mysql";
+
+import { RecommendRecipe } from "./type";
 
 export const getIngredientRecommendRecipes = async (
   ingredientId: number,

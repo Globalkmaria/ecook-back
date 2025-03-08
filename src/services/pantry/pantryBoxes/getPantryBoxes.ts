@@ -1,7 +1,8 @@
-import mysqlDB from "../../../db/mysql.js";
-import { getPantryItemsByUserId } from "../pantryItems/getPantryItem.js";
-import { PantryBoxInfoServerData } from "./type.js";
-import { mapPantryBoxesToResponse } from "./helper.js";
+import mysqlDB from "../../../db/mysql";
+import { getPantryItemsByUserId } from "../pantryItems/getPantryItem";
+
+import { mapPantryBoxesToResponse } from "./helper";
+import { PantryBoxInfoServerData } from "./type";
 
 export const getPantryBoxes = async (userId: number) => {
   const pantryBoxes = await getPantryBoxesInfoByUserId(userId);

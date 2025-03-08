@@ -1,13 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 
-import { decryptRecipeURLAndGetRecipeId } from "../../../services/recipes/utils.js";
-import { validateId } from "../../../utils/numbers.js";
-import { ServiceError } from "../../../services/helpers/ServiceError.js";
-import { EditRecipe } from "../../../services/recipes/recipe/type.js";
-import { User } from "../../../services/recipes/recipe/type.js";
-import { generateRecipeKey } from "../../../services/recipes/utils.js";
-import { updateRecipeService } from "../../../services/recipes/recipe/updateRecipeService.js";
-import { processAndUploadImage } from "../../../db/aws.js";
+import { processAndUploadImage } from "../../../db/aws";
+import { ServiceError } from "../../../services/helpers/ServiceError";
+import { EditRecipe , User } from "../../../services/recipes/recipe/type";
+import { updateRecipeService } from "../../../services/recipes/recipe/updateRecipeService";
+import { decryptRecipeURLAndGetRecipeId , generateRecipeKey } from "../../../services/recipes/utils";
+import { validateId } from "../../../utils/numbers";
 
 type UpdateRecipeParams = {
   key: string;
@@ -18,7 +16,7 @@ type UpdateRecipeBody = {
 };
 
 export const updateRecipe = async (
-  req: Request<UpdateRecipeParams, {}, UpdateRecipeBody>,
+  req: Request<UpdateRecipeParams, "", UpdateRecipeBody>,
   res: Response,
   next: NextFunction
 ) => {

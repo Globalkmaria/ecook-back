@@ -1,7 +1,7 @@
 import express from "express";
 
-import productRouter from "./product.js";
-import recommendRouter from "./recommend.js";
+import productRouter from "./product";
+import recommendRouter from "./recommend";
 
 const router = express.Router();
 

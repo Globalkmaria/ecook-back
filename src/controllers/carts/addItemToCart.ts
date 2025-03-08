@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 
-import { SerializedUser } from "../../config/passport.js";
-import { ServiceError } from "../../services/helpers/ServiceError.js";
-import { createCartItem } from "../../services/carts/cartsService.js";
+import { SerializedUser } from "../../config/passport";
+import { createCartItem } from "../../services/carts/cartsService";
+import { ServiceError } from "../../services/helpers/ServiceError";
 
 type AddItemToCartParams = {
   username: string;
@@ -18,7 +18,7 @@ type AddItemToCartResponse = {
 };
 
 export const addItemToCart = async (
-  req: Request<AddItemToCartParams, {}, AddItemToCartBody>,
+  req: Request<AddItemToCartParams, "", AddItemToCartBody>,
   res: Response<AddItemToCartResponse>,
   next: NextFunction
 ) => {

@@ -1,8 +1,9 @@
-import { GetCartItemsByUserResponse } from "../../controllers/carts/getCartItemsByUser.js";
-import { getImgUrl } from "../../utils/img.js";
-import { generateIngredientKey } from "../ingredients/utils.js";
-import { generateProductKey } from "../products/utils.js";
-import { CartItemData, CartItemInfo } from "./type.js";
+import { GetCartItemsByUserResponse } from "../../controllers/carts/getCartItemsByUser";
+import { getImgUrl } from "../../utils/img";
+import { generateIngredientKey } from "../ingredients/utils";
+import { generateProductKey } from "../products/utils";
+
+import { CartItemData, CartItemInfo } from "./type";
 
 export const generateClientCartItems = (
   cartItems: CartItemData[]

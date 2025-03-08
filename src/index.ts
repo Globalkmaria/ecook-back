@@ -1,15 +1,14 @@
+import cors from "cors";
 import express from "express";
 import session from "express-session";
-import cors from "cors";
-import passport from "passport";
 import logger from "morgan";
+import passport from "passport";
 
-import v1 from "./router/v1/index.js";
-import { errorHandler, notFound } from "./middleware/errorHandlers.js";
-
-import "./config/passport.js";
-import { config, corsOption, getSessions } from "./config/index.js";
-import { errorLogger, logRequest } from "./middleware/log.js";
+import { config, corsOption, getSessions } from "./config/index";
+import { errorHandler, notFound } from "./middleware/errorHandlers";
+import { errorLogger, logRequest } from "./middleware/log";
+import v1 from "./router/v1/index";
+import "./config/passport";
 
 const app = express();
 

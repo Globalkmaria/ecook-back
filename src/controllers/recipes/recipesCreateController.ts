@@ -1,14 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 
-import { createRecipeService } from "../../services/recipes/recipesCreateService/index.js";
-import { ServiceError } from "../../services/helpers/ServiceError.js";
+import { ServiceError } from "../../services/helpers/ServiceError";
+import { createRecipeService } from "../../services/recipes/recipesCreateService/index";
 
 export interface CreateRecipeBody {
   info: string; // JSON string
 }
 
 export const createRecipe = async (
-  req: Request<{}, {}, CreateRecipeBody>,
+  req: Request<"", "", CreateRecipeBody>,
   res: Response,
   next: NextFunction
 ) => {

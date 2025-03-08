@@ -1,10 +1,9 @@
-import { HomeRecipe } from "../../controllers/home/homeRecipesController.js";
-import { generateRecipeKey } from "../recipes/utils.js";
-
-import { getImgUrl } from "../../utils/img.js";
-import { splitString } from "../../utils/normalize.js";
-import { getRecentRecipes } from "../recipes/recipesSearchService.js";
-import { RecipesSimple } from "../recipes/type.js";
+import { HomeRecipe } from "../../controllers/home/homeRecipesController";
+import { getImgUrl } from "../../utils/img";
+import { splitString } from "../../utils/normalize";
+import { getRecentRecipes } from "../recipes/recipesSearchService";
+import { RecipesSimple } from "../recipes/type";
+import { generateRecipeKey } from "../recipes/utils";
 
 export const homeRecipesService = async () => {
   const result = await getRecentRecipes(18);

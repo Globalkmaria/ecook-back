@@ -1,11 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 
-import {
-  signupUser,
-  SignupUser,
-} from "../../services/auth/authSignupService.js";
-import { getImgUrl } from "../../utils/img.js";
-import { processAndUploadImage } from "../../db/aws.js";
+import { processAndUploadImage } from "../../db/aws";
+import { signupUser, SignupUser } from "../../services/auth/authSignupService";
+import { getImgUrl } from "../../utils/img";
 
 interface SignupBody {
   username: string;
@@ -23,7 +20,7 @@ type SignupResponse =
     };
 
 export const signup = async (
-  req: Request<{}, {}, SignupBody>,
+  req: Request<"", "", SignupBody>,
   res: Response<SignupResponse>,
   next: NextFunction
 ) => {
@@ -47,7 +44,7 @@ export const signup = async (
       });
       return;
     }
-
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     req.login(newUser, (error: any) => {
       if (error) return next(error);
 

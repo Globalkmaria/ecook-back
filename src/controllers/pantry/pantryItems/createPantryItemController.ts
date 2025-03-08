@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 
-import { SerializedUser } from "../../../config/passport.js";
-import { createPantryItem } from "../../../services/pantry/pantryItems/createPantryItem.js";
+import { SerializedUser } from "../../../config/passport";
+import { createPantryItem } from "../../../services/pantry/pantryItems/createPantryItem";
 import {
   decryptPantryBoxKeyWithThrowError,
   generatePantryItemKey,
-} from "../../../services/pantry/utils.js";
+} from "../../../services/pantry/utils";
 
 export type CreatePantryItemParams = {
   pantryBoxKey: string;
@@ -22,7 +22,7 @@ export type CreatePantryItemResponse = {
 };
 
 export const createPantryItemController = async (
-  req: Request<CreatePantryItemParams, {}, CreatePantryItemRequestBody>,
+  req: Request<CreatePantryItemParams, "", CreatePantryItemRequestBody>,
   res: Response<CreatePantryItemResponse>,
   next: NextFunction
 ) => {

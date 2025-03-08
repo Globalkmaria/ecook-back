@@ -1,8 +1,9 @@
 import express from "express";
-import { authGuard } from "../../../../middleware/auth.js";
 
-import { deletePantryItemController } from "../../../../controllers/pantry/pantryItems/deletePantryItemController.js";
-import { updatePantryItemController } from "../../../../controllers/pantry/pantryItems/updatePantryItemController.js";
+
+import { deletePantryItemController } from "../../../../controllers/pantry/pantryItems/deletePantryItemController";
+import { updatePantryItemController } from "../../../../controllers/pantry/pantryItems/updatePantryItemController";
+import { authGuard } from "../../../../middleware/auth";
 
 const router = express.Router();
 

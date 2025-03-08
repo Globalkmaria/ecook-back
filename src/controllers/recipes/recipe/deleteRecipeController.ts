@@ -1,13 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 
-import { decryptRecipeURLAndGetRecipeId } from "../../../services/recipes/utils.js";
-import { validateId } from "../../../utils/numbers.js";
-import { ServiceError } from "../../../services/helpers/ServiceError.js";
+import { SerializedUser } from "../../../config/passport";
+import { ServiceError } from "../../../services/helpers/ServiceError";
 import {
   deleteRecipeById,
   getRecipe,
-} from "../../../services/recipes/recipe/deleteRecipeService.js";
-import { SerializedUser } from "../../../config/passport.js";
+} from "../../../services/recipes/recipe/deleteRecipeService";
+import { decryptRecipeURLAndGetRecipeId } from "../../../services/recipes/utils";
+import { validateId } from "../../../utils/numbers";
 
 type DeleteRecipeParams = {
   key: string;
@@ -36,6 +36,7 @@ export const deleteRecipe = async (
     next({
       statue: 400,
       message: "Something went wrong while deleting the recipe",
+      error,
     });
   }
 };

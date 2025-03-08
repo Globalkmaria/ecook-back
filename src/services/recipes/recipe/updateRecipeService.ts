@@ -1,15 +1,15 @@
 import { PoolConnection, ResultSetHeader, RowDataPacket } from "mysql2/promise";
 
-import mysqlDB from "../../../db/mysql.js";
-import { getTagsToInsertAndDelete, getUpdatedRecipeData } from "./helper.js";
-import { EditRecipe } from "./type.js";
-import { RecipeInfo } from "./type.js";
-import { ServiceError } from "../../helpers/ServiceError.js";
-import { lightSlugify } from "../../../utils/normalize.js";
-import { getNewProductData } from "../helper.js";
-import { IngredientNewProduct } from "../type.js";
-import { arrayToPlaceholders } from "../../../utils/query.js";
-import { UpdateRecipeServiceParams } from "./type.js";
+import mysqlDB from "../../../db/mysql";
+import { lightSlugify } from "../../../utils/normalize";
+import { arrayToPlaceholders } from "../../../utils/query";
+import { ServiceError } from "../../helpers/ServiceError";
+import { getNewProductData } from "../helper";
+import { IngredientNewProduct } from "../type";
+
+import { getTagsToInsertAndDelete, getUpdatedRecipeData } from "./helper";
+import { EditRecipe , RecipeInfo , UpdateRecipeServiceParams } from "./type";
+
 
 export const updateRecipeService = async ({
   recipeId,

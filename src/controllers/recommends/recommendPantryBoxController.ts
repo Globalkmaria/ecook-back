@@ -1,18 +1,19 @@
 import { NextFunction, Request, Response } from "express";
-import { decryptPantryBoxKeyWithThrowError } from "../../services/pantry/utils.js";
-import { getOriginalPantryBox } from "../../services/pantry/pantryBoxes/getPantryBox.js";
-import {
-  getIngredientAndProductRecommendRecipes,
-  getIngredientRecommendRecipes,
-} from "../../services/recommends/recommendPantryBoxService.js";
+
+import { decryptIngredientKeyWithThrowError } from "../../services/ingredients/utils";
+import { getOriginalPantryBox } from "../../services/pantry/pantryBoxes/getPantryBox";
+import { decryptPantryBoxKeyWithThrowError } from "../../services/pantry/utils";
+import { decryptProductKeyWithThrowError } from "../../services/products/utils";
 import {
   formatRecipeData,
   getUniqueRecipes,
-} from "../../services/recipes/recipe/helper.js";
-import { getRecentRecipes } from "../../services/recipes/recipe/recipeRecommendService.js";
-import { RecipeRecommendationClientData } from "../../services/recipes/recipe/type.js";
-import { decryptIngredientKeyWithThrowError } from "../../services/ingredients/utils.js";
-import { decryptProductKeyWithThrowError } from "../../services/products/utils.js";
+} from "../../services/recipes/recipe/helper";
+import { getRecentRecipes } from "../../services/recipes/recipe/recipeRecommendService";
+import { RecipeRecommendationClientData } from "../../services/recipes/recipe/type";
+import {
+  getIngredientAndProductRecommendRecipes,
+  getIngredientRecommendRecipes,
+} from "../../services/recommends/recommendPantryBoxService";
 
 type RecommendPantryBoxParams = {
   pantryBoxKey: string;
@@ -26,7 +27,7 @@ type RecommendPantryBoxParamsQuery = {
 type RecommendPantryBoxResponse = RecipeRecommendationClientData[];
 
 export const recommendPantryBoxController = async (
-  req: Request<RecommendPantryBoxParams, {}, {}, RecommendPantryBoxParamsQuery>,
+  req: Request<RecommendPantryBoxParams, "", "", RecommendPantryBoxParamsQuery>,
   res: Response<RecommendPantryBoxResponse>,
   next: NextFunction
 ) => {

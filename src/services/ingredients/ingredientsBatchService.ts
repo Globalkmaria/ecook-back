@@ -1,7 +1,8 @@
 import { RowDataPacket } from "mysql2";
 
-import mysqlDB from "../../db/mysql.js";
-import { IngredientProduct, SimpleIngredient } from "./type.js";
+import mysqlDB from "../../db/mysql";
+
+import { IngredientProduct, SimpleIngredient } from "./type";
 
 export const getIngredients = async (ingredientIds: number[]) => {
   const [ingredients] = await mysqlDB.query<

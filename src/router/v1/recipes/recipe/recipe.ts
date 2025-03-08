@@ -1,11 +1,11 @@
 import express from "express";
 
-import { upload } from "../../../../db/aws.js";
-import { authGuard } from "../../../../middleware/auth.js";
+import { deleteRecipe } from "../../../../controllers/recipes/recipe/deleteRecipeController";
+import { getRecipe } from "../../../../controllers/recipes/recipe/getRecipeController";
+import { updateRecipe } from "../../../../controllers/recipes/recipe/updateRecipeController";
+import { upload } from "../../../../db/aws";
+import { authGuard } from "../../../../middleware/auth";
 
-import { getRecipe } from "../../../../controllers/recipes/recipe/getRecipeController.js";
-import { deleteRecipe } from "../../../../controllers/recipes/recipe/deleteRecipeController.js";
-import { updateRecipe } from "../../../../controllers/recipes/recipe/updateRecipeController.js";
 
 const router = express.Router();
 

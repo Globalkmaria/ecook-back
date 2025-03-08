@@ -1,5 +1,5 @@
-import mysqlDB from "../../db/mysql.js";
-import { BookmarkRecipe } from "../../router/v1/bookmarks/index.js";
+import mysqlDB from "../../db/mysql";
+import { BookmarkRecipe } from "../../router/v1/bookmarks/index";
 
 export const getBookmarksByUserId = async (userId: number) => {
   const [bookmarks] = await mysqlDB.query<BookmarkRecipe[]>(

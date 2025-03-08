@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 
-import { decryptPantryItemKeyWithThrowError } from "../../../services/pantry/utils.js";
-import { updatePantryItem } from "../../../services/pantry/pantryItems/updatePantryItem.js";
-import { SerializedUser } from "../../../config/passport.js";
+import { SerializedUser } from "../../../config/passport";
+import { updatePantryItem } from "../../../services/pantry/pantryItems/updatePantryItem";
+import { decryptPantryItemKeyWithThrowError } from "../../../services/pantry/utils";
 
 type UpdatePantryItemParams = {
   pantryItemKey: string;
@@ -14,7 +14,7 @@ type UpdatePantryItemRequestBody = {
 };
 
 export const updatePantryItemController = async (
-  req: Request<UpdatePantryItemParams, {}, UpdatePantryItemRequestBody>,
+  req: Request<UpdatePantryItemParams, "", UpdatePantryItemRequestBody>,
   res: Response,
   next: NextFunction
 ) => {

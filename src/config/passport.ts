@@ -1,9 +1,10 @@
-import passport from "passport";
-import { Strategy as LocalStrategy } from "passport-local";
 import crypto from "crypto";
 
-import mysqlDB from "../db/mysql.js";
-import { User } from "../services/recipes/recipe/type.js";
+import passport from "passport";
+import { Strategy as LocalStrategy } from "passport-local";
+
+import mysqlDB from "../db/mysql";
+import { User } from "../services/recipes/recipe/type";
 
 interface UserRow {
   id: number;
@@ -58,6 +59,7 @@ passport.use(
 );
 
 passport.serializeUser(
+  //eslint-disable-next-line @typescript-eslint/no-explicit-any
   (user: Express.User, done: (err: any, id?: SerializedUser) => void) => {
     const currentUser = user as User;
     process.nextTick(() => {
@@ -69,6 +71,7 @@ passport.serializeUser(
 passport.deserializeUser(
   (
     serializedUser: SerializedUser,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     done: (err: any, user?: Express.User) => void
   ) => {
     process.nextTick(() => {

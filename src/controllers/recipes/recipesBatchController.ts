@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 
-import { ClientRecipeSimple } from "../../services/recipes/type.js";
-import { ServiceError } from "../../services/helpers/ServiceError.js";
-import { getBatchRecipes } from "../../services/recipes/recipesBatchService.js";
+import { ServiceError } from "../../services/helpers/ServiceError";
+import { getBatchRecipes } from "../../services/recipes/recipesBatchService";
+import { ClientRecipeSimple } from "../../services/recipes/type";
 
 export type RecipesBatchBody = {
   type: string;
@@ -26,12 +26,11 @@ export type RecipesBatchSearchTypes =
   (typeof RECIPES_BATCH_SEARCH_TYPES)[keyof typeof RECIPES_BATCH_SEARCH_TYPES];
 
 export const recipesBatch = async (
-  req: Request<{}, {}, RecipesBatchBody>,
+  req: Request<"", "", RecipesBatchBody>,
   res: Response<RecipesBatchResponse>,
   next: NextFunction
 ) => {
   try {
-    const body = req.body;
     const type = req.body.type as RecipesBatchSearchTypes;
     if (!RECIPES_BATCH_SEARCH_TYPE_VALUES.includes(type)) {
       next({

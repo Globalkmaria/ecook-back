@@ -1,10 +1,12 @@
-import mysqlDB from "../../db/mysql.js";
-import { lightSlugify, lightTrim } from "../../utils/normalize.js";
-import { decryptProductKeyWithThrowError } from "./utils.js";
-import { formatClientProducts } from "./helper.js";
-import { Product, SearchProductsData, SearchProductsParams } from "./type.js";
-import { Ingredient } from "../ingredients/type.js";
-import { GetProductsResponse } from "../../controllers/products/productsController.js";
+import { GetProductsResponse } from "../../controllers/products/productsController";
+import mysqlDB from "../../db/mysql";
+import { lightSlugify, lightTrim } from "../../utils/normalize";
+import { Ingredient } from "../ingredients/type";
+
+import { formatClientProducts } from "./helper";
+import { Product, SearchProductsData, SearchProductsParams } from "./type";
+import { decryptProductKeyWithThrowError } from "./utils";
+
 
 export const searchProducts = async ({
   type,

@@ -1,5 +1,6 @@
-import { INewRecipe, IngredientNewProduct } from "./type.js";
-import { lightTrim, lightSlugify } from "../../utils/normalize.js";
+import { lightTrim, lightSlugify } from "../../utils/normalize";
+
+import { INewRecipe, IngredientNewProduct } from "./type";
 
 export const getNewRecipeData = (recipe: INewRecipe, userId: number) => {
   const { name, hours, minutes, description, steps } =

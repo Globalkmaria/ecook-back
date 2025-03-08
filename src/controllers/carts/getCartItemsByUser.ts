@@ -1,10 +1,10 @@
 import { NextFunction, Request, Response } from "express";
 
-import { SerializedUser } from "../../config/passport.js";
-import { ServiceError } from "../../services/helpers/ServiceError.js";
-import { getCartItemsByUserIdService } from "../../services/carts/getCartItemsByUserIdService.js";
-import { CartItemInfo } from "../../services/carts/type.js";
-import { generateClientCartItems } from "../../services/carts/helper.js";
+import { SerializedUser } from "../../config/passport";
+import { getCartItemsByUserIdService } from "../../services/carts/getCartItemsByUserIdService";
+import { generateClientCartItems } from "../../services/carts/helper";
+import { CartItemInfo } from "../../services/carts/type";
+import { ServiceError } from "../../services/helpers/ServiceError";
 
 type GetCartItemsByUserParams = {
   username: string;

@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
-import { homeRecipesService } from "../../services/home/homeRecipesService.js";
-import { ClientRecipeSimple } from "../../services/recipes/type.js";
+import { homeRecipesService } from "../../services/home/homeRecipesService";
+import { ClientRecipeSimple } from "../../services/recipes/type";
 
 export interface HomeRecipe extends ClientRecipeSimple {
   hours: number;

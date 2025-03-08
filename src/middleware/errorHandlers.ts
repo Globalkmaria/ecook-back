@@ -10,10 +10,10 @@ export const notFound = (
 };
 
 export const errorHandler = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   error: any,
   req: Request,
-  res: Response,
-  next: NextFunction
+  res: Response
 ): void => {
   console.error(error);
   res.status(error.status || 500).send({

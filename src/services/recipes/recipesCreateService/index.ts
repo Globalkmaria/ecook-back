@@ -1,24 +1,24 @@
 import { Request } from "express";
 
-import mysqlDB from "../../../db/mysql.js";
+import { SerializedUser } from "../../../config/passport";
+import { CreateRecipeBody } from "../../../controllers/recipes/recipesCreateController";
+import { processAndUploadImage } from "../../../db/aws";
+import mysqlDB from "../../../db/mysql";
+import { ServiceError } from "../../helpers/ServiceError";
+import { INewRecipe } from "../type";
+import { generateRecipeKey } from "../utils";
 
-import { SerializedUser } from "../../../config/passport.js";
-
-import { INewRecipe } from "../type.js";
-import { generateRecipeKey } from "../utils.js";
-import { CreateRecipeBody } from "../../../controllers/recipes/recipesCreateController.js";
 import {
   insertIngredients,
   insertRecipe,
   insertRecipeImage,
   insertTags,
   isRequiredFieldsPresent,
-} from "./helper.js";
-import { ServiceError } from "../../helpers/ServiceError.js";
-import { processAndUploadImage } from "../../../db/aws.js";
+} from "./helper";
+
 
 export const createRecipeService = async (
-  req: Request<{}, {}, CreateRecipeBody>
+  req: Request<"", "", CreateRecipeBody>
 ) => {
   const connection = await mysqlDB.getConnection();
 

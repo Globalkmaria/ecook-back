@@ -1,9 +1,8 @@
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 
-import mysqlDB from "../../db/mysql.js";
-
-import { decryptIngredientKeyWithThrowError } from "../ingredients/utils.js";
-import { decryptProductKeyWithThrowError } from "../products/utils.js";
+import mysqlDB from "../../db/mysql";
+import { decryptIngredientKeyWithThrowError } from "../ingredients/utils";
+import { decryptProductKeyWithThrowError } from "../products/utils";
 
 interface RemoveCartItemParams {
   userId: number;

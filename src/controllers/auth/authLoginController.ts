@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 import passport from "passport";
 
-import { User } from "../../services/recipes/recipe/type.js";
-import { getImgUrl } from "../../utils/img.js";
+import { User } from "../../services/recipes/recipe/type";
+import { getImgUrl } from "../../utils/img";
 
 interface LoginBody {
   username: string;
@@ -15,7 +15,7 @@ interface LoginResponse {
 }
 
 export const login = (
-  req: Request<{}, {}, LoginBody>,
+  req: Request<"", "", LoginBody>,
   res: Response<LoginResponse>,
   next: NextFunction
 ) => {

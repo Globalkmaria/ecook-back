@@ -1,11 +1,11 @@
-import mysqlDB from "../../../db/mysql.js";
+import mysqlDB from "../../../db/mysql";
+import { ServiceError } from "../../helpers/ServiceError";
 import {
   formatRecipeData,
   getUniqueRecipes,
-} from "../../recipes/recipe/helper.js";
-import { RecommendRecipe } from "../../recommends/type.js";
-import { ServiceError } from "../../helpers/ServiceError.js";
-import { Product } from "../type.js";
+} from "../../recipes/recipe/helper";
+import { RecommendRecipe } from "../../recommends/type";
+import { Product } from "../type";
 
 export const getProductRecommendService = async (productId: number) => {
   const productData = await getProductData(productId);

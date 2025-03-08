@@ -1,17 +1,17 @@
 import { NextFunction, Request, Response } from "express";
 
-import { RecommendRecipe } from "../../../services/recommends/type.js";
+import {
+  formatRecipeData,
+  getUniqueRecipes,
+} from "../../../services/recipes/recipe/helper";
 import {
   getIngredientRecipes,
   getRecentRecipes,
   getRecipeInfo,
   getTagRecipes,
   getUserRecipes,
-} from "../../../services/recipes/recipe/recipeRecommendService.js";
-import {
-  formatRecipeData,
-  getUniqueRecipes,
-} from "../../../services/recipes/recipe/helper.js";
+} from "../../../services/recipes/recipe/recipeRecommendService";
+import { RecommendRecipe } from "../../../services/recommends/type";
 
 type GetRecipeRecommendParams = {
   key: string;

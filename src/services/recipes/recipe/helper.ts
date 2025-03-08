@@ -1,22 +1,21 @@
-import {
-  EditRecipe,
-  RecipeInfo,
-  RecipeInfoWithUser,
-  RecipeRecommendationClientData,
-} from "./type.js";
-import { getImgUrl } from "../../../utils/img.js";
+import { getImgUrl } from "../../../utils/img";
+import { shuffleArray } from "../../../utils/shuffle";
+import { generateIngredientKey } from "../../ingredients/utils";
+import { generateProductKey } from "../../products/utils";
+import { RecommendRecipe } from "../../recommends/type";
+import { sanitizeRecipeData } from "../helper";
+import { generateRecipeKey } from "../utils";
+
 import {
   ClientRecipeDetail,
   ClientRecipeProduct,
   RecipeIngredient,
   RecipeIngredientRequired,
-} from "./type.js";
-import { sanitizeRecipeData } from "../helper.js";
-import { generateRecipeKey } from "../utils.js";
-import { RecommendRecipe } from "../../recommends/type.js";
-import { shuffleArray } from "../../../utils/shuffle.js";
-import { generateIngredientKey } from "../../ingredients/utils.js";
-import { generateProductKey } from "../../products/utils.js";
+
+  EditRecipe,
+  RecipeInfo,
+  RecipeInfoWithUser,
+  RecipeRecommendationClientData} from "./type";
 
 export const generateClientRecipeIngredient = (
   ingredient: RecipeIngredient,
@@ -113,7 +112,7 @@ export const getUpdatedRecipeData = ({
   newRecipe: EditRecipe;
   oldRecipe: RecipeInfo;
 }) => {
-  const updates = new Map<string, any>();
+  const updates = new Map<string, string | number | string[]>();
 
   const { name, hours, minutes, description, steps } =
     sanitizeRecipeData(newRecipe);

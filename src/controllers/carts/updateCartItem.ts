@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 
-import { SerializedUser } from "../../config/passport.js";
-import { ServiceError } from "../../services/helpers/ServiceError.js";
+import { SerializedUser } from "../../config/passport";
 import {
   removeCartItem,
   updateCartItemQuantity,
-} from "../../services/carts/cartsService.js";
+} from "../../services/carts/cartsService";
+import { ServiceError } from "../../services/helpers/ServiceError";
 
 type UpdateCartItemParams = {
   username: string;
@@ -22,7 +22,7 @@ type UpdateCartItemResponse = {
 };
 
 export const updateCartItem = async (
-  req: Request<UpdateCartItemParams, {}, UpdateCartItemBody>,
+  req: Request<UpdateCartItemParams, "", UpdateCartItemBody>,
   res: Response<UpdateCartItemResponse>,
   next: NextFunction
 ) => {

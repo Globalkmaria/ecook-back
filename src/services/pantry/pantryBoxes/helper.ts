@@ -1,10 +1,11 @@
-import { getImgUrl } from "../../../utils/img.js";
+import { getImgUrl } from "../../../utils/img";
 import {
   GetPantryItemsByUserIdRes,
   PantryItemServerData,
-} from "../pantryItems/type.js";
-import { generatePantryBoxKey, generatePantryItemKey } from "../utils.js";
-import { PantryBoxInfoServerData } from "./type.js";
+} from "../pantryItems/type";
+import { generatePantryBoxKey, generatePantryItemKey } from "../utils";
+
+import { PantryBoxInfoServerData } from "./type";
 
 type PantryBoxResponse = {
   key: string;

@@ -1,16 +1,16 @@
 import express from "express";
 
-import recipesRouter from "./recipes/index.js";
-import productsRouter from "./products/index.js";
-import usersRouter from "./users.js";
-import authRouter from "./auth/index.js";
-import imagesRouter from "./images/index.js";
-import recommendRouter from "./recommend/index.js";
-import bookmarksRouter from "./bookmarks/index.js";
-import homeRouter from "./home/index.js";
-import cartsRouter from "./carts/index.js";
-import ingredientsRouter from "./ingredients/index.js";
-import pantryRouter from "./pantry/index.js";
+import authRouter from "./auth/index";
+import bookmarksRouter from "./bookmarks/index";
+import cartsRouter from "./carts/index";
+import homeRouter from "./home/index";
+import imagesRouter from "./images/index";
+import ingredientsRouter from "./ingredients/index";
+import pantryRouter from "./pantry/index";
+import productsRouter from "./products/index";
+import recipesRouter from "./recipes/index";
+import recommendRouter from "./recommend/index";
+import usersRouter from "./users";
 
 const router = express.Router();
 

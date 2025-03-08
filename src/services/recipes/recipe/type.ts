@@ -1,7 +1,7 @@
 import { RowDataPacket } from "mysql2";
 
-import { INewRecipe } from "../type.js";
-import { ClientProduct } from "../../products/type.js";
+import { ClientProduct } from "../../products/type";
+import { INewRecipe } from "../type";
 
 interface IngredientBase {
   id: number; // Primary key, auto_increment

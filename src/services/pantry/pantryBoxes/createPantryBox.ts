@@ -1,6 +1,7 @@
-import { ResultSetHeader, RowDataPacket } from "mysql2";
-import { PoolConnection } from "mysql2/promise.js";
-import { PantryBoxOriginalData } from "./type.js";
+import { ResultSetHeader } from "mysql2";
+import { PoolConnection } from "mysql2/promise";
+
+import { PantryBoxOriginalData } from "./type";
 
 interface CreatePantryBoxProps {
   userId: number;

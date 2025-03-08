@@ -1,13 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 
-import { SerializedUser } from "../../config/passport.js";
+import { SerializedUser } from "../../config/passport";
 import {
   addUserBookmark,
   getBookmarksByUserId,
   removeUserBookmark,
-} from "../../services/bookmarks/bookmarksService.js";
-import { decryptRecipeURLAndGetRecipeId } from "../../services/recipes/utils.js";
-import { generateRecipeKeysForBookmarks } from "./helper.js";
+} from "../../services/bookmarks/bookmarksService";
+import { decryptRecipeURLAndGetRecipeId } from "../../services/recipes/utils";
+
+import { generateRecipeKeysForBookmarks } from "./helper";
 
 type GetBookmarksResponse = string[] | { error: string };
 
@@ -44,7 +45,7 @@ interface AddBookmarkParams {
 type AddBookmarkResponse = void | { error: string };
 
 export const addBookmark = async (
-  req: Request<AddBookmarkParams, {}, {}>,
+  req: Request<AddBookmarkParams, "", "">,
   res: Response<AddBookmarkResponse>,
   next: NextFunction
 ) => {

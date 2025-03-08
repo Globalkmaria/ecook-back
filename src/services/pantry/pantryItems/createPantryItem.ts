@@ -1,9 +1,9 @@
 import { ResultSetHeader } from "mysql2";
+import { PoolConnection } from "mysql2/promise";
 
-import mysqlDB from "../../../db/mysql.js";
-import { arrayToPlaceholders } from "../../../utils/query.js";
-import { linkPantryItemToBox } from "../pantryBoxItemsJC/index.js";
-import { PoolConnection } from "mysql2/promise.js";
+import mysqlDB from "../../../db/mysql";
+import { arrayToPlaceholders } from "../../../utils/query";
+import { linkPantryItemToBox } from "../pantryBoxItemsJC/index";
 
 type CreatePantryItemProps = {
   pantryBoxId: number;

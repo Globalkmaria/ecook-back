@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 
-import { deletePantryItem } from "../../../services/pantry/pantryItems/deletePantryItem.js";
-import { decryptPantryItemKeyWithThrowError } from "../../../services/pantry/utils.js";
-import { SerializedUser } from "../../../config/passport.js";
+import { SerializedUser } from "../../../config/passport";
+import { deletePantryItem } from "../../../services/pantry/pantryItems/deletePantryItem";
+import { decryptPantryItemKeyWithThrowError } from "../../../services/pantry/utils";
 
 type DeletePantryItemParams = {
   pantryItemKey: string;

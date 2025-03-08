@@ -1,6 +1,6 @@
-import { config } from "../../config/index.js";
-import { decrypt, encrypt } from "../../utils/encrypt.js";
-import { sanitizeURL } from "../../utils/normalize.js";
+import { config } from "../../config/index";
+import { decrypt, encrypt } from "../../utils/encrypt";
+import { sanitizeURL } from "../../utils/normalize";
 
 export const decryptKeyAndGetProductId = (url: string) => {
   const [ciphertext] = url.split("-");

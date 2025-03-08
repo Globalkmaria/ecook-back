@@ -1,11 +1,12 @@
 import {
   RECIPES_BATCH_SEARCH_TYPES,
   RecipesBatchSearchTypes,
-} from "../../controllers/recipes/recipesBatchController.js";
-import mysqlDB from "../../db/mysql.js";
-import { decryptRecipeURLAndGetRecipeId } from "./utils.js";
-import { formatSearchResult } from "./recipesSearchService.js";
-import { RecipesSimple } from "./type.js";
+} from "../../controllers/recipes/recipesBatchController";
+import mysqlDB from "../../db/mysql";
+
+import { formatSearchResult } from "./recipesSearchService";
+import { RecipesSimple } from "./type";
+import { decryptRecipeURLAndGetRecipeId } from "./utils";
 
 export const getBatchRecipes = async ({
   type,

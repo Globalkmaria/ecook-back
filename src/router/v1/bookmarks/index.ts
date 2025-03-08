@@ -1,13 +1,13 @@
 import express from "express";
 import { RowDataPacket } from "mysql2";
 
-import { authGuard } from "../../../middleware/auth.js";
-
 import {
   addBookmark,
   getBookmarks,
   removeBookmark,
-} from "../../../controllers/bookmarks/bookmarksController.js";
+} from "../../../controllers/bookmarks/bookmarksController";
+import { authGuard } from "../../../middleware/auth";
+
 
 const router = express.Router();
 

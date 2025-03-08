@@ -1,6 +1,6 @@
 import express from "express";
 
-import ingredientsRouter from "./ingredients.js";
+import ingredientsRouter from "./ingredients";
 
 const router = express.Router();
 

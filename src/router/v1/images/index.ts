@@ -1,9 +1,10 @@
-import express from "express";
 import { Readable } from "stream";
-import { GetObjectCommand } from "@aws-sdk/client-s3";
 
-import { s3Client } from "../../../db/aws.js";
-import { config } from "../../../config/index.js";
+import { GetObjectCommand } from "@aws-sdk/client-s3";
+import express from "express";
+
+import { config } from "../../../config/index";
+import { s3Client } from "../../../db/aws";
 
 const router = express.Router();
 
@@ -27,6 +28,7 @@ router.get("/:key", async (req, res) => {
 
     // Check if Body exists and is a readable stream
     if (response.Body) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const bodyStream = Readable.from(response.Body as any); // Convert response.Body to a Node.js readable stream
       bodyStream.pipe(res); // Stream the content to the response
     } else {

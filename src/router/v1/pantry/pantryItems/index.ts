@@ -1,6 +1,6 @@
 import express from "express";
 
-import pantryItemRouter from "./pantryItem.js";
+import pantryItemRouter from "./pantryItem";
 
 const router = express.Router();
 

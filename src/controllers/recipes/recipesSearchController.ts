@@ -3,8 +3,8 @@ import { NextFunction, Request, Response } from "express";
 import {
   recommendRecipes,
   searchRecipesService,
-} from "../../services/recipes/recipesSearchService.js";
-import { ClientRecipeSimple } from "../../services/recipes/type.js";
+} from "../../services/recipes/recipesSearchService";
+import { ClientRecipeSimple } from "../../services/recipes/type";
 
 export interface SearchRecipesQueryParams {
   q?: string;
@@ -27,7 +27,7 @@ export const RECIPES_SEARCH_TYPES = {
 const SEARCH_TYPES_VALUES = Object.values(RECIPES_SEARCH_TYPES);
 
 export const searchRecipes = async (
-  req: Request<{}, {}, {}, SearchRecipesQueryParams>,
+  req: Request<"", "", "", SearchRecipesQueryParams>,
   res: Response<SearchRecipesResponse | { error: string }>,
   next: NextFunction
 ) => {

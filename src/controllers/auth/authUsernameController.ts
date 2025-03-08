@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-import { checkUsernameExists } from "../../services/auth/authUsernameService.js";
+import { checkUsernameExists } from "../../services/auth/authUsernameService";
 
 interface Params {
   username: string;
