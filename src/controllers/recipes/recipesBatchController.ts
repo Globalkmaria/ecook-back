@@ -26,12 +26,11 @@ export type RecipesBatchSearchTypes =
   (typeof RECIPES_BATCH_SEARCH_TYPES)[keyof typeof RECIPES_BATCH_SEARCH_TYPES];
 
 export const recipesBatch = async (
-  req: Request<{}, {}, RecipesBatchBody>,
+  req: Request<"", "", RecipesBatchBody>,
   res: Response<RecipesBatchResponse>,
   next: NextFunction
 ) => {
   try {
-    const body = req.body;
     const type = req.body.type as RecipesBatchSearchTypes;
     if (!RECIPES_BATCH_SEARCH_TYPE_VALUES.includes(type)) {
       next({

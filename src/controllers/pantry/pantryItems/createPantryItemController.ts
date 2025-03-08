@@ -22,7 +22,7 @@ export type CreatePantryItemResponse = {
 };
 
 export const createPantryItemController = async (
-  req: Request<CreatePantryItemParams, {}, CreatePantryItemRequestBody>,
+  req: Request<CreatePantryItemParams, "", CreatePantryItemRequestBody>,
   res: Response<CreatePantryItemResponse>,
   next: NextFunction
 ) => {

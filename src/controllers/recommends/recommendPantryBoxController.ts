@@ -26,7 +26,7 @@ type RecommendPantryBoxParamsQuery = {
 type RecommendPantryBoxResponse = RecipeRecommendationClientData[];
 
 export const recommendPantryBoxController = async (
-  req: Request<RecommendPantryBoxParams, {}, {}, RecommendPantryBoxParamsQuery>,
+  req: Request<RecommendPantryBoxParams, "", "", RecommendPantryBoxParamsQuery>,
   res: Response<RecommendPantryBoxResponse>,
   next: NextFunction
 ) => {

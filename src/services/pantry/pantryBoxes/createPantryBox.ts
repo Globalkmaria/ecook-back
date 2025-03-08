@@ -1,4 +1,4 @@
-import { ResultSetHeader, RowDataPacket } from "mysql2";
+import { ResultSetHeader } from "mysql2";
 import { PoolConnection } from "mysql2/promise";
 import { PantryBoxOriginalData } from "./type";
 

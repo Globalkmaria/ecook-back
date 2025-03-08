@@ -9,7 +9,7 @@ export interface GetProductParams {
 }
 
 export const getProduct = async (
-  req: Request<GetProductParams, {}>,
+  req: Request<GetProductParams, "">,
   res: Response,
   next: NextFunction
 ) => {

@@ -22,7 +22,7 @@ type UpdateCartItemResponse = {
 };
 
 export const updateCartItem = async (
-  req: Request<UpdateCartItemParams, {}, UpdateCartItemBody>,
+  req: Request<UpdateCartItemParams, "", UpdateCartItemBody>,
   res: Response<UpdateCartItemResponse>,
   next: NextFunction
 ) => {

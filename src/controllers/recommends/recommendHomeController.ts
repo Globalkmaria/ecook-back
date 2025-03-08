@@ -12,10 +12,10 @@ export interface HomeRecommendationSection {
 }
 
 type RecommendHomeResponse = {
-  [K in (typeof recommendType)[number]]: HomeRecommendationSection;
+  [K in RecommendType]: HomeRecommendationSection;
 };
 
-const recommendType = ["tag", "ingredient"] as const;
+type RecommendType = "tag" | "ingredient";
 
 export const recommendHome = async (
   req: Request,

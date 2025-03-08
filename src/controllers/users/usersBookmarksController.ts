@@ -17,7 +17,7 @@ interface UserBookmarksResponse {
 }
 
 export const getUserBookmarkedRecipes = async (
-  req: Request<{}, {}, {}, UserBookmarksQueryParams>,
+  req: Request<"", "", "", UserBookmarksQueryParams>,
   res: Response<UserBookmarksResponse | { error: string }>,
   next: NextFunction
 ) => {

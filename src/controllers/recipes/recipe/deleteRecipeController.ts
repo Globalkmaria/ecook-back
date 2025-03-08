@@ -36,6 +36,7 @@ export const deleteRecipe = async (
     next({
       statue: 400,
       message: "Something went wrong while deleting the recipe",
+      error,
     });
   }
 };

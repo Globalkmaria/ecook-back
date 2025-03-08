@@ -14,7 +14,7 @@ type UpdatePantryItemRequestBody = {
 };
 
 export const updatePantryItemController = async (
-  req: Request<UpdatePantryItemParams, {}, UpdatePantryItemRequestBody>,
+  req: Request<UpdatePantryItemParams, "", UpdatePantryItemRequestBody>,
   res: Response,
   next: NextFunction
 ) => {

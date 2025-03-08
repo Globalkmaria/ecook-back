@@ -113,7 +113,7 @@ export const getUpdatedRecipeData = ({
   newRecipe: EditRecipe;
   oldRecipe: RecipeInfo;
 }) => {
-  const updates = new Map<string, any>();
+  const updates = new Map<string, string | number | string[]>();
 
   const { name, hours, minutes, description, steps } =
     sanitizeRecipeData(newRecipe);

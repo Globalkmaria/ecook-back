@@ -18,7 +18,7 @@ type UpdateRecipeBody = {
 };
 
 export const updateRecipe = async (
-  req: Request<UpdateRecipeParams, {}, UpdateRecipeBody>,
+  req: Request<UpdateRecipeParams, "", UpdateRecipeBody>,
   res: Response,
   next: NextFunction
 ) => {

@@ -18,7 +18,7 @@ import { ServiceError } from "../../helpers/ServiceError";
 import { processAndUploadImage } from "../../../db/aws";
 
 export const createRecipeService = async (
-  req: Request<{}, {}, CreateRecipeBody>
+  req: Request<"", "", CreateRecipeBody>
 ) => {
   const connection = await mysqlDB.getConnection();
 

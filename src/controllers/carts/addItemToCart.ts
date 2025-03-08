@@ -18,7 +18,7 @@ type AddItemToCartResponse = {
 };
 
 export const addItemToCart = async (
-  req: Request<AddItemToCartParams, {}, AddItemToCartBody>,
+  req: Request<AddItemToCartParams, "", AddItemToCartBody>,
   res: Response<AddItemToCartResponse>,
   next: NextFunction
 ) => {

@@ -26,7 +26,7 @@ type CreatePantryBoxResponse = {
 };
 
 export const createPantryBoxController = async (
-  req: Request<{}, {}, CreatePantryBoxRequestBody>,
+  req: Request<"", "", CreatePantryBoxRequestBody>,
   res: Response<CreatePantryBoxResponse>,
   next: NextFunction
 ) => {

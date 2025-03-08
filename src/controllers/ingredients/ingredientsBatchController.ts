@@ -38,7 +38,7 @@ export type IngredientsBatchResponse = {
 };
 
 export const ingredientsBatch = async (
-  req: Request<{}, {}, IngredientsBatchBody>,
+  req: Request<"", "", IngredientsBatchBody>,
   res: Response<IngredientsBatchResponse>,
   next: NextFunction
 ) => {

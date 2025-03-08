@@ -1,4 +1,4 @@
-export const arrayToPlaceholders = <T extends any>(array: T[]) =>
+export const arrayToPlaceholders = <T>(array: T[]) =>
   Array(array.length)
     .fill(1)
     .map(() => "?")

@@ -27,7 +27,7 @@ export const RECIPES_SEARCH_TYPES = {
 const SEARCH_TYPES_VALUES = Object.values(RECIPES_SEARCH_TYPES);
 
 export const searchRecipes = async (
-  req: Request<{}, {}, {}, SearchRecipesQueryParams>,
+  req: Request<"", "", "", SearchRecipesQueryParams>,
   res: Response<SearchRecipesResponse | { error: string }>,
   next: NextFunction
 ) => {

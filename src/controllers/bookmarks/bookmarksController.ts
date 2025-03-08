@@ -44,7 +44,7 @@ interface AddBookmarkParams {
 type AddBookmarkResponse = void | { error: string };
 
 export const addBookmark = async (
-  req: Request<AddBookmarkParams, {}, {}>,
+  req: Request<AddBookmarkParams, "", "">,
   res: Response<AddBookmarkResponse>,
   next: NextFunction
 ) => {

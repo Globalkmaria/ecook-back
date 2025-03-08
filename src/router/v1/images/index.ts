@@ -27,6 +27,7 @@ router.get("/:key", async (req, res) => {
 
     // Check if Body exists and is a readable stream
     if (response.Body) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const bodyStream = Readable.from(response.Body as any); // Convert response.Body to a Node.js readable stream
       bodyStream.pipe(res); // Stream the content to the response
     } else {

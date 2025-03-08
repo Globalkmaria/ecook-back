@@ -20,7 +20,7 @@ type SignupResponse =
     };
 
 export const signup = async (
-  req: Request<{}, {}, SignupBody>,
+  req: Request<"", "", SignupBody>,
   res: Response<SignupResponse>,
   next: NextFunction
 ) => {
@@ -44,7 +44,7 @@ export const signup = async (
       });
       return;
     }
-
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     req.login(newUser, (error: any) => {
       if (error) return next(error);
 
