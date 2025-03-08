@@ -1,7 +1,7 @@
 import { RowDataPacket } from "mysql2";
 
-import { INewRecipe } from "../type";
-import { ClientProduct } from "../../products/type";
+import { INewRecipe } from "../type.js";
+import { ClientProduct } from "../../products/type.js";
 
 interface IngredientBase {
   id: number; // Primary key, auto_increment
@@ -114,3 +114,13 @@ export type UserSimple = RowDataPacket &
   Pick<User, "id" | "username" | "img" | "first_name">;
 
 export type EditRecipe = INewRecipe & { id: number };
+
+export interface RecipeRecommendationClientData {
+  key: string;
+  name: string;
+  img: string | null;
+  user: {
+    username: string;
+    img: string | null;
+  };
+}

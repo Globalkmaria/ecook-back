@@ -7,7 +7,7 @@ import { RecommendRecipe } from "../../recommends/type.js";
 import { ServiceError } from "../../helpers/ServiceError.js";
 import { Product } from "../type.js";
 
-export const getProductRecommendService = async (productId: string) => {
+export const getProductRecommendService = async (productId: number) => {
   const productData = await getProductData(productId);
 
   if (!productData.length) throw new ServiceError(404, "Product not found");
@@ -36,7 +36,7 @@ const getRecipes = async (product: Product) => {
   return formattedRecipes;
 };
 
-const getProductData = async (productId: string) => {
+const getProductData = async (productId: number) => {
   const [productData] = await mysqlDB.query<Product[]>(
     `SELECT p.*, i.id ingredient_id, i.name ingredient_name
       FROM product_detail_view p

@@ -1,4 +1,9 @@
-import { EditRecipe, RecipeInfo, RecipeInfoWithUser } from "./type.js";
+import {
+  EditRecipe,
+  RecipeInfo,
+  RecipeInfoWithUser,
+  RecipeRecommendationClientData,
+} from "./type.js";
 import { getImgUrl } from "../../../utils/img.js";
 import {
   ClientRecipeDetail,
@@ -149,7 +154,9 @@ export const getUniqueRecipes = (
   return uniqueRecipes;
 };
 
-export const formatRecipeData = (recipes: RecommendRecipe[]) =>
+export const formatRecipeData = (
+  recipes: RecommendRecipe[]
+): RecipeRecommendationClientData[] =>
   recipes.map((recipe) => {
     const key = generateRecipeKey(recipe.recipe_id, recipe.recipe_name);
     return {

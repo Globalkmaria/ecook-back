@@ -3,7 +3,7 @@ import { ServiceError } from "../../helpers/ServiceError.js";
 import { formatClientProduct } from "../helper.js";
 import { Product } from "../type.js";
 
-export const getProductDetail = async (productId: string) => {
+export const getProductDetail = async (productId: number) => {
   const [data] = await mysqlDB.query<Product[]>(
     `SELECT p.*, i.id ingredient_id, i.name ingredient_name
       FROM product_detail_view p

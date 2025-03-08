@@ -1,9 +1,9 @@
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 
 import mysqlDB from "../../db/mysql.js";
-import { ServiceError } from "../helpers/ServiceError.js";
-import { decryptKeyAndGetIngredientId } from "../ingredients/utils.js";
-import { decryptKeyAndGetProductId } from "../products/utils.js";
+
+import { decryptIngredientKeyWithThrowError } from "../ingredients/utils.js";
+import { decryptProductKeyWithThrowError } from "../products/utils.js";
 
 interface RemoveCartItemParams {
   userId: number;
@@ -14,8 +14,8 @@ interface RemoveCartItemParams {
 export const removeCartItem = async (params: RemoveCartItemParams) => {
   const { userId, ingredientKey, productKey } = params;
   const ingredientId =
-    ingredientKey && decryptKeyAndGetIngredientId(ingredientKey);
-  const productId = productKey && decryptKeyAndGetProductId(productKey);
+    ingredientKey && decryptIngredientKeyWithThrowError(ingredientKey);
+  const productId = productKey && decryptProductKeyWithThrowError(productKey);
 
   if (productId) {
     const [result] = await mysqlDB.execute<ResultSetHeader>(
@@ -52,16 +52,8 @@ export const updateCartItemQuantity = async ({
   quantity,
 }: UpdateCartItemQuantityParams) => {
   const ingredientId =
-    ingredientKey && decryptKeyAndGetIngredientId(ingredientKey);
-  const productId = productKey && decryptKeyAndGetProductId(productKey);
-
-  if (!ingredientId) {
-    throw new ServiceError(400, "Invalid ingredient key");
-  }
-
-  if (productKey && !productId) {
-    throw new ServiceError(400, "Invalid product key");
-  }
+    ingredientKey && decryptIngredientKeyWithThrowError(ingredientKey);
+  const productId = productKey && decryptProductKeyWithThrowError(productKey);
 
   const productQuery = productId
     ? "AND product_id = ?"
@@ -107,16 +99,8 @@ export const createCartItem = async ({
   productKey?: string;
 }) => {
   const ingredientId =
-    ingredientKey && decryptKeyAndGetIngredientId(ingredientKey);
-  const productId = productKey && decryptKeyAndGetProductId(productKey);
-
-  if (!ingredientId) {
-    throw new ServiceError(400, "Invalid ingredient key");
-  }
-
-  if (productKey && !productId) {
-    throw new ServiceError(400, "Invalid product key");
-  }
+    ingredientKey && decryptIngredientKeyWithThrowError(ingredientKey);
+  const productId = productKey && decryptProductKeyWithThrowError(productKey);
 
   const productQuery = productId
     ? "AND product_id = ?"
