@@ -1,6 +1,7 @@
 import { config } from "../../config/index";
 import { decrypt, encrypt } from "../../utils/encrypt";
 import { sanitizeURL } from "../../utils/normalize";
+
 import { RecipesSimple } from "./type";
 
 export const decryptRecipeURLAndGetRecipeId = (url: string) => {

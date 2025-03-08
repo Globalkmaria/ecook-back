@@ -1,5 +1,6 @@
-import { RecipeInfo } from "./type";
 import mysqlDB from "../../../db/mysql";
+
+import { RecipeInfo } from "./type";
 
 export const getRecipe = async (recipeId: string) => {
   const [recipes] = await mysqlDB.execute<RecipeInfo[]>(

@@ -1,16 +1,16 @@
 import express from "express";
 
-import recipesRouter from "./recipes/index";
-import productsRouter from "./products/index";
-import usersRouter from "./users";
 import authRouter from "./auth/index";
-import imagesRouter from "./images/index";
-import recommendRouter from "./recommend/index";
 import bookmarksRouter from "./bookmarks/index";
-import homeRouter from "./home/index";
 import cartsRouter from "./carts/index";
+import homeRouter from "./home/index";
+import imagesRouter from "./images/index";
 import ingredientsRouter from "./ingredients/index";
 import pantryRouter from "./pantry/index";
+import productsRouter from "./products/index";
+import recipesRouter from "./recipes/index";
+import recommendRouter from "./recommend/index";
+import usersRouter from "./users";
 
 const router = express.Router();
 

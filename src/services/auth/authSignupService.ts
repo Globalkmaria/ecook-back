@@ -1,8 +1,10 @@
 import crypto from "crypto";
+
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 
 import mysqlDB from "../../db/mysql";
 import { getImgUrl } from "../../utils/img";
+
 import { validateEmail, validatePassword, validateUsername } from "./helper";
 
 export interface SignupUser {

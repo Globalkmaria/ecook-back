@@ -1,6 +1,7 @@
 import { RowDataPacket } from "mysql2";
-import { GetProductsResponse } from "../../controllers/products/productsController";
+
 import { PRODUCT_QUERY_TYPES } from "../../controllers/products/const";
+import { GetProductsResponse } from "../../controllers/products/productsController";
 
 export interface Product extends RowDataPacket {
   id: number; // Primary key for the ingredient

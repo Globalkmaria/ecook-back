@@ -1,7 +1,6 @@
 import { ResultSetHeader, RowDataPacket } from "mysql2";
 
 import mysqlDB from "../../db/mysql";
-
 import { decryptIngredientKeyWithThrowError } from "../ingredients/utils";
 import { decryptProductKeyWithThrowError } from "../products/utils";
 

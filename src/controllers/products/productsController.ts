@@ -1,8 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 
 import { searchProducts } from "../../services/products/productsService";
-import { isValidProductQueryType } from "./helper";
 import { ClientProduct } from "../../services/products/type";
+
+import { isValidProductQueryType } from "./helper";
 
 export interface GetProductsQuery {
   type: string;

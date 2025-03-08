@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 
-import { decryptPantryItemKeyWithThrowError } from "../../../services/pantry/utils";
-import { updatePantryItem } from "../../../services/pantry/pantryItems/updatePantryItem";
 import { SerializedUser } from "../../../config/passport";
+import { updatePantryItem } from "../../../services/pantry/pantryItems/updatePantryItem";
+import { decryptPantryItemKeyWithThrowError } from "../../../services/pantry/utils";
 
 type UpdatePantryItemParams = {
   pantryItemKey: string;

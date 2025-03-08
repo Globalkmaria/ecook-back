@@ -1,6 +1,7 @@
 import { RowDataPacket } from "mysql2";
 
 import mysqlDB from "../../db/mysql";
+
 import { IngredientProduct, SimpleIngredient } from "./type";
 
 export const getIngredients = async (ingredientIds: number[]) => {

@@ -1,6 +1,7 @@
 import express from "express";
-import { getCartItemsByUser } from "../../../controllers/carts/getCartItemsByUser";
+
 import { addItemToCart } from "../../../controllers/carts/addItemToCart";
+import { getCartItemsByUser } from "../../../controllers/carts/getCartItemsByUser";
 import { updateCartItem } from "../../../controllers/carts/updateCartItem";
 import { authGuard } from "../../../middleware/auth";
 

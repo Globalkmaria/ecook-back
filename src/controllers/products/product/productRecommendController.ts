@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 
-import { decryptProductKeyWithThrowError } from "../../../services/products/utils";
-import { getProductRecommendService } from "../../../services/products/product/productRecommendService";
 import { ServiceError } from "../../../services/helpers/ServiceError";
+import { getProductRecommendService } from "../../../services/products/product/productRecommendService";
+import { decryptProductKeyWithThrowError } from "../../../services/products/utils";
 
 export interface GetProductRecommendParams {
   key: string;

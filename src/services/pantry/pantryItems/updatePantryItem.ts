@@ -1,8 +1,8 @@
 import { ResultSetHeader } from "mysql2";
 
 import mysqlDB from "../../../db/mysql";
-import { ServiceError } from "../../helpers/ServiceError";
 import { camelToSnake } from "../../../utils/keysToSnakeCase";
+import { ServiceError } from "../../helpers/ServiceError";
 
 const fields = ["buy_date", "expire_date", "quantity"];
 

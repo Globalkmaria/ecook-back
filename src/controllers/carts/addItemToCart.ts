@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 
 import { SerializedUser } from "../../config/passport";
-import { ServiceError } from "../../services/helpers/ServiceError";
 import { createCartItem } from "../../services/carts/cartsService";
+import { ServiceError } from "../../services/helpers/ServiceError";
 
 type AddItemToCartParams = {
   username: string;

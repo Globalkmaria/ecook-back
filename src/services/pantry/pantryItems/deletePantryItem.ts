@@ -1,9 +1,9 @@
 import { ResultSetHeader } from "mysql2";
 
 import mysqlDB from "../../../db/mysql";
+import { ServiceError } from "../../helpers/ServiceError";
 import { deletePantryBox } from "../pantryBoxes/deletePantryBox";
 import { getPantryBoxItems } from "../pantryBoxItemsJC/index";
-import { ServiceError } from "../../helpers/ServiceError";
 
 export const deletePantryItem = async (
   pantryItemId: number,

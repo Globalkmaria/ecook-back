@@ -1,4 +1,5 @@
 import mysqlDB from "../../db/mysql";
+
 import { RecommendRecipe } from "./type";
 
 export const getIngredientRecommendRecipes = async (

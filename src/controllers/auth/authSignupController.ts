@@ -1,8 +1,8 @@
 import { NextFunction, Request, Response } from "express";
 
+import { processAndUploadImage } from "../../db/aws";
 import { signupUser, SignupUser } from "../../services/auth/authSignupService";
 import { getImgUrl } from "../../utils/img";
-import { processAndUploadImage } from "../../db/aws";
 
 interface SignupBody {
   username: string;

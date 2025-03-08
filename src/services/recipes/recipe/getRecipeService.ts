@@ -1,5 +1,4 @@
 import mysqlDB from "../../../db/mysql";
-import { RecipeInfoWithUser } from "./type";
 import { ServiceError } from "../../helpers/ServiceError";
 
 import {
@@ -9,7 +8,7 @@ import {
   getIngredientIds,
   getProductIds,
 } from "./helper";
-import {
+import { RecipeInfoWithUser ,
   ClientRecipeDetail,
   ClientRecipeProduct,
   RecipeIngredient,

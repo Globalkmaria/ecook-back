@@ -1,5 +1,6 @@
 import { getImgUrl } from "../../utils/img";
 import { generateIngredientKey } from "../ingredients/utils";
+
 import { ClientProduct, Product } from "./type";
 import { generateProductKey } from "./utils";
 

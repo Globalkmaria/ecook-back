@@ -1,9 +1,10 @@
-import express from "express";
 import { Readable } from "stream";
-import { GetObjectCommand } from "@aws-sdk/client-s3";
 
-import { s3Client } from "../../../db/aws";
+import { GetObjectCommand } from "@aws-sdk/client-s3";
+import express from "express";
+
 import { config } from "../../../config/index";
+import { s3Client } from "../../../db/aws";
 
 const router = express.Router();
 

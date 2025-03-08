@@ -1,22 +1,21 @@
-import {
-  EditRecipe,
-  RecipeInfo,
-  RecipeInfoWithUser,
-  RecipeRecommendationClientData,
-} from "./type";
 import { getImgUrl } from "../../../utils/img";
+import { shuffleArray } from "../../../utils/shuffle";
+import { generateIngredientKey } from "../../ingredients/utils";
+import { generateProductKey } from "../../products/utils";
+import { RecommendRecipe } from "../../recommends/type";
+import { sanitizeRecipeData } from "../helper";
+import { generateRecipeKey } from "../utils";
+
 import {
   ClientRecipeDetail,
   ClientRecipeProduct,
   RecipeIngredient,
   RecipeIngredientRequired,
-} from "./type";
-import { sanitizeRecipeData } from "../helper";
-import { generateRecipeKey } from "../utils";
-import { RecommendRecipe } from "../../recommends/type";
-import { shuffleArray } from "../../../utils/shuffle";
-import { generateIngredientKey } from "../../ingredients/utils";
-import { generateProductKey } from "../../products/utils";
+
+  EditRecipe,
+  RecipeInfo,
+  RecipeInfoWithUser,
+  RecipeRecommendationClientData} from "./type";
 
 export const generateClientRecipeIngredient = (
   ingredient: RecipeIngredient,

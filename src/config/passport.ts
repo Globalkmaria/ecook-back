@@ -1,6 +1,7 @@
+import crypto from "crypto";
+
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import crypto from "crypto";
 
 import mysqlDB from "../db/mysql";
 import { User } from "../services/recipes/recipe/type";

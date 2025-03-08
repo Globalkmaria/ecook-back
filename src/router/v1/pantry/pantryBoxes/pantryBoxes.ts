@@ -1,7 +1,8 @@
 import express from "express";
-import { authGuard } from "../../../../middleware/auth";
-import { getPantryBoxesController } from "../../../../controllers/pantry/pantryBoxes/getPantryBoxesController";
+
 import { createPantryBoxController } from "../../../../controllers/pantry/pantryBoxes/createPantryBoxController";
+import { getPantryBoxesController } from "../../../../controllers/pantry/pantryBoxes/getPantryBoxesController";
+import { authGuard } from "../../../../middleware/auth";
 
 const router = express.Router();
 

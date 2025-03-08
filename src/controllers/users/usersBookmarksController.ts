@@ -1,11 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 
 import { SerializedUser } from "../../config/passport";
+import { ClientRecipeSimple } from "../../services/recipes/type";
 import {
   getBookmarkedRecipesByUserId,
   getUserByUsername,
 } from "../../services/users/usersBookmarksService";
-import { ClientRecipeSimple } from "../../services/recipes/type";
 
 interface UserBookmarksQueryParams {
   username?: string;
@@ -17,7 +17,7 @@ interface UserBookmarksResponse {
 }
 
 export const getUserBookmarkedRecipes = async (
-  req: Request<"", "", "", UserBookmarksQueryParams>,
+  req: Request<UserBookmarksQueryParams>,
   res: Response<UserBookmarksResponse | { error: string }>,
   next: NextFunction
 ) => {

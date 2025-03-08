@@ -1,6 +1,7 @@
 import { RowDataPacket } from "mysql2";
 
 import mysqlDB from "../../db/mysql";
+
 import { CartItemData } from "./type";
 
 export const getCartItemsByUserIdService = async (userId: number) => {

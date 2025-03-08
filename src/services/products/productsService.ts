@@ -1,10 +1,12 @@
+import { GetProductsResponse } from "../../controllers/products/productsController";
 import mysqlDB from "../../db/mysql";
 import { lightSlugify, lightTrim } from "../../utils/normalize";
-import { decryptProductKeyWithThrowError } from "./utils";
+import { Ingredient } from "../ingredients/type";
+
 import { formatClientProducts } from "./helper";
 import { Product, SearchProductsData, SearchProductsParams } from "./type";
-import { Ingredient } from "../ingredients/type";
-import { GetProductsResponse } from "../../controllers/products/productsController";
+import { decryptProductKeyWithThrowError } from "./utils";
+
 
 export const searchProducts = async ({
   type,

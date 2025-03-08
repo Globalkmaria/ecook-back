@@ -1,10 +1,11 @@
-import mysqlDB from "../../db/mysql";
-import { groupRecommendRecipesByOptionName } from "./helper";
-import { RecommendRecipeWithOption } from "./type";
-import { arrayToPlaceholders } from "../../utils/query";
-import mysqlDB2 from "../../db/mysql2";
-import { Recommend } from "./type";
 import { HomeRecommendationSection } from "../../controllers/recommends/recommendHomeController";
+import mysqlDB from "../../db/mysql";
+import mysqlDB2 from "../../db/mysql2";
+import { arrayToPlaceholders } from "../../utils/query";
+
+import { groupRecommendRecipesByOptionName } from "./helper";
+import { RecommendRecipeWithOption , Recommend } from "./type";
+
 
 export const getTagRecommend = async (): Promise<HomeRecommendationSection> => {
   const [tagsData] = await mysqlDB2.query<Recommend[]>(

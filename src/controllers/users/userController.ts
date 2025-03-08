@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
-import { getUserDetail } from "../../services/users/userService";
 import { ServiceError } from "../../services/helpers/ServiceError";
+import { getUserDetail } from "../../services/users/userService";
 
 type GetUserParams = {
   username: string;

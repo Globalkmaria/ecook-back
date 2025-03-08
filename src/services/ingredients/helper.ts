@@ -1,6 +1,7 @@
 import { IngredientsBatchResponse } from "../../controllers/ingredients/ingredientsBatchController";
 import { getImgUrl } from "../../utils/img";
 import { generateProductKey } from "../products/utils";
+
 import { IngredientProduct, SimpleIngredient } from "./type";
 import { generateIngredientKey } from "./utils";
 

@@ -1,10 +1,10 @@
 import mysqlDB from "../../../db/mysql";
+import { ServiceError } from "../../helpers/ServiceError";
 import {
   formatRecipeData,
   getUniqueRecipes,
 } from "../../recipes/recipe/helper";
 import { RecommendRecipe } from "../../recommends/type";
-import { ServiceError } from "../../helpers/ServiceError";
 import { Product } from "../type";
 
 export const getProductRecommendService = async (productId: number) => {

@@ -1,11 +1,11 @@
 import express from "express";
 
-import { upload } from "../../../db/aws";
 
 import { login } from "../../../controllers/auth/authLoginController";
 import { logout } from "../../../controllers/auth/authLogoutController";
 import { signup } from "../../../controllers/auth/authSignupController";
 import { checkUsernameAvailability } from "../../../controllers/auth/authUsernameController";
+import { upload } from "../../../db/aws";
 
 const router = express.Router();
 
