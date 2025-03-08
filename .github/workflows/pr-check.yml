@@ -1,0 +1,42 @@
+name: PR Validation
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: "npm"
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Build Project
+        run: npm run build
+
+      - name: Start Server
+        run: npm run start  & disown
+
+      - name: Wait for Server to Start
+        run: |
+          for i in {1..10}; do
+            if curl -s http://localhost:8080; then
+              echo "Server is running!"
+              exit 0
+            fi
+            echo "Waiting for server..."
+            sleep 3
+          done
+          echo "Server failed to start"
+          exit 1
