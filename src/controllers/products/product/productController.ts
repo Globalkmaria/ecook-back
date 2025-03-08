@@ -1,10 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 
-import {
-  decryptKeyAndGetProductId,
-  decryptProductKeyWithThrowError,
-} from "../../../services/products/utils.js";
-import { validateId } from "../../../utils/numbers.js";
+import { decryptProductKeyWithThrowError } from "../../../services/products/utils.js";
 import { ServiceError } from "../../../services/helpers/ServiceError.js";
 import { getProductDetail } from "../../../services/products/product/productService.js";
 
