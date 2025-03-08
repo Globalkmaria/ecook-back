@@ -2,11 +2,10 @@
   "name": "recipes-backend",
   "version": "1.3.0",
   "description": "Recipes Backend",
-  "type": "module",
-  "main": "index.js",
+  "main": "index",
   "scripts": {
-    "build": "tsc",
-    "start": "NODE_ENV=prod node dist/index.js",
+    "build": "esbuild src/index.ts --bundle --platform=node --outdir=dist --sourcemap",
+    "start": "NODE_ENV=prod node dist/index",
     "dev": "NODE_ENV=dev tsx watch ./src/index.ts"
   },
   "dependencies": {
