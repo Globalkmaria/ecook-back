@@ -93,6 +93,9 @@ Whether you're exploring new recipes or looking for ways to reuse ingredients, E
 
 - Easily add ingredients and products to your cart while browsing recipes, helping you organize your shopping list. 
 
+10. Pantry Page
+- Allows users to save and manage their ingredients, track their expiration and purchase dates, and view detailed ingredient information. It also provides personalized recipe recommendations based on the saved ingredients.
+
 ## Skills and Technologies Used
 
 - **Frontend**
@@ -115,8 +118,7 @@ Whether you're exploring new recipes or looking for ways to reuse ingredients, E
 
 
 - ERD
-<img width="900" alt="image" src="https://github.com/user-attachments/assets/684214ba-2b9e-4be3-85b4-c53160a6a7dd" />
-
+<img width="1200" alt="Screenshot 2025-03-08 at 2 33 57 PM" src="https://github.com/user-attachments/assets/40e3bda6-ee93-4337-93fa-e68e9c8a9159" />
 
 
 - Home page
@@ -130,9 +132,13 @@ Whether you're exploring new recipes or looking for ways to reuse ingredients, E
 
 - Product page
 <img width="900" alt="image" src="https://github.com/user-attachments/assets/d1dce010-7590-49e6-87ee-83e5e52873f7" />
-- Cart page
-<img width="900" alt="image" src="https://github.com/user-attachments/assets/2919fa33-d2bc-497d-9104-f5551442c6b0" />
 
+- Cart page
+<img width="900" alt="Screenshot 2025-03-08 at 3 16 45 PM" src="https://github.com/user-attachments/assets/9c84393b-103e-4702-851f-0ec8104a8ed7" />
+
+- Pantry page
+<img width="900" alt="Screenshot 2025-03-08 at 3 13 15 PM" src="https://github.com/user-attachments/assets/70c1bde9-85bc-49c2-b5f7-e33386e06d0c" />
+<img width="900" alt="Screenshot 2025-03-08 at 2 25 18 PM" src="https://github.com/user-attachments/assets/492570f4-5802-40e7-aa97-8aa55e9d428e" />
 
 - Add new recipe
 <img  width="900" alt="newRecipe" src="https://github.com/user-attachments/assets/f245c0f7-6b6d-40ae-8a81-f231d115d822"/>
