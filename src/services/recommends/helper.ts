@@ -1,3 +1,4 @@
+import { getValidSimpleUser } from "../../helpers/checkUser";
 import { getImgUrl } from "../../utils/img";
 import { generateRecipeKey } from "../recipes/utils";
 
@@ -9,10 +10,11 @@ const formatRecipeData = (recipe: RecommendRecipeWithOption) => {
   return {
     name: recipe.recipe_name,
     img: getImgUrl(recipe.recipe_img, true),
-    user: {
+    user: getValidSimpleUser({
       username: recipe.user_username,
-      img: getImgUrl(recipe.user_img, true),
-    },
+      deleted_at: recipe.user_deleted_at,
+      img: recipe.user_img,
+    }),
     key,
     option: recipe.option_name,
   };

@@ -7,7 +7,6 @@ import { formatClientProducts } from "./helper";
 import { Product, SearchProductsData, SearchProductsParams } from "./type";
 import { decryptProductKeyWithThrowError } from "./utils";
 
-
 export const searchProducts = async ({
   type,
   query,

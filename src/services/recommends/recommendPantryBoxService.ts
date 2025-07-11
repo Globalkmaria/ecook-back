@@ -13,7 +13,8 @@ export const getIngredientRecommendRecipes = async (
         r.name as recipe_name, 
         img.recipe_img as recipe_img, 
         user.username as user_username, 
-        user.img as user_img
+        user.img as user_img,
+        user.deleted_at as user_deleted_at
     FROM recipes r
     JOIN recipe_ingredients ri
         ON r.id = ri.recipe_id
@@ -44,7 +45,8 @@ export const getIngredientAndProductRecommendRecipes = async (
         r.name as recipe_name, 
         img.recipe_img as recipe_img, 
         user.username as user_username, 
-        user.img as user_img
+        user.img as user_img,
+        user.deleted_at as user_deleted_at
     FROM recipes r
     JOIN recipe_ingredients ri
         ON r.id = ri.recipe_id

@@ -9,6 +9,7 @@ export interface RecipesSimple extends RowDataPacket {
   user_img?: string | null; // Nullable, varchar(255)
   user_username: string; //  varchar(100)
   user_id: number; // Non-nullable, int, default 0
+  user_deleted_at: Date | null; // Timestamp, default NULL
   tag_ids?: string | null; // Nullable, text (could store a list of tag IDs as a string)
   tag_names?: string | null; // Nullable, text (could store a list of tag names as a string)
   hours: number; // Non-nullable, int, default 0
@@ -19,7 +20,7 @@ export interface ClientRecipeSimple {
   id: number;
   name: string;
   img: string;
-  tags: { id: number; name: string }[];
+  tags: { name: string }[];
 }
 
 export interface IngredientNewProduct {

@@ -15,7 +15,7 @@ interface LoginResponse {
 }
 
 export const login = (
-  req: Request<"", "", LoginBody>,
+  req: Request<unknown, unknown, LoginBody>,
   res: Response<LoginResponse>,
   next: NextFunction
 ) => {

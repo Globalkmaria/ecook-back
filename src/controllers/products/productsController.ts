@@ -16,7 +16,7 @@ export type GetProductsResponse = {
 };
 
 export const getProducts = async (
-  req: Request<"", "", "", GetProductsQuery>,
+  req: Request<unknown, unknown, unknown, GetProductsQuery>,
   res: Response<GetProductsResponse>,
   next: NextFunction
 ) => {

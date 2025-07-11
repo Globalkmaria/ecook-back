@@ -26,7 +26,7 @@ export type RecipesBatchSearchTypes =
   (typeof RECIPES_BATCH_SEARCH_TYPES)[keyof typeof RECIPES_BATCH_SEARCH_TYPES];
 
 export const recipesBatch = async (
-  req: Request<"", "", RecipesBatchBody>,
+  req: Request<unknown, unknown, RecipesBatchBody>,
   res: Response<RecipesBatchResponse>,
   next: NextFunction
 ) => {

@@ -8,7 +8,8 @@ import {
   getIngredientIds,
   getProductIds,
 } from "./helper";
-import { RecipeInfoWithUser ,
+import {
+  RecipeInfoWithUser,
   ClientRecipeDetail,
   ClientRecipeProduct,
   RecipeIngredient,
@@ -43,7 +44,6 @@ const getRecipeTags = async (recipeId: string) => {
     [recipeId]
   );
   return tags.map((tag) => ({
-    id: tag.tag_id,
     name: tag.tag_name,
   }));
 };

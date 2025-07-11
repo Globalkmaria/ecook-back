@@ -6,7 +6,7 @@ import { RecipesSimple } from "../recipes/type";
 
 export const getUserDetail = async (username: string) => {
   const [userData] = await mysqlDB.execute<UserSimple[]>(
-    `SELECT * FROM users WHERE username = ?`,
+    `SELECT * FROM users WHERE username = ? AND deleted_at IS NULL`,
     [username]
   );
 

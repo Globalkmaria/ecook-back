@@ -14,6 +14,7 @@ export interface RecommendRecipe extends RowDataPacket {
   recipe_img: string;
   user_username: string;
   user_img: string;
+  user_deleted_at: Date | null;
 }
 
 export type RecommendRecipeWithOption = {

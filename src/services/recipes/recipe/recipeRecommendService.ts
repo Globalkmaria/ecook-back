@@ -35,7 +35,8 @@ export const getUserRecipes = async (recipe: RecipeInfo) => {
       recipes.name as recipe_name, 
       img.recipe_img as recipe_img, 
       user.username as user_username, 
-      user.img as user_img
+      user.img as user_img,
+      user.deleted_at as user_deleted_at
     FROM filtered_recipes as recipes
     JOIN recipe_img_view img ON recipes.id = img.recipe_id
     JOIN users_simple_view user ON user.id = recipes.user_id;
@@ -71,7 +72,8 @@ export const getIngredientRecipes = async (recipe: RecipeInfo) => {
       recipes.recipe_name, 
       img.recipe_img as recipe_img, 
       user.username as user_username, 
-      user.img as user_img
+      user.img as user_img,
+      user.deleted_at as user_deleted_at
     FROM filtered_recipes recipes
     JOIN recipe_img_view img 
       ON recipes.recipe_id = img.recipe_id
@@ -111,7 +113,8 @@ export const getTagRecipes = async (recipe: RecipeInfo) => {
       recipes.recipe_name, 
       img.recipe_img as recipe_img, 
       user.username as user_username, 
-      user.img as user_img
+      user.img as user_img,
+      user.deleted_at as user_deleted_at
     FROM filtered_recipes as recipes
     JOIN recipe_img_view img 
       ON recipes.recipe_id = img.recipe_id
@@ -132,7 +135,8 @@ export const getRecentRecipes = async (limit = 8) => {
       r.name as recipe_name, 
       r.recipe_img, 
       r.user_username, 
-      r.user_img
+      r.user_img,
+      r.user_deleted_at
     FROM recipe_with_user_info_view r
     ORDER BY r.created_at DESC
     LIMIT ${limit}

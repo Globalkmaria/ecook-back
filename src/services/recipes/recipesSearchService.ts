@@ -3,13 +3,12 @@ import {
   SearchRecipesQueryParams,
 } from "../../controllers/recipes/recipesSearchController";
 import mysqlDB from "../../db/mysql";
+import { getValidSimpleUser } from "../../helpers/checkUser";
 import { getImgUrl } from "../../utils/img";
 import { lightSlugify, lightTrim, splitString } from "../../utils/normalize";
 
 import { RecipesSimple } from "./type";
 import { generateRecipeKey } from "./utils";
-
-
 
 export const searchRecipesService = async ({
   q,
@@ -60,6 +59,7 @@ const searchByName = async (query: string) => {
               ri.recipe_img AS img,
               u.img AS user_img,
               u.username AS user_username,
+              u.deleted_at AS user_deleted_at,
               u.id AS user_id,
               GROUP_CONCAT(tag_id SEPARATOR ',') AS tag_ids,
               GROUP_CONCAT(tag_name SEPARATOR ',') AS tag_names
@@ -91,6 +91,7 @@ const searchByTag = async (query: string) => {
               ri.recipe_img AS img,
               u.img AS user_img,
               u.username AS user_username,
+              u.deleted_at AS user_deleted_at,
               u.id AS user_id,
               GROUP_CONCAT(tag_id SEPARATOR ',') AS tag_ids,
               GROUP_CONCAT(tag_name SEPARATOR ',') AS tag_names
@@ -126,6 +127,7 @@ const searchByIngredient = async (query: string) => {
               ri.recipe_img AS img,
               u.img AS user_img,
               u.username AS user_username,
+              u.deleted_at AS user_deleted_at,
               u.id AS user_id,
               GROUP_CONCAT(rt.tag_id SEPARATOR ',') AS tag_ids,
               GROUP_CONCAT(rt.tag_name SEPARATOR ',') AS tag_names
@@ -163,6 +165,7 @@ const searchByProduct = async (query: string) => {
                 ri.recipe_img AS img,
                 u.img AS user_img,
                 u.username AS user_username,
+                u.deleted_at AS user_deleted_at,
                 u.id AS user_id,
                 GROUP_CONCAT(tag_id SEPARATOR ',') AS tag_ids,
                 GROUP_CONCAT(tag_name SEPARATOR ',') AS tag_names
@@ -204,7 +207,6 @@ export const formatSearchResult = (data: RecipesSimple[]) =>
     const tagIds = splitString(recipe.tag_ids);
     const tagNames = splitString(recipe.tag_names);
     const tags = tagIds.map((id, index) => ({
-      id: parseInt(id, 10),
       name: tagNames[index],
     }));
 
@@ -218,9 +220,10 @@ export const formatSearchResult = (data: RecipesSimple[]) =>
       hours: recipe.hours,
       minutes: recipe.minutes,
       key,
-      user: {
+      user: getValidSimpleUser({
         username: recipe.user_username,
-        img: getImgUrl(recipe.user_img),
-      },
+        deleted_at: recipe.user_deleted_at,
+        img: recipe.user_img,
+      }),
     };
   });
