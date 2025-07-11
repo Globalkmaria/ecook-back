@@ -4,8 +4,7 @@ import mysqlDB2 from "../../db/mysql2";
 import { arrayToPlaceholders } from "../../utils/query";
 
 import { groupRecommendRecipesByOptionName } from "./helper";
-import { RecommendRecipeWithOption , Recommend } from "./type";
-
+import { RecommendRecipeWithOption, Recommend } from "./type";
 
 export const getTagRecommend = async (): Promise<HomeRecommendationSection> => {
   const [tagsData] = await mysqlDB2.query<Recommend[]>(
@@ -88,39 +87,35 @@ export const getIngredientRecommend =
     const [ingredientsRecipes] = await mysqlDB.query<
       RecommendRecipeWithOption[]
     >(
-      `WITH LatestRecipes AS (
+      `SELECT 
+        ingredient_name AS option_name,
+        ranked.recipe_id AS recipe_id,
+        recipe_name,
+        r_img.recipe_img,
+        u.username AS user_username,
+        u.img AS user_img
+      FROM (
         SELECT 
-        r.id recipe_id, 
-        r.user_id, 
-        r.name recipe_name, 
-        i.ingredient_id,
-        i.ingredient_name,
-        ROW_NUMBER() OVER (PARTITION BY i.ingredient_id ORDER BY r.id DESC) AS row_num
-        FROM recipes r
-        JOIN 
-            (SELECT recipe_id, ingredient_id, name ingredient_name
-            FROM recipe_ingredients 
-            WHERE ingredient_id IN (${ingredientPlaceholder})
-            ) i
-        ON r.id = i.recipe_id
-    )
-    SELECT 
-        lr.recipe_id, 
-        lr.recipe_name, 
-        recipe_img, 
-        u.username user_username, 
-        u.img user_img, 
-        lr.ingredient_name option_name
-    FROM (
-        SELECT *
-        FROM LatestRecipes
-        WHERE row_num <= 5
-    ) AS lr
-    JOIN recipe_img_view r_img
-        ON lr.recipe_id = r_img.recipe_id
-    JOIN users_simple_view u
-        ON lr.user_id = u.id
-        ;
+          ingredient_name,
+          recipe_id,
+          recipe_name,
+          user_id
+        FROM (
+          SELECT 
+            ri.name AS ingredient_name,
+            r.id AS recipe_id,
+            r.name AS recipe_name,
+            r.user_id,
+            ROW_NUMBER() OVER (PARTITION BY ri.ingredient_id ORDER BY r.id DESC) AS rn
+          FROM recipe_ingredients ri
+          JOIN recipes r ON r.id = ri.recipe_id
+          WHERE ri.ingredient_id IN (${ingredientPlaceholder})
+        ) ranked_all
+        WHERE rn <= 5
+      ) ranked
+      JOIN recipe_img_view r_img ON ranked.recipe_id = r_img.recipe_id
+      JOIN users_simple_view u ON ranked.user_id = u.id
+      ORDER BY ingredient_name, recipe_id DESC;
     `,
       [...ingredientValues]
     );
