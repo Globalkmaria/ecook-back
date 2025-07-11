@@ -27,7 +27,8 @@ export const getTagRecommend = async (): Promise<HomeRecommendationSection> => {
         recipe_name,
         r_img.recipe_img,
         u.username AS user_username,
-        u.img AS user_img
+        u.img AS user_img,
+        u.deleted_at AS user_deleted_at
       FROM (
         SELECT	
           tag_name,
@@ -91,6 +92,7 @@ export const getIngredientRecommend =
         recipe_name,
         r_img.recipe_img,
         u.username AS user_username,
+        u.deleted_at AS user_deleted_at,
         u.img AS user_img
       FROM (
         SELECT 

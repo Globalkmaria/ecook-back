@@ -8,7 +8,7 @@ export interface CreateRecipeBody {
 }
 
 export const createRecipe = async (
-  req: Request<"", "", CreateRecipeBody>,
+  req: Request<unknown, unknown, CreateRecipeBody>,
   res: Response,
   next: NextFunction
 ) => {

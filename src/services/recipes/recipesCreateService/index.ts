@@ -16,9 +16,8 @@ import {
   isRequiredFieldsPresent,
 } from "./helper";
 
-
 export const createRecipeService = async (
-  req: Request<"", "", CreateRecipeBody>
+  req: Request<unknown, unknown, CreateRecipeBody>
 ) => {
   const connection = await mysqlDB.getConnection();
 

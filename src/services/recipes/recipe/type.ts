@@ -45,7 +45,6 @@ interface RecipeProduct {
 }
 
 interface Ingredient {
-  id: number;
   key: string;
   name: string;
   quantity: string;
@@ -63,8 +62,8 @@ export interface ClientRecipeDetail {
   steps: string[];
   img: string;
   ingredients: Ingredient[];
-  tags: { id: number; name: string }[];
-  user: { id: number; username: string; img: string | null };
+  tags: { name: string }[];
+  user: { username: string; img: string | null; isDeleted: boolean };
 }
 export type ClientRecipeProduct = Omit<ClientProduct, "ingredient" | "key"> & {
   ingredientId: number;
@@ -103,11 +102,12 @@ export interface User extends RowDataPacket {
   hashed_password: string; // Non-nullable, VARBINARY(255)
   salt: string; // Non-nullable, VARBINARY(255)
   name?: string; //  varchar(100)
-  img?: string; // Nullable, varchar(255)
+  img?: string | null; // Nullable, varchar(255)
   youtube_link?: string; // Nullable, varchar(255)
   created_at?: Date; // Timestamp, default CURRENT_TIMESTAMP
   updated_at?: Date; // Timestamp, auto-update on change
   instagram_link?: string; // Nullable, varchar(255)
+  deleted_at: Date | null; // Timestamp, default NULL
 }
 
 export type UserSimple = RowDataPacket &

@@ -1,3 +1,4 @@
+import { getValidSimpleUser } from "../../../helpers/checkUser";
 import { getImgUrl } from "../../../utils/img";
 import { shuffleArray } from "../../../utils/shuffle";
 import { generateIngredientKey } from "../../ingredients/utils";
@@ -11,17 +12,16 @@ import {
   ClientRecipeProduct,
   RecipeIngredient,
   RecipeIngredientRequired,
-
   EditRecipe,
   RecipeInfo,
   RecipeInfoWithUser,
-  RecipeRecommendationClientData} from "./type";
+  RecipeRecommendationClientData,
+} from "./type";
 
 export const generateClientRecipeIngredient = (
   ingredient: RecipeIngredient,
   map: Map<number, ClientRecipeProduct[]>
 ): ClientRecipeDetail["ingredients"][0] => ({
-  id: ingredient.ingredient_id,
   key: generateIngredientKey(
     ingredient.ingredient_id,
     ingredient.ingredient_name
@@ -84,12 +84,11 @@ export const generateRecipeInformation = ({
   ingredients: ClientRecipeDetail["ingredients"];
   tags: ClientRecipeDetail["tags"];
 }): ClientRecipeDetail => {
-  const user = {
-    id: info.user_id,
+  const user = getValidSimpleUser({
     username: info.user_username,
-    img: getImgUrl(info.user_img, true),
-  };
-
+    deleted_at: info.user_deleted_at,
+    img: info.user_img,
+  });
   const img = getImgUrl(info.recipe_img, true);
   const key = generateRecipeKey(info.id, info.name);
   return {
@@ -105,6 +104,7 @@ export const generateRecipeInformation = ({
     key,
   };
 };
+
 export const getUpdatedRecipeData = ({
   newRecipe,
   oldRecipe,
@@ -162,10 +162,11 @@ export const formatRecipeData = (
       key,
       name: recipe.recipe_name,
       img: getImgUrl(recipe.recipe_img),
-      user: {
+      user: getValidSimpleUser({
         username: recipe.user_username,
-        img: getImgUrl(recipe.user_img),
-      },
+        deleted_at: recipe.user_deleted_at,
+        img: recipe.user_img,
+      }),
     };
   });
 

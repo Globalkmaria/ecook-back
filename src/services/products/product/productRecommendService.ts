@@ -56,6 +56,7 @@ const getProductRecipes = async (productId: number) => {
             , r.recipe_img
             , r.user_username
             , r.user_img
+            , r.user_deleted_at
         FROM recipe_ingredients  ri
         JOIN recipe_with_user_info_view r 
         WHERE 
@@ -75,6 +76,7 @@ const getIngredientRecipes = async (ingredientId: number) => {
             , r.recipe_img
             , r.user_username
             , r.user_img
+            , r.user_deleted_at
         FROM recipe_ingredients  ri
         JOIN recipe_with_user_info_view r 
         WHERE 
