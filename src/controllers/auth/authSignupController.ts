@@ -20,7 +20,7 @@ type SignupResponse =
     };
 
 export const signup = async (
-  req: Request<"", "", SignupBody>,
+  req: Request<unknown, unknown, SignupBody>,
   res: Response<SignupResponse>,
   next: NextFunction
 ) => {
