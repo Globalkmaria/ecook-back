@@ -21,37 +21,35 @@ export const getTagRecommend = async (): Promise<HomeRecommendationSection> => {
   const tagPlaceholder = arrayToPlaceholders(tagValues);
 
   const [tagRecipes] = await mysqlDB.query<RecommendRecipeWithOption[]>(
-    `WITH RankedRecipes AS (
-        SELECT	
-            tag_id, 
-            tag_name,
-            r.user_id,  
-            r.id recipe_id,
-            r.name recipe_name,
-            ROW_NUMBER() OVER (PARTITION BY tag_id ORDER BY r.id DESC) AS row_num
-        FROM (
-            SELECT *
-            FROM recipe_tags_view
-            WHERE tag_id IN (${tagPlaceholder})
-        ) AS t
-        JOIN recipes r ON r.id = t.recipe_id
-    )
-    SELECT 
-        rr.tag_name option_name, 
-        rr.recipe_id, 
-        rr.recipe_name,
-        r_img.recipe_img, 
-        u.username AS user_username, 
+    `SELECT 
+        tag_name AS option_name,
+        ranked.recipe_id AS recipe_id,
+        recipe_name,
+        r_img.recipe_img,
+        u.username AS user_username,
         u.img AS user_img
-    FROM (
-        SELECT *
-        FROM RankedRecipes
+      FROM (
+        SELECT	
+          tag_name,
+          recipe_id,
+          recipe_name,
+          user_id
+        FROM (
+          SELECT 
+            t.tag_name,
+            r.id AS recipe_id,
+            r.name AS recipe_name,
+            r.user_id,
+            ROW_NUMBER() OVER (PARTITION BY t.tag_id ORDER BY r.id DESC) AS row_num
+          FROM recipe_tags_view t
+          JOIN recipes r ON r.id = t.recipe_id
+          WHERE t.tag_id IN (${tagPlaceholder})
+        ) ranked_all
         WHERE row_num <= 5
-    ) AS rr
-    JOIN recipe_img_view r_img
-        ON rr.recipe_id = r_img.recipe_id
-    JOIN users_simple_view u
-        ON rr.user_id = u.id;
+      ) ranked
+      JOIN recipe_img_view r_img ON ranked.recipe_id = r_img.recipe_id
+      JOIN users_simple_view u ON ranked.user_id = u.id
+      ORDER BY tag_name, recipe_id DESC;
     `,
     [...tagValues]
   );
