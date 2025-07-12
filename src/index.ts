@@ -25,8 +25,8 @@ app.use(passport.session());
 
 app.use("/api/v1", v1);
 
-app.use(errorLogger);
 app.use(notFound);
+app.use(errorLogger);
 app.use(errorHandler);
 
 app.listen(config.port, () => {
