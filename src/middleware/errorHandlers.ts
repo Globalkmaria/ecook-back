@@ -1,21 +1,23 @@
 import { Request, Response, NextFunction } from "express";
-import createError from "http-errors";
+
+import { ErrorLogger } from "./log";
 
 export const notFound = (
   req: Request,
   res: Response,
   next: NextFunction
 ): void => {
-  next(createError(404, "Route not found"));
+  next({
+    status: 404,
+    message: "Route not found",
+  });
 };
 
 export const errorHandler = (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  error: any,
+  error: ErrorLogger,
   req: Request,
   res: Response
 ): void => {
-  console.error(error);
   res.status(error.status || 500).send({
     message: error.message,
   });

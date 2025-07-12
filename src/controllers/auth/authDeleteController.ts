@@ -1,14 +1,14 @@
-import { NextFunction, Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 
 import { SerializedUser } from "../../config/passport";
 import { deleteUserAccount } from "../../services/auth/authDeleteService";
 
-interface DeleteAccountBody {
+export interface DeleteAccountBody {
   password: string;
   reason?: string;
 }
 
-interface DeleteAccountResponse {
+export interface DeleteAccountResponse {
   message: string;
 }
 
@@ -25,6 +25,10 @@ export const deleteAccount = async (
       return next({
         status: 401,
         message: "Unauthorized. Please log in to delete your account.",
+        data: {
+          user,
+          reason: "No authenticated user",
+        },
       });
     }
 
@@ -32,6 +36,10 @@ export const deleteAccount = async (
       return next({
         status: 400,
         message: "Password is required to delete your account.",
+        data: {
+          user,
+          reason: "Missing password",
+        },
       });
     }
 
@@ -44,8 +52,13 @@ export const deleteAccount = async (
 
     if (!result.success) {
       return next({
-        status: 400,
+        status: result.status,
         message: result.error || "Failed to delete account.",
+        data: {
+          user,
+          reason: "Failed to delete account",
+          result,
+        },
       });
     }
 
@@ -67,6 +80,11 @@ export const deleteAccount = async (
       status: 500,
       message: "An error occurred while deleting your account.",
       error,
+      data: {
+        user: req.user,
+        reason: "Critical error during deletion",
+        error,
+      },
     });
   }
 };
