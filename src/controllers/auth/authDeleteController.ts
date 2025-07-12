@@ -3,12 +3,12 @@ import { Request, Response, NextFunction } from "express";
 import { SerializedUser } from "../../config/passport";
 import { deleteUserAccount } from "../../services/auth/authDeleteService";
 
-export interface DeleteAccountBody {
+interface DeleteAccountBody {
   password: string;
   reason?: string;
 }
 
-export interface DeleteAccountResponse {
+interface DeleteAccountResponse {
   message: string;
 }
 
