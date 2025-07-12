@@ -4,6 +4,8 @@ import { RowDataPacket } from "mysql2";
 
 import mysqlDB from "../../db/mysql";
 
+import { isProtectedUsername } from "./helper";
+
 interface DeleteAccountParams {
   userId: number;
   username: string;
@@ -11,11 +13,15 @@ interface DeleteAccountParams {
   reason?: string;
 }
 
-interface DeleteAccountResult {
-  success: boolean;
-  error?: string;
-  deletedAt?: Date;
-}
+type DeleteAccountResult =
+  | {
+      success: true;
+    }
+  | {
+      success: false;
+      status: number;
+      error: string;
+    };
 
 interface UserAuthData extends RowDataPacket {
   id: number;
@@ -30,19 +36,19 @@ export const deleteUserAccount = async (
   const { userId, username, password, reason } = params;
 
   try {
-    // 1. Verify user identity by checking password
+    // Verify user identity by checking password
     const [userRows] = await mysqlDB.execute<UserAuthData[]>(
       "SELECT id, username, hashed_password, salt FROM users WHERE id = ? AND username = ?",
       [userId, username]
     );
 
     if (userRows.length === 0) {
-      return { success: false, error: "User not found" };
+      return { success: false, status: 404, error: "User not found" };
     }
 
     const user = userRows[0];
 
-    // 2. Verify password
+    // Verify password
     const isPasswordValid = await verifyPassword(
       password,
       user.hashed_password,
@@ -50,10 +56,14 @@ export const deleteUserAccount = async (
     );
 
     if (!isPasswordValid) {
-      return { success: false, error: "Invalid password" };
+      return { success: false, status: 400, error: "Invalid password" };
     }
 
-    // 3. Begin transaction for account deletion
+    if (isProtectedUsername(username)) {
+      return { success: false, status: 403, error: "Protected username" };
+    }
+
+    // Begin transaction for account deletion
     const connection = await mysqlDB.getConnection();
 
     try {
@@ -61,14 +71,14 @@ export const deleteUserAccount = async (
 
       const deletedAt = new Date();
 
-      // 4. Log the deletion for audit purposes (optional)
+      // Log the deletion for audit purposes (optional)
       await connection.execute(
         `INSERT INTO account_deletions (user_id, username, reason, deleted_at) 
          VALUES (?, ?, ?, ?)`,
         [userId, username, reason || null, deletedAt]
       );
 
-      // 5. Soft delete: Mark user as deleted instead of hard delete
+      // Soft delete: Mark user as deleted instead of hard delete
       // This approach follows industry best practices for data retention
       await connection.execute(
         `UPDATE users 
@@ -86,7 +96,6 @@ export const deleteUserAccount = async (
 
       return {
         success: true,
-        deletedAt,
       };
     } catch (error) {
       await connection.rollback();
@@ -98,6 +107,7 @@ export const deleteUserAccount = async (
     console.error("Error deleting user account:", error);
     return {
       success: false,
+      status: 500,
       error: "An error occurred while deleting the account",
     };
   }

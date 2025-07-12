@@ -59,6 +59,10 @@ export const config = {
       iv: required("PANTRY_ITEM_ENCRYPTION_IV"),
     },
   },
+  protectedUsernames: required("PROTECTED_USERNAMES")
+    .split(",")
+    .map((name) => name.trim().toLowerCase())
+    .filter((name) => !!name),
 };
 
 export const corsOption = {

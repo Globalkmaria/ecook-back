@@ -1,3 +1,5 @@
+import { config } from "@/config";
+
 // Reserved usernames that users cannot register
 const RESERVED_USERNAMES = [
   // Anonymous chef variations
@@ -97,4 +99,8 @@ export const validatePassword = (password: string) => {
 export const validateEmail = (email: string) => {
   const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return regex.test(email);
+};
+
+export const isProtectedUsername = (username: string) => {
+  return config.protectedUsernames.includes(username.toLowerCase());
 };
