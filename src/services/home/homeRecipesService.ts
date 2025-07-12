@@ -5,6 +5,8 @@ import { getRecentRecipes } from "../recipes/recipesSearchService";
 import { RecipesSimple } from "../recipes/type";
 import { generateRecipeKey } from "../recipes/utils";
 
+import { getValidUser } from "@/helpers/checkUser";
+
 export const homeRecipesService = async () => {
   const result = await getRecentRecipes(18);
   return formatHomeRecipes(result);
@@ -29,8 +31,6 @@ const formatHomeRecipes = (data: RecipesSimple[]): HomeRecipe[] =>
       hours: recipe.hours,
       minutes: recipe.minutes,
       key,
-      user: {
-        username: recipe.user_username,
-      },
+      user: getValidUser(recipe),
     };
   });
