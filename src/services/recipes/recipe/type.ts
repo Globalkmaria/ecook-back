@@ -64,6 +64,7 @@ export interface ClientRecipeDetail {
   ingredients: Ingredient[];
   tags: { name: string }[];
   user: { username: string; img: string | null; isDeleted: boolean };
+  createdAt: Date;
 }
 export type ClientRecipeProduct = Omit<ClientProduct, "ingredient" | "key"> & {
   ingredientId: number;

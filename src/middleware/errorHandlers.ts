@@ -16,7 +16,8 @@ export const notFound = (
 export const errorHandler = (
   error: ErrorLogger,
   req: Request,
-  res: Response
+  res: Response,
+  _next: NextFunction
 ): void => {
   res.status(error.status || 500).send({
     message: error.message,

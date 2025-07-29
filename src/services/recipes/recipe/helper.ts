@@ -102,6 +102,7 @@ export const generateRecipeInformation = ({
     tags,
     user,
     key,
+    createdAt: info.created_at,
   };
 };
 
