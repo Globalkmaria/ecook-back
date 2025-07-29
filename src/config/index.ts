@@ -12,6 +12,9 @@ const required = (key: string, defaultValue = undefined) => {
 };
 
 export const config = {
+  paths: {
+    root: process.cwd(),
+  },
   session: {
     secret: required("SESSION_SECRET"),
   },
