@@ -1,9 +1,7 @@
 # E-COOK
 
-Project Link : <https://www.ecook.online>
-
-- Test ID : testme
-- PW : Helloworld1!
+> 배포가 중단된 상태입니다. 코드와 아래 스냅샷으로 확인해 주세요.
+> _Deployment is currently offline — please refer to the code and snapshots below._
 
 ## Table of Contents
 
